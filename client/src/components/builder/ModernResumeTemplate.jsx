@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Globe, Github, Linkedin, Award } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe, Code2, Link2, Award } from 'lucide-react';
 
 const ModernResumeTemplate = ({ data, customColor, customFont }) => {
   if (!data) return null;
@@ -85,12 +85,12 @@ const ModernResumeTemplate = ({ data, customColor, customFont }) => {
           )}
           {contact.linkedin && (
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.78rem', color: '#475569' }}>
-              <Linkedin size={12} color={accentColor} /> {contact.linkedin}
+              <Link2 size={12} color={accentColor} /> {contact.linkedin}
             </span>
           )}
           {contact.github && (
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.78rem', color: '#475569' }}>
-              <Github size={12} color={accentColor} /> {contact.github}
+              <Code2 size={12} color={accentColor} /> {contact.github}
             </span>
           )}
           {contact.portfolio && (
