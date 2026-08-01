@@ -8,6 +8,7 @@ import IndustryExamples from './pages/IndustryExamples';
 import IndustryCategory from './pages/IndustryCategory';
 import ResumeExample from './pages/ResumeExample';
 import Templates from './pages/Templates';
+import AdminTemplates from './pages/AdminTemplates';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/industry-examples/:industryId" element={<IndustryCategory />} />
         <Route path="/resume-examples/:id" element={<ResumeExample />} />
         <Route path="/templates" element={<Templates />} />
+        <Route path="/admin/templates" element={<AdminTemplates />} />
       </Routes>
     </Router>
   );

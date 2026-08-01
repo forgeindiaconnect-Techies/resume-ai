@@ -115,6 +115,71 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           console.error(err);
         }
       } else {
+        // Check for template prefill from sitemap library
+        const prefilled = localStorage.getItem('prefilledResumeJson');
+        if (prefilled) {
+          try {
+            const parsed = JSON.parse(prefilled);
+            setFormData(prev => ({
+              ...prev,
+              title: `My ${parsed.role || 'Professional'} Resume`,
+              templateId: localStorage.getItem('selectedTemplateId') || 'modern',
+              personalInfo: {
+                name: parsed.name || '',
+                email: parsed.contact?.email || '',
+                phone: parsed.contact?.phone || '',
+                location: parsed.contact?.location || '',
+                linkedin: parsed.contact?.linkedin || '',
+                github: parsed.contact?.github || '',
+                portfolio: parsed.contact?.portfolio || '',
+                summary: parsed.objective || ''
+              },
+              experience: parsed.experience?.map((exp, idx) => ({
+                id: idx + 1,
+                role: exp.title,
+                company: exp.company,
+                duration: exp.duration,
+                desc: exp.desc
+              })) || [],
+              education: parsed.education?.map((edu, idx) => ({
+                id: idx + 1,
+                degree: edu.degree,
+                school: edu.institution,
+                department: '',
+                cgpa: edu.cgpa || '',
+                year: edu.tenure
+              })) || [],
+              projects: parsed.projects?.map((proj, idx) => ({
+                id: idx + 1,
+                name: proj.title,
+                technology: proj.technology,
+                desc: proj.desc,
+                github: '',
+                liveDemo: ''
+              })) || [],
+              skills: {
+                programming: parsed.skills?.languages?.split(',').map(s => s.trim()) || [],
+                frameworks: parsed.skills?.frameworks?.split(',').map(s => s.trim()) || [],
+                databases: parsed.skills?.tools?.split(',').map(s => s.trim()) || []
+              },
+              certificates: parsed.training?.map((tr, idx) => ({
+                id: idx + 1,
+                name: tr,
+                organization: '',
+                year: ''
+              })) || [],
+              languagesList: parsed.languagesList || [],
+              references: parsed.references || ''
+            }));
+            
+            // Clean up to prevent subsequent reload overrides
+            localStorage.removeItem('prefilledResumeJson');
+            return;
+          } catch (e) {
+            console.error('Prefill parse error:', e);
+          }
+        }
+
         const guestId = localStorage.getItem('guestSessionId');
         if (guestId) {
           try {
