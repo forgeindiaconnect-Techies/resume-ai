@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/health", "destination": "/api/health.js" },
+    { "source": "/api/analyze/optimize", "destination": "/api/analyze/optimize.js" },
+    { "source": "/api/analyze", "destination": "/api/analyze.js" },
+    { "source": "/api/match", "destination": "/api/match.js" },
+    { "source": "/api/candidates/:id", "destination": "/api/candidates.js" },
+    { "source": "/api/candidates", "destination": "/api/candidates.js" },
+    { "source": "/api/interviews", "destination": "/api/interviews.js" },
+    { "source": "/api/resumes", "destination": "/api/resumes.js" },
+    { "source": "/api/upload-resume", "destination": "/api/upload-resume.js" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

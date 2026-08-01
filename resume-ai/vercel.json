@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
+    { "source": "/api/candidates/rank", "destination": "/frontend/api/candidates.js" },
+    { "source": "/api/candidates", "destination": "/frontend/api/candidates.js" },
+    
+    { "source": "/api/analyze/optimize", "destination": "/frontend/api/analyze.js" },
+    { "source": "/api/analyze", "destination": "/frontend/api/analyze.js" },
+    
+    { "source": "/api/interviews/generate", "destination": "/frontend/api/interviews.js" },
+    { "source": "/api/interviews/validate", "destination": "/frontend/api/interviews.js" },
+    { "source": "/api/interview", "destination": "/frontend/api/interviews.js" },
+    
+    { "source": "/api/match", "destination": "/frontend/api/match.js" },
+    { "source": "/api/resumes", "destination": "/frontend/api/resumes.js" },
+    { "source": "/api/upload-resume", "destination": "/frontend/api/upload-resume.js" },
+    { "source": "/api/health", "destination": "/frontend/api/health.js" },
+
+    { "source": "/(.*)", "destination": "/frontend/dist/$1", "check": true },
+    { "source": "/(.*)", "destination": "/frontend/dist/index.html" }
+  ]
+}

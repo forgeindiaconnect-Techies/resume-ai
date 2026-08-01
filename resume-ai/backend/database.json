@@ -1,0 +1,2825 @@
+{
+  "candidates": [
+    {
+      "id": "1711533600000",
+      "name": "John Doe",
+      "fileName": "john_doe_resume.pdf",
+      "role": "Frontend",
+      "status": "Applied",
+      "timestamp": "2026-03-27T10:00:00.000Z",
+      "score": 88,
+      "matchPercentage": 92,
+      "matchedSkills": [
+        "React",
+        "JavaScript",
+        "Tailwind",
+        "Next.js"
+      ],
+      "strengths": [
+        "Strong React expertise",
+        "Modern UI experience"
+      ],
+      "weaknesses": [
+        "Limited backend knowledge"
+      ],
+      "reasons": [],
+      "interview": {
+        "token": "84c7dd5a84ea0b47432539e631346248"
+      }
+    },
+    {
+      "id": "1711533660000",
+      "name": "Jane Smith",
+      "fileName": "jane_smith_cv.docx",
+      "role": "Frontend",
+      "status": "Selected",
+      "timestamp": "2026-03-27T10:10:00.000Z",
+      "score": 94,
+      "matchPercentage": 96,
+      "matchedSkills": [
+        "React",
+        "TypeScript",
+        "Redux",
+        "Architecture"
+      ],
+      "strengths": [
+        "Enterprise-grade architecture",
+        "TypeScript pro"
+      ],
+      "weaknesses": [],
+      "reasons": [],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "10:00",
+        "link": "https://meet.google.com/abc-defg-hij",
+        "token": "7612335fac44e37732720597fb569ad6"
+      },
+      "notifications": [
+        {
+          "id": "1774613991845",
+          "type": "Selected",
+          "message": "Congratulations! You have been selected for the next round.",
+          "date": "27/3/2026, 5:49:51 pm"
+        }
+      ]
+    },
+    {
+      "id": "1711533720000",
+      "name": "Robert Brown",
+      "fileName": "robert_resume.pdf",
+      "role": "Backend",
+      "status": "Rejected",
+      "timestamp": "2026-03-27T10:20:00.000Z",
+      "score": 45,
+      "matchPercentage": 40,
+      "matchedSkills": [
+        "Node.js"
+      ],
+      "strengths": [
+        "Basic Node.js"
+      ],
+      "weaknesses": [
+        "Missing cloud experience",
+        "No DB indexing knowledge"
+      ],
+      "reasons": [
+        "Incomplete tech stack for senior role"
+      ]
+    },
+    {
+      "id": "1774607533046",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 4:02:13 pm",
+      "name": "sample_resumes",
+      "fileName": "sample_resumes.pdf",
+      "score": 59,
+      "matchPercentage": 36,
+      "matchedSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind"
+      ],
+      "skills": [
+        "JavaScript",
+        "TypeScript",
+        "HTML",
+        "CSS",
+        "React",
+        "Express",
+        "Node.js",
+        "MongoDB"
+      ],
+      "missingSkills": [
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "suggestedRoles": [
+        "Backend",
+        "Fullstack"
+      ],
+      "improvementSkills": [
+        "Next.js",
+        "Redux",
+        "Architecture"
+      ],
+      "role": "Frontend",
+      "remarks": "Keyword gap for Frontend requirements",
+      "interview": {
+        "token": "10f1a3d856db343f06d9f2fde01431b1"
+      }
+    },
+    {
+      "id": "1774607799165",
+      "status": "Interview",
+      "timestamp": "2026-03-27T10:36:39.165Z",
+      "name": "resume_2",
+      "fileName": "resume_2.pdf",
+      "score": 0,
+      "matchedSkills": [],
+      "suggestedRoles": [],
+      "improvementSkills": [],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "13:09",
+        "link": "http://localhost:5173/interview/c46106a28b71b86bced10b4538386a39",
+        "meetLink": "https://meet.google.com/own-batw-ces",
+        "token": "c46106a28b71b86bced10b4538386a39"
+      },
+      "notifications": [
+        {
+          "id": "1774678863081",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 12:51. Please check the meeting link to join.",
+          "link": "http://localhost:5173/interview/c46106a28b71b86bced10b4538386a39",
+          "date": "28/3/2026, 11:51:03 am"
+        }
+      ]
+    },
+    {
+      "id": "1774607799170",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 4:06:39 pm",
+      "name": "resume_1",
+      "fileName": "resume_1.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [
+        "HTML",
+        "CSS",
+        "React"
+      ],
+      "missingSkills": [
+        "Node.js",
+        "Go",
+        "Python",
+        "Microservices",
+        "distributed systems",
+        "high-availability",
+        "concurrency",
+        "API engineering",
+        "PostgreSQL",
+        "Kubernetes"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Backend requirements"
+      ],
+      "suggestedRoles": [
+        "Frontend"
+      ],
+      "improvementSkills": [
+        "Node.js",
+        "Go",
+        "Python"
+      ],
+      "role": "Backend",
+      "remarks": "Keyword gap for Backend requirements",
+      "notifications": [
+        {
+          "id": "1774679260845",
+          "type": "Selected",
+          "message": "Congratulations! You have been selected for the next round.",
+          "link": null,
+          "date": "28/3/2026, 11:57:40 am"
+        },
+        {
+          "id": "1774679649302",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "link": null,
+          "date": "28/3/2026, 12:04:09 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774607927907",
+      "status": "Interview",
+      "timestamp": "2026-03-27T10:38:47.907Z",
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 0,
+      "matchedSkills": [],
+      "suggestedRoles": [],
+      "improvementSkills": [],
+      "interview": {
+        "date": "2026-04-09",
+        "time": "17:23",
+        "link": "http://localhost:5173/interview/be0a5d1ccb169da8c49d6a7acc204022",
+        "meetLink": "http://localhost:5173/interview-room/1774607927907",
+        "token": "be0a5d1ccb169da8c49d6a7acc204022"
+      },
+      "notifications": [
+        {
+          "id": "1775649168752",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-04-09 at 17:23. Please check the meeting link to join.",
+          "link": "http://localhost:5173/interview/be0a5d1ccb169da8c49d6a7acc204022",
+          "date": "8/4/2026, 5:22:48 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774607927915",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 4:08:47 pm",
+      "name": "resume_3",
+      "fileName": "resume_3.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [
+        "React"
+      ],
+      "missingSkills": [
+        "Node.js",
+        "Go",
+        "Python",
+        "Microservices",
+        "distributed systems",
+        "high-availability",
+        "concurrency",
+        "API engineering",
+        "PostgreSQL",
+        "Kubernetes"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Backend requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Node.js",
+        "Go",
+        "Python"
+      ],
+      "role": "Backend",
+      "remarks": "Keyword gap for Backend requirements"
+    },
+    {
+      "id": "1774608428067",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 4:17:08 pm",
+      "name": "Pooji  (2)",
+      "fileName": "Pooji  (2).pdf",
+      "score": 40,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "role": "Frontend",
+      "remarks": "Keyword gap for Frontend requirements"
+    },
+    {
+      "id": "1774608997173",
+      "status": "Interview",
+      "timestamp": "27/3/2026, 4:26:37 pm",
+      "name": "RESUME VAIDEESWARI (1)",
+      "fileName": "RESUME VAIDEESWARI (1).pdf",
+      "score": 63,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "tRPC",
+        "Prisma",
+        "E2E testing",
+        "SaaS",
+        "System Design"
+      ],
+      "strengths": [
+        "Strong use of action verbs to describe professional impact",
+        "Uses quantifiable metrics to demonstrate impact",
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "reasons": [],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "Next.js",
+        "TypeScript"
+      ],
+      "role": "Fullstack",
+      "remarks": "Consider adding skills like: React, Next.js, TypeScript",
+      "interview": {
+        "date": "2026-03-28",
+        "time": "12:45",
+        "link": "http://localhost:5174/interview/26fb2f1d9c7e37c662a379bd79e3f5b5",
+        "meetLink": "http://localhost:5174/interview-room/1774608997173",
+        "token": "26fb2f1d9c7e37c662a379bd79e3f5b5"
+      },
+      "notifications": [
+        {
+          "id": "1774682064812",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 12:45. Please check the meeting link to join.",
+          "link": "http://localhost:5174/interview/26fb2f1d9c7e37c662a379bd79e3f5b5",
+          "date": "28/3/2026, 12:44:24 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774609571068",
+      "status": "Interview",
+      "timestamp": "27/3/2026, 4:36:11 pm",
+      "name": "RESUME VAIDEESWARI",
+      "fileName": "RESUME VAIDEESWARI.pdf",
+      "score": 63,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Sales"
+      ],
+      "strengths": [
+        "Strong use of action verbs to describe professional impact",
+        "Uses quantifiable metrics to demonstrate impact",
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Sales"
+      ],
+      "role": "BDA",
+      "remarks": "Consider adding skills like: Sales",
+      "interview": {
+        "date": "2026-03-28",
+        "time": "13:17",
+        "link": "http://localhost:5173/interview/3f245683b2d6b497ca07ed52bb7d8dc5",
+        "meetLink": "https://meet.google.com/jcn-vifh-jik",
+        "token": "3f245683b2d6b497ca07ed52bb7d8dc5"
+      },
+      "notifications": [
+        {
+          "id": "1774680384645",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 13:17. Please check the meeting link to join.",
+          "link": "http://localhost:5173/interview/3f245683b2d6b497ca07ed52bb7d8dc5",
+          "date": "28/3/2026, 12:16:24 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774610030616",
+      "status": "Interview",
+      "timestamp": "2026-03-27T11:13:50.616Z",
+      "notifications": [
+        {
+          "id": "1774610030616-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 4:43:50 pm"
+        },
+        {
+          "id": "1774610062015",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 4:44:22 pm"
+        },
+        {
+          "id": "1774610066402",
+          "type": "Offer Sent",
+          "message": "Status updated to OFFER SENT.",
+          "date": "27/3/2026, 4:44:26 pm"
+        },
+        {
+          "id": "1774683191203",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 13:04. Please check the meeting link to join.",
+          "link": "http://localhost:5173/interview/9a33b3ae9fad89f51ae840574523625c",
+          "date": "28/3/2026, 1:03:11 pm"
+        }
+      ],
+      "name": "resume_7",
+      "fileName": "resume_7.pdf",
+      "score": 0,
+      "matchedSkills": [],
+      "suggestedRoles": [],
+      "improvementSkills": [],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "13:04",
+        "link": "http://localhost:5173/interview/9a33b3ae9fad89f51ae840574523625c",
+        "meetLink": "http://localhost:5173/interview-room/1774610030616",
+        "token": "9a33b3ae9fad89f51ae840574523625c"
+      }
+    },
+    {
+      "id": "1774610030702",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 4:43:50 pm",
+      "notifications": [
+        {
+          "id": "1774610030702-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 4:43:50 pm"
+        }
+      ],
+      "name": "resume_6",
+      "fileName": "resume_6.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [
+        "Docker",
+        "AWS"
+      ],
+      "missingSkills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "tRPC",
+        "Prisma",
+        "E2E testing",
+        "SaaS",
+        "System Design"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "Next.js",
+        "TypeScript"
+      ],
+      "role": "Fullstack",
+      "remarks": "Keyword gap for Fullstack requirements"
+    },
+    {
+      "id": "1774610276001",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 4:47:55 pm",
+      "notifications": [
+        {
+          "id": "1774610276001-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 4:47:56 pm"
+        }
+      ],
+      "name": "Pooji  (2)",
+      "fileName": "Pooji  (2).pdf",
+      "score": 40,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "role": "Frontend",
+      "remarks": "Keyword gap for Frontend requirements"
+    },
+    {
+      "id": "1774610399565",
+      "status": "Rejected",
+      "timestamp": "2026-03-27T11:19:59.565Z",
+      "notifications": [
+        {
+          "id": "1774610399565-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 4:49:59 pm"
+        },
+        {
+          "id": "1774610440171",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 4:50:40 pm"
+        }
+      ],
+      "name": "resume_8",
+      "fileName": "resume_8.pdf",
+      "score": 0,
+      "matchedSkills": [],
+      "suggestedRoles": [],
+      "improvementSkills": []
+    },
+    {
+      "id": "1774610563710",
+      "status": "error",
+      "timestamp": "2026-03-27T11:22:43.710Z",
+      "notifications": [
+        {
+          "id": "1774610563710-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 4:52:43 pm"
+        }
+      ],
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 0,
+      "matchedSkills": [],
+      "suggestedRoles": [],
+      "improvementSkills": []
+    },
+    {
+      "id": "1774612689496",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 5:28:09 pm",
+      "notifications": [
+        {
+          "id": "1774612689497-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 5:28:09 pm"
+        }
+      ],
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Data",
+        "Analytics",
+        "SQL",
+        "Tableau",
+        "Power BI",
+        "Statstical",
+        "ETL",
+        "Business",
+        "Strategy",
+        "KPI"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [
+        "Keyword gap for BDA requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Data",
+        "Analytics",
+        "SQL"
+      ],
+      "role": "BDA",
+      "remarks": "Keyword gap for BDA requirements"
+    },
+    {
+      "id": "1774613082263",
+      "status": "Rejected",
+      "timestamp": "27/3/2026, 5:34:42 pm",
+      "notifications": [
+        {
+          "id": "1774613082263-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 5:34:42 pm"
+        }
+      ],
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Data",
+        "Analytics",
+        "SQL",
+        "Tableau",
+        "Power BI",
+        "Statstical",
+        "ETL",
+        "Business",
+        "Strategy",
+        "KPI"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [
+        "Keyword gap for BDA requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Data",
+        "Analytics",
+        "SQL"
+      ],
+      "role": "BDA",
+      "remarks": "Keyword gap for BDA requirements"
+    },
+    {
+      "id": "1774613415005",
+      "timestamp": "27/3/2026, 5:40:15 pm",
+      "name": "resume_3",
+      "fileName": "resume_3.pdf",
+      "score": 0,
+      "matchedSkills": [],
+      "suggestedRoles": [],
+      "improvementSkills": [],
+      "status": "Selected",
+      "notifications": [
+        {
+          "id": "1774613414956-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 5:40:14 pm"
+        },
+        {
+          "id": "1774613427407",
+          "type": "Selected",
+          "message": "Congratulations! You have been selected for the next round.",
+          "date": "27/3/2026, 5:40:27 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774613710572",
+      "timestamp": "27/3/2026, 5:45:10 pm",
+      "name": "resume_1",
+      "fileName": "resume_1.pdf",
+      "score": 0,
+      "matchedSkills": [],
+      "suggestedRoles": [],
+      "improvementSkills": [],
+      "status": "Selected",
+      "notifications": [
+        {
+          "id": "1774613710521-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 5:45:10 pm"
+        },
+        {
+          "id": "1774614073259",
+          "type": "Selected",
+          "message": "Congratulations! You have been selected for the next round.",
+          "date": "27/3/2026, 5:51:13 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774614311335",
+      "timestamp": "27/3/2026, 5:55:11 pm",
+      "name": "sample_resumes",
+      "fileName": "sample_resumes.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "tRPC",
+        "Prisma",
+        "E2E testing",
+        "SaaS",
+        "System Design"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "Next.js",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Fullstack",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774614311160-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 5:55:11 pm"
+        },
+        {
+          "id": "1774614311335-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 5:55:11 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774614502117",
+      "timestamp": "27/3/2026, 5:58:22 pm",
+      "name": "resume_5",
+      "fileName": "resume_5.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "SQL"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "SQL"
+      ],
+      "status": "Rejected",
+      "role": "Backend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774614502043-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 5:58:22 pm"
+        },
+        {
+          "id": "1774614502117-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 5:58:22 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774614995540",
+      "timestamp": "27/3/2026, 6:06:35 pm",
+      "name": "resume_7",
+      "fileName": "resume_7.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "tRPC",
+        "Prisma",
+        "E2E testing",
+        "SaaS",
+        "System Design"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "Next.js",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Fullstack",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774614995358-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 6:06:35 pm"
+        },
+        {
+          "id": "1774614995540-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 6:06:35 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774615032189",
+      "timestamp": "27/3/2026, 6:07:12 pm",
+      "name": "resume_6",
+      "fileName": "resume_6.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "tRPC",
+        "Prisma",
+        "E2E testing",
+        "SaaS",
+        "System Design"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "Next.js",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Fullstack",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774615032134-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 6:07:12 pm"
+        },
+        {
+          "id": "1774615032189-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 6:07:12 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774621759707",
+      "timestamp": "27/3/2026, 7:59:19 pm",
+      "name": "resume_7",
+      "fileName": "resume_7.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Frontend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774621759707-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 7:59:19 pm"
+        },
+        {
+          "id": "1774621759707-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 7:59:19 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774623519295",
+      "timestamp": "27/3/2026, 8:28:39 pm",
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Node.js",
+        "Go",
+        "Python",
+        "Microservices",
+        "distributed systems",
+        "high-availability",
+        "concurrency",
+        "API engineering",
+        "PostgreSQL",
+        "Kubernetes"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Node.js",
+        "Go",
+        "Python"
+      ],
+      "status": "Rejected",
+      "role": "Backend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774623519295-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 8:28:39 pm"
+        },
+        {
+          "id": "1774623519295-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 8:28:39 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774627081980",
+      "timestamp": "27/3/2026, 9:28:01 pm",
+      "name": "resume_3",
+      "fileName": "resume_3.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Cloud"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Cloud"
+      ],
+      "status": "Rejected",
+      "role": "Fullstack",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774627081980-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "27/3/2026, 9:28:01 pm"
+        },
+        {
+          "id": "1774627081980-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "27/3/2026, 9:28:02 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774670506875",
+      "timestamp": "28/3/2026, 9:31:46 am",
+      "name": "resume_6",
+      "fileName": "resume_6.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "tRPC",
+        "Prisma",
+        "E2E testing",
+        "SaaS",
+        "System Design"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Fullstack requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "Next.js",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Fullstack",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774670506875-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:31:46 am"
+        },
+        {
+          "id": "1774670506875-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:31:47 am"
+        }
+      ]
+    },
+    {
+      "id": "1774670638791",
+      "timestamp": "28/3/2026, 9:33:58 am",
+      "name": "resume_6",
+      "fileName": "resume_6.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "UI/UX"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "UI/UX"
+      ],
+      "status": "HR Round",
+      "role": "Frontend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774670638791-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:33:58 am"
+        },
+        {
+          "id": "1774670638791-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:33:58 am"
+        },
+        {
+          "id": "1774670646496",
+          "type": "Offer Sent",
+          "message": "Status updated to OFFER SENT.",
+          "date": "28/3/2026, 9:34:06 am"
+        },
+        {
+          "id": "1774670721394",
+          "type": "Selected",
+          "message": "Congratulations! You have been selected for the next round.",
+          "date": "28/3/2026, 9:35:21 am"
+        },
+        {
+          "id": "1774670731307",
+          "type": "HR Round",
+          "message": "Status updated to HR ROUND.",
+          "date": "28/3/2026, 9:35:31 am"
+        }
+      ]
+    },
+    {
+      "id": "1774671100149",
+      "timestamp": "28/3/2026, 9:41:40 am",
+      "name": "resume_8",
+      "fileName": "resume_8.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "status": "Interview",
+      "role": "Backend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774671100149-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:41:40 am"
+        },
+        {
+          "id": "1774671100149-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:41:40 am"
+        },
+        {
+          "id": "1774671445141",
+          "type": "Interview",
+          "message": "Your interview has been scheduled. Check the meeting link for details.",
+          "date": "28/3/2026, 9:47:25 am"
+        }
+      ],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "10:47",
+        "link": "https://meet.google.com/abc-defg-hij"
+      }
+    },
+    {
+      "id": "1774671100215",
+      "timestamp": "28/3/2026, 9:41:40 am",
+      "name": "resume_7",
+      "fileName": "resume_7.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "status": "Rejected",
+      "role": "Backend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774671100215-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:41:40 am"
+        },
+        {
+          "id": "1774671100215-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:41:40 am"
+        }
+      ]
+    },
+    {
+      "id": "1774671100222",
+      "timestamp": "28/3/2026, 9:41:40 am",
+      "name": "resume_6",
+      "fileName": "resume_6.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "status": "Rejected",
+      "role": "Backend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774671100222-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:41:40 am"
+        },
+        {
+          "id": "1774671100222-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:41:40 am"
+        }
+      ]
+    },
+    {
+      "id": "1774671100230",
+      "timestamp": "28/3/2026, 9:41:40 am",
+      "name": "resume_5",
+      "fileName": "resume_5.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "SQL",
+        "NoSQL"
+      ],
+      "status": "Rejected",
+      "role": "Backend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774671100230-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:41:40 am"
+        },
+        {
+          "id": "1774671100230-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:41:40 am"
+        }
+      ]
+    },
+    {
+      "id": "1774671781817",
+      "timestamp": "28/3/2026, 9:53:01 am",
+      "name": "resume_2",
+      "fileName": "resume_2.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Data",
+        "Analytics",
+        "SQL",
+        "Tableau",
+        "Power BI",
+        "Statstical",
+        "ETL",
+        "Business",
+        "Strategy",
+        "KPI"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Data",
+        "Analytics",
+        "SQL"
+      ],
+      "status": "Interview",
+      "role": "BDA",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774671781817-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:53:01 am"
+        },
+        {
+          "id": "1774671781817-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:53:02 am"
+        },
+        {
+          "id": "1774671866475",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 10:54. Please check the meeting link to join.",
+          "link": "https://meet.google.com/abc-defg-hij",
+          "date": "28/3/2026, 9:54:26 am"
+        }
+      ],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "10:54",
+        "link": "https://meet.google.com/abc-defg-hij"
+      }
+    },
+    {
+      "id": "1774671782022",
+      "timestamp": "28/3/2026, 9:53:01 am",
+      "name": "resume_1",
+      "fileName": "resume_1.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Data",
+        "Analytics",
+        "SQL",
+        "Tableau",
+        "Power BI",
+        "Statstical",
+        "ETL",
+        "Business",
+        "Strategy",
+        "KPI"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Data",
+        "Analytics",
+        "SQL"
+      ],
+      "status": "Rejected",
+      "role": "BDA",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774671782022-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 9:53:02 am"
+        },
+        {
+          "id": "1774671782022-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 9:53:02 am"
+        }
+      ]
+    },
+    {
+      "id": "1774672261640",
+      "timestamp": "28/3/2026, 10:01:01 am",
+      "name": "RESUME VAIDEESWARI (2)",
+      "fileName": "RESUME VAIDEESWARI (2).pdf",
+      "score": 63,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Node.js",
+        "Go",
+        "Python",
+        "Microservices",
+        "distributed systems",
+        "high-availability",
+        "concurrency",
+        "API engineering",
+        "PostgreSQL",
+        "Kubernetes"
+      ],
+      "strengths": [
+        "Strong use of action verbs to describe professional impact",
+        "Uses quantifiable metrics to demonstrate impact",
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Node.js",
+        "Go",
+        "Python"
+      ],
+      "status": "Interview",
+      "role": "Backend",
+      "remarks": "Consider adding skills like: Node.js, Go, Python",
+      "notifications": [
+        {
+          "id": "1774672261640-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:01:01 am"
+        },
+        {
+          "id": "1774672304835",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 11:02. Please check the meeting link to join.",
+          "link": "https://meet.google.com/abc-defg-hij",
+          "date": "28/3/2026, 10:01:44 am"
+        }
+      ],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "11:02",
+        "link": "https://meet.google.com/abc-defg-hij"
+      }
+    },
+    {
+      "id": "1774672261827",
+      "timestamp": "28/3/2026, 10:01:01 am",
+      "name": "Pooji  (2)",
+      "fileName": "Pooji  (2).pdf",
+      "score": 40,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Node.js",
+        "Go",
+        "Python",
+        "Microservices",
+        "distributed systems",
+        "high-availability",
+        "concurrency",
+        "API engineering",
+        "PostgreSQL",
+        "Kubernetes"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Backend requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Node.js",
+        "Go",
+        "Python"
+      ],
+      "status": "Rejected",
+      "role": "Backend",
+      "remarks": "Keyword gap for Backend requirements",
+      "notifications": [
+        {
+          "id": "1774672261827-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:01:01 am"
+        },
+        {
+          "id": "1774672261827-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:01:01 am"
+        }
+      ]
+    },
+    {
+      "id": "1774672668674",
+      "timestamp": "28/3/2026, 10:07:48 am",
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Java"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Backend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Java"
+      ],
+      "status": "Interview",
+      "role": "Backend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774672668674-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:07:48 am"
+        },
+        {
+          "id": "1774672668674-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:07:48 am"
+        },
+        {
+          "id": "1774672698420",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 10:08. Please check the meeting link to join.",
+          "link": "https://meet.google.com/pzn-ewkv-wbn",
+          "date": "28/3/2026, 10:08:18 am"
+        }
+      ],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "10:08",
+        "link": "https://meet.google.com/pzn-ewkv-wbn"
+      }
+    },
+    {
+      "id": "1774672846750",
+      "timestamp": "28/3/2026, 10:10:46 am",
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "status": "Rejected",
+      "role": "Frontend",
+      "email": "pooja@example.com",
+      "notifications": [
+        {
+          "id": "1774672846750-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:10:46 am"
+        },
+        {
+          "id": "1774672846750-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:10:46 am"
+        }
+      ]
+    },
+    {
+      "id": "1774673478364",
+      "timestamp": "28/3/2026, 10:21:18 am",
+      "name": "resume_5",
+      "fileName": "resume_5.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Python"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Python"
+      ],
+      "status": "Rejected",
+      "role": "BDA",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774673478364-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:21:18 am"
+        },
+        {
+          "id": "1774673478364-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:21:18 am"
+        }
+      ]
+    },
+    {
+      "id": "1774673478452",
+      "timestamp": "28/3/2026, 10:21:18 am",
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Python"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Python"
+      ],
+      "status": "Rejected",
+      "role": "BDA",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774673478452-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:21:18 am"
+        },
+        {
+          "id": "1774673478452-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:21:18 am"
+        }
+      ]
+    },
+    {
+      "id": "1774673825412",
+      "timestamp": "28/3/2026, 10:27:05 am",
+      "name": "resume_2",
+      "fileName": "resume_2.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Frontend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774673825412-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:27:05 am"
+        },
+        {
+          "id": "1774673825412-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:27:05 am"
+        }
+      ]
+    },
+    {
+      "id": "1774673825497",
+      "timestamp": "28/3/2026, 10:27:05 am",
+      "name": "resume_1",
+      "fileName": "resume_1.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Frontend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774673825497-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:27:05 am"
+        },
+        {
+          "id": "1774673825497-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:27:05 am"
+        }
+      ]
+    },
+    {
+      "id": "1774674156234",
+      "timestamp": "28/3/2026, 10:32:36 am",
+      "name": "resume_4",
+      "fileName": "resume_4.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "status": "Interview",
+      "role": "Frontend",
+      "remarks": "Keyword gap for Frontend requirements",
+      "notifications": [
+        {
+          "id": "1774674156234-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:32:36 am"
+        },
+        {
+          "id": "1774674156234-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:32:36 am"
+        },
+        {
+          "id": "1774674178773",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 11:33. Please check the meeting link to join.",
+          "link": "https://meet.google.com/xyh-uusq-ppu",
+          "date": "28/3/2026, 10:32:58 am"
+        }
+      ],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "11:33",
+        "link": "https://meet.google.com/xyh-uusq-ppu"
+      }
+    },
+    {
+      "id": "1774674156457",
+      "timestamp": "28/3/2026, 10:32:36 am",
+      "name": "resume_3",
+      "fileName": "resume_3.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Frontend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774674156457-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 10:32:36 am"
+        },
+        {
+          "id": "1774674156457-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 10:32:36 am"
+        }
+      ]
+    },
+    {
+      "id": "1774677936476",
+      "timestamp": "28/3/2026, 11:35:36 am",
+      "name": "RESUME VAIDEESWARI",
+      "email": "candidate@example.com",
+      "fileName": "RESUME VAIDEESWARI.pdf",
+      "score": 63,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React"
+      ],
+      "strengths": [
+        "Strong use of action verbs to describe professional impact",
+        "Uses quantifiable metrics to demonstrate impact",
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React"
+      ],
+      "status": "Consider",
+      "role": "Frontend",
+      "remarks": "Consider adding skills like: React",
+      "notifications": [
+        {
+          "id": "1774677936476-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 11:35:36 am"
+        }
+      ]
+    },
+    {
+      "id": "1774677936566",
+      "timestamp": "28/3/2026, 11:35:36 am",
+      "name": "Pooji  (2)",
+      "email": "candidate@example.com",
+      "fileName": "Pooji  (2).pdf",
+      "score": 40,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React"
+      ],
+      "status": "Rejected",
+      "role": "Frontend",
+      "remarks": "Keyword gap for Frontend requirements",
+      "notifications": [
+        {
+          "id": "1774677936566-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 11:35:36 am"
+        },
+        {
+          "id": "1774677936566-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 11:35:36 am"
+        }
+      ]
+    },
+    {
+      "id": "1774678195320",
+      "timestamp": "28/3/2026, 11:39:55 am",
+      "name": "resume_6",
+      "email": "candidate@example.com",
+      "fileName": "resume_6.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Data",
+        "Analytics",
+        "SQL",
+        "Tableau",
+        "Power BI",
+        "Statstical",
+        "ETL",
+        "Business",
+        "Strategy",
+        "KPI"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for BDA requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Data",
+        "Analytics",
+        "SQL"
+      ],
+      "status": "Interview",
+      "role": "BDA",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774678195320-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 11:39:55 am"
+        },
+        {
+          "id": "1774678195320-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 11:39:55 am"
+        },
+        {
+          "id": "1774678220380",
+          "type": "Interview",
+          "message": "Your interview has been scheduled for 2026-03-28 at 12:41. Please check the meeting link to join.",
+          "link": "http://localhost:5173/interview/a54620aabe60e32c6de9fde8c1c1b3b9",
+          "date": "28/3/2026, 11:40:20 am"
+        }
+      ],
+      "interview": {
+        "date": "2026-03-28",
+        "time": "12:41",
+        "link": "http://localhost:5173/interview/a54620aabe60e32c6de9fde8c1c1b3b9"
+      }
+    },
+    {
+      "id": "1774678817381",
+      "timestamp": "28/3/2026, 11:50:17 am",
+      "name": "resume_8",
+      "fileName": "resume_8.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for UI Developer requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "status": "Rejected",
+      "role": "UI Developer",
+      "email": "hr@example.com",
+      "notifications": [
+        {
+          "id": "1774678817381-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 11:50:17 am"
+        },
+        {
+          "id": "1774678817381-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 11:50:17 am"
+        }
+      ]
+    },
+    {
+      "id": "1774679317459",
+      "timestamp": "28/3/2026, 11:58:37 am",
+      "name": "resume_5",
+      "email": "candidate@example.com",
+      "fileName": "resume_5.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "status": "Rejected",
+      "role": "Frontend",
+      "remarks": "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF.",
+      "notifications": [
+        {
+          "id": "1774679317459-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "28/3/2026, 11:58:37 am"
+        },
+        {
+          "id": "1774679317459-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "28/3/2026, 11:58:37 am"
+        }
+      ]
+    },
+    {
+      "id": "1774937801562",
+      "timestamp": "31/3/2026, 11:46:41 am",
+      "name": "resume_5",
+      "fileName": "resume_5.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for UX Developer requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "status": "Rejected",
+      "role": "UX Developer",
+      "email": "pooja@example.com",
+      "notifications": [
+        {
+          "id": "1774937801562-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "31/3/2026, 11:46:41 am"
+        },
+        {
+          "id": "1774937801562-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "31/3/2026, 11:46:41 am"
+        }
+      ]
+    },
+    {
+      "id": "1774949129610",
+      "timestamp": "31/3/2026, 2:55:29 pm",
+      "name": "resume_5",
+      "fileName": "resume_5.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for React Developer requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "status": "Rejected",
+      "role": "React Developer",
+      "email": "pooja@example.com",
+      "notifications": [
+        {
+          "id": "1774949129610-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "31/3/2026, 2:55:29 pm"
+        },
+        {
+          "id": "1774949129610-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "31/3/2026, 2:55:29 pm"
+        }
+      ]
+    },
+    {
+      "id": "1774951478918",
+      "timestamp": "31/3/2026, 3:34:39 pm",
+      "name": "resume_5",
+      "fileName": "resume_5.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for React Developer requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "status": "Rejected",
+      "role": "React Developer",
+      "email": "pooja@example.com",
+      "notifications": [
+        {
+          "id": "1774951478918-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "31/3/2026, 3:34:38 pm"
+        },
+        {
+          "id": "1774951478918-2",
+          "type": "Rejected",
+          "message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application.",
+          "date": "31/3/2026, 3:34:39 pm"
+        }
+      ]
+    },
+    {
+      "_id": "1775648782536",
+      "id": "1775648782536",
+      "name": "resume_7",
+      "fileName": "resume_7.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for UX Developer requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "status": "Applied",
+      "role": "UX Developer",
+      "email": "pooja@example.com",
+      "extractedText": "",
+      "notifications": [
+        {
+          "id": "1775648782533-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "8/4/2026, 5:16:22 pm"
+        }
+      ],
+      "timestamp": "2026-04-08T11:46:22.536Z",
+      "createdAt": "2026-04-08T11:46:22.536Z"
+    },
+    {
+      "_id": "1775649004950",
+      "id": "1775649004950",
+      "score": 47,
+      "matchPercentage": 0,
+      "verdict": "Rejected",
+      "status": "Applied",
+      "reasons": [
+        "Keyword gap for Frontend Developer requirements"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend Developer requirements"
+      ],
+      "suggestions": [
+        "Consider adding skills like: Git, Communication, Teamwork"
+      ],
+      "matchedSkills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "skills": [],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Git",
+        "Communication",
+        "Teamwork"
+      ],
+      "communicationScore": 70,
+      "communicationAnalysis": [
+        "Consider expanding on details for better clarity",
+        "Grammar is acceptable"
+      ],
+      "role": "Frontend Developer",
+      "extractedText": "\n\nDivya N\nRole: HR Executive\nSkills:\n- Recruitment\n- Onboarding\nExperience:\n- 2 yrs HR\nEducation:\n- MBA HR",
+      "name": "DIVYA N",
+      "email": "candidate@example.com",
+      "fileName": "resume_7.pdf",
+      "notifications": [
+        {
+          "id": "1775649004946-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "8/4/2026, 5:20:04 pm"
+        }
+      ],
+      "timestamp": "2026-04-08T11:50:04.950Z",
+      "createdAt": "2026-04-08T11:50:04.950Z"
+    },
+    {
+      "_id": "1775649004968",
+      "id": "1775649004968",
+      "name": "Pooja",
+      "fileName": "resume_7.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend Developer requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Frontend Developer requirements"
+      ],
+      "status": "Applied",
+      "role": "Frontend Developer",
+      "email": "pooja@example.com",
+      "extractedText": "\n\nDivya N\nRole: HR Executive\nSkills:\n- Recruitment\n- Onboarding\nExperience:\n- 2 yrs HR\nEducation:\n- MBA HR",
+      "notifications": [
+        {
+          "id": "1775649004967-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "8/4/2026, 5:20:04 pm"
+        }
+      ],
+      "timestamp": "2026-04-08T11:50:04.968Z",
+      "createdAt": "2026-04-08T11:50:04.968Z"
+    },
+    {
+      "_id": "1775709178166",
+      "id": "1775709178166",
+      "name": "resume_8",
+      "fileName": "resume_8.pdf",
+      "score": 0,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Unreadable PDF: The file seems to be an image or has no text. Please upload a machine-readable PDF."
+      ],
+      "status": "Applied",
+      "role": "Frontend",
+      "email": "pooja@example.com",
+      "extractedText": "",
+      "notifications": [
+        {
+          "id": "1775709178165-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "9/4/2026, 10:02:58 am"
+        }
+      ],
+      "timestamp": "2026-04-09T04:32:58.166Z",
+      "createdAt": "2026-04-09T04:32:58.167Z"
+    },
+    {
+      "_id": "1775709239123",
+      "id": "1775709239123",
+      "score": 47,
+      "matchPercentage": 0,
+      "verdict": "Rejected",
+      "status": "Applied",
+      "reasons": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "suggestions": [
+        "Consider adding skills like: React, JavaScript, TypeScript"
+      ],
+      "matchedSkills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "skills": [],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "communicationScore": 70,
+      "communicationAnalysis": [
+        "Consider expanding on details for better clarity",
+        "Grammar is acceptable"
+      ],
+      "role": "Frontend",
+      "extractedText": "\n\nVikram L\nRole: Mobile Developer\nSkills:\n- Flutter\n- Dart\nExperience:\n- 3 yrs mobile apps\nEducation:\n- BCA",
+      "name": "VIKRAM L",
+      "email": "candidate@example.com",
+      "fileName": "resume_8.pdf",
+      "notifications": [
+        {
+          "id": "1775709239121-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "9/4/2026, 10:03:59 am"
+        }
+      ],
+      "timestamp": "2026-04-09T04:33:59.123Z",
+      "createdAt": "2026-04-09T04:33:59.123Z"
+    },
+    {
+      "_id": "1775709239135",
+      "id": "1775709239135",
+      "name": "Pooja",
+      "fileName": "resume_8.pdf",
+      "score": 47,
+      "matchPercentage": 0,
+      "matchedSkills": [],
+      "skills": [],
+      "missingSkills": [
+        "React",
+        "JavaScript",
+        "TypeScript",
+        "Tailwind",
+        "Next.js",
+        "Redux",
+        "Architecture",
+        "TTI",
+        "Core Web Vitals",
+        "Performant",
+        "Accessible"
+      ],
+      "strengths": [
+        "Strong professional formatting and document structure"
+      ],
+      "weaknesses": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "reasons": [
+        "Keyword gap for Frontend requirements"
+      ],
+      "status": "Applied",
+      "role": "Frontend",
+      "email": "pooja@example.com",
+      "extractedText": "\n\nVikram L\nRole: Mobile Developer\nSkills:\n- Flutter\n- Dart\nExperience:\n- 3 yrs mobile apps\nEducation:\n- BCA",
+      "notifications": [
+        {
+          "id": "1775709239133-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "9/4/2026, 10:03:59 am"
+        }
+      ],
+      "timestamp": "2026-04-09T04:33:59.135Z",
+      "createdAt": "2026-04-09T04:33:59.135Z"
+    },
+    {
+      "_id": "1785496435693",
+      "id": "1785496435693",
+      "score": 47,
+      "matchPercentage": 0,
+      "verdict": "Rejected",
+      "status": "Applied",
+      "reasons": [
+        "Low relevance to job role"
+      ],
+      "weaknesses": [
+        "Could use more quantifiable metrics"
+      ],
+      "suggestions": [
+        "Consider tailoring your summary to specific job descriptions"
+      ],
+      "matchedSkills": [],
+      "missingSkills": [
+        "Git",
+        "Communication",
+        "Teamwork",
+        "Agile",
+        "Leadership",
+        "Problem Solving"
+      ],
+      "skills": [],
+      "strengths": [
+        "Strong use of action verbs to describe professional impact",
+        "Strong professional formatting and document structure"
+      ],
+      "suggestedRoles": [],
+      "improvementSkills": [
+        "Git",
+        "Communication",
+        "Teamwork"
+      ],
+      "communicationScore": 95,
+      "communicationAnalysis": [
+        "Clear and professional tone",
+        "Good descriptive clarity",
+        "Grammar is acceptable"
+      ],
+      "role": "General",
+      "extractedText": "DECLARATION \n\n\n\nDate: _______\n\n\n\nI, __________, hereby declare that I have understood and accepted the placement terms for the position of Executive – Branch Relationship Officer.\n\n\n\nI acknowledge that my placement is subject to the availability of vacancies at my preferred location(s) and my suitability for the respective branch, as determined by the organization.\n\n\n\nI further understand and agree that, in the event a suitable vacancy is not available at my preferred location(s), or if my fitment to the preferred branch is not feasible, I may be assigned to any branch within the state of my residence based on the organization's business requirements.\n\n\n\nI confirm my willingness to accept such placement and agree to abide by the organization's decision regarding my posting.\n\n\n\nCandidate Name: _________\n\n\n\nApplication/Registration No. (if applicable): ______\n\n\n\nPreferred Location(s): _________\n\n\n\nState of Residence: _________\n\n\n\nSignature of Candidate: _______\n\n\n\nPlace: _____________\n\n",
+      "name": "DECLARATION",
+      "email": "candidate@example.com",
+      "fileName": "Declaration for ABC .docx",
+      "notifications": [
+        {
+          "id": "1785496435689-1",
+          "type": "Confirmation",
+          "message": "Application received successfully. AI initial screening in progress.",
+          "date": "31/7/2026, 4:43:55 pm"
+        }
+      ],
+      "timestamp": "2026-07-31T11:13:55.693Z",
+      "createdAt": "2026-07-31T11:13:55.693Z"
+    }
+  ]
+}
