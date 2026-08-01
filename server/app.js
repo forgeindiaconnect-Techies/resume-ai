@@ -5,6 +5,7 @@ const guestRoutes = require("./routes/guestRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
+const industryRoutes = require("./routes/industryRoutes");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/api/guest", guestRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/resume", resumeRoutes);
+app.use("/api", industryRoutes);
 
 // Home Route
 app.get("/", (req, res) => {

@@ -5,6 +5,8 @@ import OnboardingStart from './pages/OnboardingStart';
 import CareerWizard from './pages/CareerWizard';
 import ResumeBuilder from './pages/ResumeBuilder';
 import IndustryExamples from './pages/IndustryExamples';
+import IndustryCategory from './pages/IndustryCategory';
+import ResumeExample from './pages/ResumeExample';
 import Templates from './pages/Templates';
 import { Toaster } from 'react-hot-toast';
 
@@ -18,6 +20,8 @@ function App() {
         <Route path="/onboarding/wizard" element={<CareerWizard />} />
         <Route path="/builder" element={<ResumeBuilder />} />
         <Route path="/industry-examples" element={<IndustryExamples />} />
+        <Route path="/industry-examples/:industryId" element={<IndustryCategory />} />
+        <Route path="/resume-examples/:id" element={<ResumeExample />} />
         <Route path="/templates" element={<Templates />} />
       </Routes>
     </Router>
