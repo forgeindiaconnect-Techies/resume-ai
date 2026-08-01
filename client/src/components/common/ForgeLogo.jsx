@@ -23,46 +23,42 @@ const ForgeLogo = ({ size = 40, showText = true, variant = 'light' }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Blue "F" bracket shape - top horizontal bar */}
+        {/* Blue F bracket shape (from Forge brand mark) */}
         <rect x="10" y="10" width="60" height="14" rx="3" fill={blue} />
-        {/* Blue vertical bar (left leg of F) */}
         <rect x="10" y="10" width="14" height="80" rx="3" fill={blue} />
-        {/* Blue middle horizontal bar */}
         <rect x="10" y="44" width="45" height="12" rx="3" fill={blue} />
 
-        {/* Yellow triangle / mountain */}
+        {/* Yellow pyramid/triangle at bottom representing career rise */}
         <polygon points="30,95 62,58 94,95" fill={yellow} />
-
-        {/* Yellow small box on mountain peak */}
         <rect x="54" y="50" width="16" height="10" rx="2" fill={yellow} />
       </svg>
 
       {showText && (
         <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-          {/* Main company name */}
+          {/* Brand Product Name: CareerElite AI */}
           <div style={{
-            fontWeight: 900,
-            fontSize: `${Math.max(0.75, 1.1 * (size / 40))}rem`,
-            letterSpacing: '0.05em',
-            fontFamily: "'Inter', 'Arial', sans-serif",
+            fontWeight: 950,
+            fontSize: `${Math.max(0.75, 1.15 * (size / 40))}rem`,
+            letterSpacing: '0.04em',
+            fontFamily: "'Outfit', sans-serif",
             textTransform: 'uppercase',
             whiteSpace: 'nowrap'
           }}>
-            <span style={{ color: blue }}>FORGE </span>
-            <span style={{ color: yellow }}>INDIA</span>
-            <span style={{ color: textColor }}> CONNECT</span>
+            <span style={{ color: textColor }}>CAREER</span>
+            <span style={{ color: blue }}>ELITE</span>
+            <span style={{ color: yellow }}> AI</span>
           </div>
-          {/* Tagline */}
+          {/* Corporate brand owner subtitle */}
           <div style={{
-            fontSize: `${Math.max(0.5, 0.6 * (size / 40))}rem`,
+            fontSize: `${Math.max(0.45, 0.52 * (size / 40))}rem`,
             fontWeight: 700,
-            letterSpacing: '0.18em',
+            letterSpacing: '0.12em',
             color: subColor,
             textTransform: 'uppercase',
             marginTop: '1px',
             whiteSpace: 'nowrap'
           }}>
-            SHAPING FUTURE
+            FORGE INDIA CONNECT
           </div>
         </div>
       )}

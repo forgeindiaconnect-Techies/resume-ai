@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;850&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -7,17 +7,46 @@
   
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-900: #1e3a8a;
-
-  --color-accent-500: #8b5cf6;
-  --color-accent-600: #7c3aed;
+  --color-primary-500: #0056b8;
+  --color-primary-600: #004ba0;
+  --color-primary-700: #003d82;
+  
+  --color-accent-500: #eab308;
+  --color-accent-600: #ca8a04;
+  
+  --color-success-500: #10b981;
+  --color-danger-500: #f43f5e;
   
   --color-dark-900: #0f172a;
   --color-dark-800: #1e293b;
   --color-dark-700: #334155;
+}
+
+/* ─── Premium Design System Tokens ─── */
+:root {
+  /* Colors */
+  --color-brand-blue: #0056b8;
+  --color-brand-yellow: #eab308;
+  --color-dark-slate: #0f172a;
+  --color-light-slate: #f8fafc;
+  --color-border-grey: #e2e8f0;
+  
+  /* Spacing System */
+  --space-xs: 0.5rem;   /* 8px */
+  --space-sm: 1rem;     /* 16px */
+  --space-md: 1.5rem;   /* 24px */
+  --space-lg: 2rem;     /* 32px */
+  --space-xl: 3rem;     /* 48px */
+  
+  /* Font Sizes */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-base: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
+  --font-2xl: 1.5rem;
+  --font-3xl: 1.875rem;
+  --font-4xl: 2.25rem;
 }
 
 @layer base {
@@ -35,4 +64,71 @@
     background-color: #f8fafc;
     color: var(--color-dark-800);
   }
+}
+
+/* ─── Standardized Premium Component Classes ─── */
+
+/* Premium Cards */
+.card-premium {
+  background: white;
+  border: 2px solid var(--color-border-grey);
+  border-radius: 20px;
+  padding: var(--space-md);
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.card-premium:hover {
+  border-color: var(--color-brand-blue);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 86, 184, 0.08);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-brand-blue), #004ba0);
+  color: white;
+  font-weight: 850;
+  padding: 0.75rem 1.75rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 86, 184, 0.2);
+  transition: opacity 0.2s;
+}
+.btn-primary:hover {
+  opacity: 0.95;
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--color-dark-slate);
+  border: 2px solid var(--color-border-grey);
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover {
+  border-color: var(--color-dark-slate);
+  background: var(--color-light-slate);
+}
+
+/* Form Styles */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 2px solid var(--color-border-grey);
+  outline: none;
+  font-size: var(--font-sm);
+  transition: border-color 0.2s;
+}
+.form-input:focus {
+  border-color: var(--color-brand-blue);
+}
+
+/* Section Wrapper spacing */
+.section-padding {
+  padding: var(--space-xl) var(--space-sm);
 }
