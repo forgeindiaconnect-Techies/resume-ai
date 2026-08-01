@@ -94,6 +94,13 @@ const LandingPage = () => {
   const [examples, setExamples] = useState([]);
   const [loadingExamples, setLoadingExamples] = useState(false);
   const [previewExample, setPreviewExample] = useState(null);
+  const handleUseTemplate = (ex) => {
+    localStorage.setItem('selectedTemplateId', ex.template || 'Modern');
+    localStorage.setItem('prefilledJobTitle', ex.jobTitle || ex.title || 'React Developer');
+    localStorage.setItem('selectedTemplateSlug', ex.slug || 'react-developer');
+    localStorage.setItem('prefilledResumeJson', JSON.stringify(ex.resumeJson || mockResumeJson(ex.jobTitle || ex.title || 'React Developer')));
+    navigate('/onboarding/start');
+  };
 
   // Fetch industries on mount
   useEffect(() => {

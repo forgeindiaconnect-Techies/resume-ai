@@ -87,8 +87,40 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   };
 
   // Restore Guest or Permanent draft on mount
+  // Enabled dynamic sections state
+  const [enabledSections, setEnabledSections] = useState(['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Preview']);
+
+  // Restore Guest or Permanent draft on mount
   useEffect(() => {
     const fetchResume = async () => {
+      // 1. Check if we have a dynamic template slug saved from landing page
+      const templateSlug = localStorage.getItem('selectedTemplateSlug');
+      if (templateSlug) {
+        try {
+          const resTpl = await fetch(`http://localhost:5000/api/template/${templateSlug}`);
+          const dataTpl = await resTpl.json();
+          if (dataTpl.success && dataTpl.sections) {
+            // Map raw database sections to step labels
+            const mapped = dataTpl.sections.map(s => {
+              if (s.toLowerCase().includes('personal')) return 'Personal';
+              if (s.toLowerCase().includes('summary')) return 'Summary';
+              if (s.toLowerCase().includes('education')) return 'Education';
+              if (s.toLowerCase().includes('experience')) return 'Experience';
+              if (s.toLowerCase().includes('project')) return 'Projects';
+              if (s.toLowerCase().includes('skill')) return 'Skills';
+              if (s.toLowerCase().includes('cert')) return 'Certificates';
+              return s;
+            });
+            // Ensure Preview is always the final step
+            if (!mapped.includes('Preview')) mapped.push('Preview');
+            setEnabledSections(mapped);
+            localStorage.removeItem('selectedTemplateSlug');
+          }
+        } catch (err) {
+          console.error('Error fetching dynamic sections:', err);
+        }
+      }
+
       if (resumeId) {
         try {
           const token = localStorage.getItem('token');
@@ -496,16 +528,10 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     setShowAiAssistantModal(false);
   };
 
-  const steps = [
-    { num: 1, label: 'Personal' },
-    { num: 2, label: 'Summary' },
-    { num: 3, label: 'Education' },
-    { num: 4, label: 'Experience' },
-    { num: 5, label: 'Projects' },
-    { num: 6, label: 'Skills' },
-    { num: 7, label: 'Certificates' },
-    { num: 8, label: 'Preview' }
-  ];
+  const steps = enabledSections.map((label, index) => ({
+    num: index + 1,
+    label
+  }));
 
   const templatePreviewData = {
     name: formData.personalInfo.name || 'Your Name',
@@ -548,6 +574,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     languagesList: formData.languagesList || [],
     references: formData.references || ''
   };
+  const currentLabel = steps.find(s => s.num === activeStep)?.label || 'Personal';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#f8fafc', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
@@ -716,7 +743,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             <AnimatePresence mode="wait">
               
               {/* Step 1: Personal Details */}
-              {activeStep === 1 && (
+              {currentLabel === 'Personal' && (
                 <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Personal Details</h3>
                   <div className="input-group">
@@ -755,7 +782,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               )}
 
               {/* Step 2: Summary */}
-              {activeStep === 2 && (
+              {currentLabel === 'Summary' && (
                 <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Professional Summary</h3>
                   <textarea 
@@ -778,7 +805,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               )}
 
               {/* Step 3: Education */}
-              {activeStep === 3 && (
+              {currentLabel === 'Education' && (
                 <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Education</h3>
@@ -806,7 +833,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               )}
 
               {/* Step 4: Experience */}
-              {activeStep === 4 && (
+              {currentLabel === 'Experience' && (
                 <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Experience</h3>
@@ -837,7 +864,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               )}
 
               {/* Step 5: Projects */}
-              {activeStep === 5 && (
+              {currentLabel === 'Projects' && (
                 <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Projects</h3>
@@ -869,7 +896,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               )}
 
               {/* Step 6: Skills */}
-              {activeStep === 6 && (
+              {currentLabel === 'Skills' && (
                 <motion.div key="s6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Skills & Categorization</h3>
                   
@@ -922,7 +949,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               )}
 
               {/* Step 7: Certificates */}
-              {activeStep === 7 && (
+              {currentLabel === 'Certificates' && (
                 <motion.div key="s7" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Certifications</h3>
@@ -946,7 +973,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               )}
 
               {/* Step 8: Preview */}
-              {activeStep === 8 && (
+              {currentLabel === 'Preview' && (
                 <motion.div key="s8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Resume Preview</h3>
                   
@@ -1012,9 +1039,9 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             </button>
 
             <button 
-              disabled={activeStep === 8}
-              onClick={() => setActiveStep(prev => Math.min(8, prev + 1))}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: activeStep === 8 ? '#cbd5e1' : '#7c3aed', border: 'none', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+              disabled={activeStep === steps.length}
+              onClick={() => setActiveStep(prev => Math.min(steps.length, prev + 1))}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: activeStep === steps.length ? '#cbd5e1' : '#7c3aed', border: 'none', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
             >
               Next Step <ChevronRight size={16} />
             </button>
