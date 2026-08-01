@@ -1,13 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ForgeLogo from './ForgeLogo';
+import { useNavigate } from 'react-router-dom';
+import ForgeLogo from '../components/common/ForgeLogo';
 import {
   Sparkles, Compass, FileSearch, FileText, MessageCircle, Briefcase, 
   ArrowRight, ChevronRight, Layers, Shield, HelpCircle, X, Upload
 } from 'lucide-react';
-import ContactModal from './ContactModal';
 
-const LandingPage = ({ onEnterApp, isLoggedIn }) => {
+import * as Icons from 'lucide-react';
+import ResumePreview from '../components/ResumePreview';
+
+const fallbackIndustries = [
+  { _id: 'it', name: 'Information Technology', icon: 'Laptop', description: 'Software Engineering, DevOps, Cloud, Cybersecurity, QA, AI & Data Science examples.' },
+  { _id: 'biz', name: 'Business', icon: 'Briefcase', description: 'Management, consulting, project management, and business operation layouts.' },
+  { _id: 'eng', name: 'Engineering', icon: 'Settings', description: 'Civil, mechanical, electrical, chemical, and aerospace designs.' },
+  { _id: 'health', name: 'Healthcare', icon: 'Activity', description: 'Clinicians, nurses, pharmacologists, and healthcare advisors.' },
+  { _id: 'fin', name: 'Finance', icon: 'DollarSign', description: 'Certified accountant, auditor, risk manager, and investor formats.' },
+  { _id: 'edu', name: 'Education', icon: 'BookOpen', description: 'Teachers, professors, academic advisors, and librarians.' },
+  { _id: 'design', name: 'Design', icon: 'Palette', description: 'Graphic, fashion, UI/UX, product, and architectural layouts.' },
+  { _id: 'mktg', name: 'Marketing', icon: 'TrendingUp', description: 'SEO consultants, content writers, marketing managers, and social developers.' },
+  { _id: 'sales', name: 'Sales', icon: 'Target', description: 'Account managers, business development associates, and retail reps.' },
+  { _id: 'hosp', name: 'Hospitality', icon: 'Coffee', description: 'Head chefs, catering directors, hotel management, and receptionists.' },
+  { _id: 'gov', name: 'Government', icon: 'FileText', description: 'Public policy analysts, program coordinators, and public safety officers.' },
+  { _id: 'legal', name: 'Legal', icon: 'Shield', description: 'Lawyer, paralegal, associate counselor, and corporate law resumes.' },
+  { _id: 'av', name: 'Aviation', icon: 'Plane', description: 'Commercial pilots, flight attendants, and aerospace safety inspectors.' },
+  { _id: 'mfg', name: 'Manufacturing', icon: 'Cpu', description: 'Plant managers, supply chain analysts, and production lines.' },
+  { _id: 'other', name: 'Others', icon: 'HelpCircle', description: 'Customer success reps, translators, and creative freelance layouts.' }
+];
+
+const mockResumeJson = (jobTitle) => ({
+  name: 'Pooja Patel',
+  role: jobTitle,
+  contact: {
+    email: 'pooja.patel@careerelite.app',
+    phone: '+91 99887 66554',
+    location: 'Hyderabad, India',
+    linkedin: 'linkedin.com/in/pooja-career',
+    github: 'github.com/pooja-dev'
+  },
+  objective: `Highly driven and performance-focused professional targeting specialized roles as a ${jobTitle}. Proven capabilities in client relationship building, technical optimization, and scalable execution within high-performance environments.`,
+  education: [{ degree: 'Master of Technology', institution: 'IIT Hyderabad', tenure: '2018 - 2020', cgpa: '9.2' }],
+  skills: { languages: 'Java, Python, Javascript, SQL', frameworks: 'React, Node, Spring Boot, FastAPI', tools: 'Docker, AWS, Git, Webpack, Figma' },
+  experience: [
+    {
+      title: `Lead ${jobTitle}`,
+      company: 'SaaSify Platforms',
+      duration: '2021 - Present',
+      desc: `Pioneered core modules for enterprise operations as ${jobTitle}.\nOptimized process latency and workflows by 40% through strict code refactoring and agile execution.`
+    }
+  ],
+  projects: [{ title: 'Enterprise Analytics Engine', technology: 'Node, React, PostgreSQL', desc: 'Developed a high-availability dashboard displaying real-time business performance metrics.' }]
+});
+
+const getFallbackRoles = (industryId) => {
+  const defaults = [
+    { _id: 'fe', jobTitle: 'Frontend Developer', experience: '2-5 Years', template: 'Modern', atsScore: 92, resumeScore: 95, description: 'Responsive web engineering, React optimization, and CSS/Tailwind design tokens.' },
+    { _id: 'be', jobTitle: 'Backend Developer', experience: '2-5 Years', template: 'Modern', atsScore: 94, resumeScore: 91, description: 'API setups, database indexes, server controllers, and system architecture.' },
+    { _id: 'fs', jobTitle: 'Full Stack Developer', experience: '5-10 Years', template: 'Modern', atsScore: 97, resumeScore: 96, description: 'End-to-end architectures, microservices, secure authentication, and AWS deployments.' }
+  ];
+  
+  if (industryId === 'biz') {
+    return [
+      { _id: 'pm', jobTitle: 'Project Manager', experience: '5-10 Years', template: 'Executive', atsScore: 96, resumeScore: 94 },
+      { _id: 'ba', jobTitle: 'Business Analyst', experience: '2-5 Years', template: 'Professional', atsScore: 94, resumeScore: 92 }
+    ].map(r => ({ ...r, resumeJson: mockResumeJson(r.jobTitle) }));
+  }
+  
+  return defaults.map(r => ({ ...r, resumeJson: mockResumeJson(r.jobTitle) }));
+};
+
+const LandingPage = () => {
+  const navigate = useNavigate();
+  const onEnterApp = (action) => {
+    if (action === 'create') navigate('/onboarding/start');
+    else if (action === 'upload') navigate('/upload');
+    else if (action === 'login') navigate('/login');
+    else navigate('/onboarding/start');
+  };
+  const isLoggedIn = false;
   const [showContactModal, setShowContactModal] = useState(false);
   const [showCookieConsent, setShowCookieConsent] = useState(true);
   const [chatHistory, setChatHistory] = useState([
@@ -17,6 +87,51 @@ const LandingPage = ({ onEnterApp, isLoggedIn }) => {
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+
+  // Industry Examples States
+  const [industries, setIndustries] = useState([]);
+  const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const [examples, setExamples] = useState([]);
+  const [loadingExamples, setLoadingExamples] = useState(false);
+  const [previewExample, setPreviewExample] = useState(null);
+
+  // Fetch industries on mount
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/industries');
+        const data = await res.json();
+        const cleanData = data.success && data.data.length > 0 ? data.data : fallbackIndustries;
+        setIndustries(cleanData);
+        setSelectedIndustry(cleanData[0]);
+      } catch (e) {
+        setIndustries(fallbackIndustries);
+        setSelectedIndustry(fallbackIndustries[0]);
+      }
+    };
+    fetchAll();
+  }, []);
+
+  // Fetch roles when selected category changes
+  useEffect(() => {
+    if (!selectedIndustry) return;
+    const fetchRoles = async () => {
+      setLoadingExamples(true);
+      try {
+        const res = await fetch(`http://localhost:5000/api/industries/${selectedIndustry._id}/examples`);
+        const data = await res.json();
+        if (data.success && data.data.length > 0) {
+          setExamples(data.data);
+        } else {
+          setExamples(getFallbackRoles(selectedIndustry._id));
+        }
+      } catch (e) {
+        setExamples(getFallbackRoles(selectedIndustry._id));
+      }
+      setLoadingExamples(false);
+    };
+    fetchRoles();
+  }, [selectedIndustry]);
 
   // Load external Playfair Display font dynamically
   useEffect(() => {
@@ -91,27 +206,17 @@ const LandingPage = ({ onEnterApp, isLoggedIn }) => {
         justifyContent: 'space-between'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ 
-              fontSize: '1.4rem', 
-              fontWeight: 800, 
-              color: '#38bdf8' 
-            }}>
-              FORGE <span style={{ color: '#eab308' }}>INDIA</span> <span style={{ color: '#ffffff' }}>CONNECT</span>
-            </span>
-            <span style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 600, letterSpacing: '0.15em', marginTop: '-2px' }}>
-              SHAPING FUTURE
-            </span>
-          </div>
+          <ForgeLogo size={36} showText={true} variant="dark" />
         </div>
 
         {/* Navigation Links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           {[
-            { label: 'Home', href: '#' },
+            { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
             { label: 'Features', href: '#features' },
+            { label: 'Templates', onClick: () => navigate('/templates') },
+            { label: 'Examples', onClick: () => navigate('/industry-examples') },
             { label: 'Pricing', href: '#pricing' },
-            { label: 'Templates', href: '#templates' },
             { label: 'Contact', onClick: () => setShowContactModal(true) }
           ].map((item, idx) => (
             <span
@@ -282,239 +387,284 @@ const LandingPage = ({ onEnterApp, isLoggedIn }) => {
           </div>
         </section>
 
-        {/* Cosmic Comparison Showcase: Executive Ready Resumes | Career 360° Output */}
-        <section style={{ 
-          maxWidth: '1200px', 
-          margin: '0 auto 6rem', 
-          padding: '4rem 2rem', 
-          background: 'radial-gradient(circle at center, #111827 0%, #030712 100%)',
+        {/* Embedded Industry Examples Section */}
+        <section id="industry-examples" style={{
+          maxWidth: '1200px',
+          margin: '0 auto 6rem',
+          padding: '4rem 2rem',
+          background: 'white',
           borderRadius: '32px',
-          boxShadow: '0 25px 60px rgba(3,7,18,0.4), inset 0 0 100px rgba(56,189,248,0.08)',
-          border: '1.5px solid rgba(56, 189, 248, 0.1)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.03)',
+          border: '1.5px solid #e2e8f0',
           position: 'relative',
           overflow: 'hidden'
         }}>
-          {/* Star particles / highlights */}
-          <div style={{ position: 'absolute', top: '15%', left: '10%', width: '4px', height: '4px', background: 'white', borderRadius: '50%', boxShadow: '0 0 12px white', opacity: 0.8 }} />
-          <div style={{ position: 'absolute', top: '75%', left: '85%', width: '3px', height: '3px', background: 'white', borderRadius: '50%', boxShadow: '0 0 8px white', opacity: 0.6 }} />
-          <div style={{ position: 'absolute', top: '40%', right: '25%', width: '5px', height: '5px', background: '#38bdf8', borderRadius: '50%', boxShadow: '0 0 15px #38bdf8', opacity: 0.7 }} />
-          <div style={{ position: 'absolute', top: '80%', left: '20%', width: '2px', height: '2px', background: '#818cf8', borderRadius: '50%', opacity: 0.5 }} />
-
-          <h2 style={{ 
-            fontSize: '2.1rem', 
-            fontFamily: "'Playfair Display', serif", 
-            fontWeight: 500, 
-            textAlign: 'center', 
-            color: '#f3f4f6', 
-            marginBottom: '4rem',
-            letterSpacing: '0.02em'
-          }}>
-            Executive Ready Resumes | Career 360° Output
-          </h2>
-
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between', 
-            gap: '2.5rem',
-            position: 'relative',
-            zIndex: 10
-          }}>
-            
-            {/* Left Card: John Anderson Resume Preview */}
-            <div style={{ 
-              flex: 1.1,
-              background: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(16px)',
-              borderRadius: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.6)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(56, 189, 248, 0.15)',
-              padding: '2.2rem',
-              color: '#1e293b',
-              textAlign: 'left',
-              fontFamily: "'Inter', sans-serif"
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <span style={{
+              background: '#eff6ff',
+              color: '#0056b8',
+              padding: '0.3rem 0.9rem',
+              borderRadius: '50px',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              display: 'inline-block',
+              marginBottom: '1rem'
+            }}>Browse Role Templates</span>
+            <h2 style={{
+              fontSize: '2.5rem',
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 900,
+              color: '#0f172a',
+              marginBottom: '1rem'
             }}>
-              {/* Header */}
-              <div style={{ textAlign: 'center', borderBottom: '1.5px solid #cbd5e1', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', letterSpacing: '0.08em', margin: '0 0 0.5rem 0' }}>
-                  JOHN ANDERSON
-                </h3>
-                <p style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600, margin: '0 0 0.75rem 0', wordBreak: 'break-all' }}>
-                  john.anderson@gmail.com • (210) 998-1999 • Charlotte, NC • johnanderson
-                </p>
-                <span style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: '0.35rem', 
-                  fontSize: '0.65rem', 
-                  fontWeight: 800, 
-                  color: '#047857', 
-                  background: '#d1fae5', 
-                  padding: '0.3rem 0.75rem', 
-                  borderRadius: '50px',
-                  textTransform: 'uppercase'
-                }}>
-                  🔒 Email & phone hidden from public view
+              Explore Job-Specific Resume Examples
+            </h2>
+            <p style={{ color: '#475569', maxWidth: '680px', margin: '0 auto', fontSize: '0.95rem', lineHeight: 1.5 }}>
+              Choose an industry below to browse premium resume templates customized for your role. Preview layouts and duplicate them instantly.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '2rem', height: '620px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            
+            {/* Categories Sidebar */}
+            <div style={{
+              width: '260px',
+              background: '#0f172a',
+              display: 'flex',
+              flexDirection: 'column',
+              borderRight: '1px solid rgba(255,255,255,0.08)',
+              overflowY: 'auto'
+            }}>
+              <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Categories
                 </span>
               </div>
-
-              {/* Summary */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-                  PROFESSIONAL SUMMARY
-                </h4>
-                <p style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
-                  Strategic Marketing Leader with extensive digital marketing experience, driving brand growth & aligning go-to-market strategies.
-                </p>
+              <div style={{ display: 'flex', flexDirection: 'column', padding: '0.5rem 0' }}>
+                {industries.map(ind => {
+                  const isActive = selectedIndustry?._id === ind._id;
+                  const IconComponent = Icons[ind.icon] || Icons.Briefcase;
+                  return (
+                    <button
+                      key={ind._id}
+                      onClick={() => setSelectedIndustry(ind)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '0.75rem 1.5rem',
+                        background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                        color: isActive ? '#ffffff' : '#94a3b8',
+                        border: 'none',
+                        borderLeft: isActive ? '4px solid #0056b8' : '4px solid transparent',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        fontSize: '0.85rem',
+                        fontWeight: isActive ? 800 : 500,
+                        transition: 'all 0.15s'
+                      }}
+                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#fff'; }}
+                      onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#94a3b8'; }}
+                    >
+                      <IconComponent size={16} color={isActive ? '#eab308' : '#64748b'} />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ind.name}</span>
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              {/* Experience */}
-              <div style={{ marginBottom: '1.75rem' }}>
-                <h4 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                  PROFESSIONAL EXPERIENCE
-                </h4>
-                <div style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: '1rem', marginLeft: '0.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem' }}>
-                    <div>
-                      <h5 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Marketing Solutions Inc.</h5>
-                      <h6 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4f46e5', margin: '0.1rem 0 0.3rem 0' }}>VP Marketing</h6>
-                    </div>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Sep 2018 - Present</span>
-                  </div>
-                  <span style={{ display: 'inline-block', fontSize: '0.7rem', fontWeight: 800, color: '#0369a1', background: '#e0f2fe', padding: '0.25rem 0.6rem', borderRadius: '6px', marginBottom: '0.6rem' }}>
-                    ✓ 12 years & current
-                  </span>
-                  <p style={{ fontSize: '0.8rem', color: '#475569', lineHeight: 1.4, margin: 0, fontWeight: 500 }}>
-                    • Lead integrated campaigns achieving 120% YoY growth in qualified leads.
+            {/* Roles Grid Panel */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
+              {selectedIndustry && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.25rem' }}>
+                    {selectedIndustry.name} Resume Formats
+                  </h3>
+                  <p style={{ fontSize: '0.82rem', color: '#64748b', margin: 0 }}>
+                    {selectedIndustry.description || `Browse recruiters approved formats for ${selectedIndustry.name} professional roles.`}
                   </p>
                 </div>
-              </div>
+              )}
 
-              {/* Footer columns */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem' }}>
-                <div>
-                  <h4 style={{ fontSize: '0.75rem', fontWeight: 900, color: '#0f172a', letterSpacing: '0.05em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    🎓 EDUCATION
-                  </h4>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>✓ Harvard MBA</span>
+              {loadingExamples ? (
+                <div style={{ textAlign: 'center', padding: '4rem', color: '#64748b', fontWeight: 650 }}>
+                  Loading templates...
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '0.75rem', fontWeight: 900, color: '#0f172a', letterSpacing: '0.05em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    🎯 TOP SKILLS
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>
-                    <span>✓ VP Marketing</span>
-                    <span>✓ Chief Marketing Officer</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Glowing Arrow Middle Indicator */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-              <motion.div 
-                animate={{ x: [0, 8, 0] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                style={{ fontSize: '2.5rem', fontWeight: 900, color: '#38bdf8', filter: 'drop-shadow(0 0 10px #38bdf8)', cursor: 'default' }}
-              >
-                →
-              </motion.div>
-            </div>
-
-            {/* Right Card: Career 360 Profile */}
-            <div style={{ 
-              flex: 1.1,
-              background: 'rgba(15, 23, 42, 0.45)',
-              backdropFilter: 'blur(16px)',
-              borderRadius: '24px',
-              border: '1.5px solid rgba(56, 189, 248, 0.3)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.25)',
-              padding: '2.2rem',
-              color: '#f8fafc',
-              textAlign: 'left',
-              fontFamily: "'Inter', sans-serif"
-            }}>
-              {/* Header */}
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: "'Playfair Display', serif", color: '#e2e8f0', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', marginBottom: '1.5rem', margin: 0 }}>
-                Your Career 360° Profile
-              </h3>
-
-              {/* User Bio Card */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.75rem' }}>
-                <div style={{ 
-                  width: 56, 
-                  height: 56, 
-                  borderRadius: '50%', 
-                  background: 'linear-gradient(135deg, #06b6d4, #4f46e5)',
-                  padding: '2px',
-                  boxShadow: '0 0 15px rgba(6,182,212,0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden'
+              ) : (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                  gap: '1.25rem'
                 }}>
-                  <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
+                  {examples.map(ex => (
+                    <div
+                      key={ex._id}
+                      style={{
+                        background: 'white',
+                        borderRadius: '16px',
+                        border: '2px solid #e2e8f0',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        transition: 'all 0.2s',
+                        textAlign: 'left'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = '#0056b8';
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 86, 184, 0.06)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = '#e2e8f0';
+                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      <div style={{ background: '#f8fafc', height: '110px', padding: '0.5rem', borderBottom: '1px solid #e2e8f0', position: 'relative' }}>
+                        <div style={{ background: 'white', border: '1px solid #cbd5e1', borderRadius: '6px', height: '100%', padding: '6px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <div style={{ height: '8px', background: '#0056b8', borderRadius: '1.5px', width: '60%' }} />
+                          <div style={{ height: '3px', background: '#e2e8f0', borderRadius: '1px', width: '25%' }} />
+                          <div style={{ display: 'flex', gap: '4px', flex: 1, marginTop: '2px' }}>
+                            <div style={{ width: '25%', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <div style={{ height: '4px', background: '#cbd5e1', borderRadius: '1px' }} />
+                              <div style={{ height: '4px', background: '#cbd5e1', borderRadius: '1px' }} />
+                            </div>
+                            <div style={{ flex: 1, background: '#f1f5f9', borderRadius: '2px' }} />
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', flex: 1, gap: '0.75rem' }}>
+                        <div>
+                          <h4 style={{ fontSize: '0.92rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.15rem' }}>{ex.jobTitle}</h4>
+                          <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#0056b8', background: '#eff6ff', padding: '0.15rem 0.4rem', borderRadius: '3px' }}>
+                            Exp: {ex.experience}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.35rem', marginTop: 'auto' }}>
+                          <button
+                            onClick={() => setPreviewExample(ex)}
+                            style={{
+                              flex: 1,
+                              background: '#f1f5f9',
+                              color: '#0f172a',
+                              border: 'none',
+                              borderRadius: '6px',
+                              padding: '0.45rem',
+                              fontWeight: 800,
+                              fontSize: '0.72rem',
+                              cursor: 'pointer'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'}
+                            onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}
+                          >
+                            Preview
+                          </button>
+                          <button
+                            onClick={() => handleUseTemplate(ex)}
+                            style={{
+                              flex: 1,
+                              background: '#0056b8',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '6px',
+                              padding: '0.45rem',
+                              fontWeight: 800,
+                              fontSize: '0.72rem',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Use
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white', margin: 0 }}>John Anderson</h4>
-                  <p style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600, margin: '0.1rem 0 0 0' }}>Marketing Leader</p>
-                </div>
-              </div>
-
-              {/* Stats highlights */}
-              <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.75rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1.25rem' }}>
-                <div>
-                  <span style={{ fontSize: '1.6rem', fontWeight: 900, color: 'white' }}>15</span>
-                  <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600, marginLeft: '0.4rem' }}>Years</span>
-                </div>
-                <div>
-                  <span style={{ fontSize: '1.6rem', fontWeight: 900, color: 'white' }}>5</span>
-                  <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600, marginLeft: '0.4rem' }}>Roles</span>
-                </div>
-              </div>
-
-              {/* Strengths */}
-              <div style={{ marginBottom: '1.75rem' }}>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.75rem' }}>
-                  TOP STRENGTH
-                </span>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1rem', alignItems: 'flex-start' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 700 }}>
-                    <span style={{ color: 'white' }}>✓ VP Marketing</span>
-                    <span style={{ color: 'white' }}>✓ CMO</span>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#38bdf8', display: 'block', lineHeight: 1 }}>92%</span>
-                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginTop: '0.2rem' }}>92 match • 89 match</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Education & Next Roles columns */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem' }}>
-                <div>
-                  <h4 style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94a3b8', letterSpacing: '0.05em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    🎓 EDUCATION
-                  </h4>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>✓ Harvard MBA</span>
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94a3b8', letterSpacing: '0.05em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    💼 NEXT ROLES
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>
-                    <span>✓ VP Marketing</span>
-                    <span>✓ Chief Marketing Officer</span>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
           </div>
         </section>
+
+        {/* Preview Side-Panel Modal */}
+        {previewExample && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            zIndex: 10000
+          }}>
+            <div style={{
+              width: '100%',
+              maxWidth: '900px',
+              background: '#f1f5f9',
+              height: '100vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '-10px 0 30px rgba(0,0,0,0.15)'
+            }}>
+              <div style={{
+                background: '#0f172a',
+                color: 'white',
+                padding: '1.25rem 2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexShrink: 0
+              }}>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, margin: 0 }}>{previewExample.jobTitle} Resume Preview</h3>
+                  <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '2px 0 0', fontWeight: 650 }}>ATS Score: {previewExample.atsScore}% &bull; Resume Score: {previewExample.resumeScore}%</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <button
+                    onClick={() => handleUseTemplate(previewExample)}
+                    style={{
+                      background: '#eab308',
+                      color: '#0f172a',
+                      border: 'none',
+                      borderRadius: '50px',
+                      padding: '0.55rem 1.4rem',
+                      fontWeight: 900,
+                      fontSize: '0.8rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Use Template
+                  </button>
+                  <button
+                    onClick={() => setPreviewExample(null)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#cbd5e1',
+                      cursor: 'pointer',
+                      fontSize: '1.5rem',
+                      padding: '0.25rem'
+                    }}
+                  >
+                    &times;
+                  </button>
+                </div>
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '3rem 2rem', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+                <ResumePreview
+                  data={previewExample.resumeJson || mockResumeJson(previewExample.jobTitle)}
+                  color="#0056b8"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* How It Works Section */}
         <section style={{ 
