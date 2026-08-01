@@ -19,7 +19,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/guest", guestRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use("/api/resume", resumeRoutes);
+app.use("/api", resumeRoutes);
 app.use("/api", industryRoutes);
 app.use("/api", templateRoutes);
 

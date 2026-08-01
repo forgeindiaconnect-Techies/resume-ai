@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, User, Mail, Shield, MessageSquare, Phone, MapPin, 
-  Linkedin, Github, Twitter, Send, CheckCircle, HelpCircle,
+  Globe, Share2, Send, CheckCircle, HelpCircle,
   FileText, Clock, Users, ChevronRight, LayoutDashboard,
   BrainCircuit, Award
 } from 'lucide-react';
@@ -310,9 +310,9 @@ const ContactModal = ({ isOpen, onClose }) => {
               <h4 style={sectionHeaderStyle}>Follow Us</h4>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 {[
-                  { Icon: Linkedin, href: '#' },
-                  { Icon: Github, href: '#' },
-                  { Icon: Twitter, href: '#' }
+                  { Icon: Globe, href: '#' },
+                  { Icon: Share2, href: '#' },
+                  { Icon: MessageSquare, href: '#' }
                 ].map(({ Icon, href }, i) => (
                   <a key={i} href={href} style={socialIconStyle}>
                     <Icon size={18} />

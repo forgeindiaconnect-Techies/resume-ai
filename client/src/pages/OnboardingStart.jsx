@@ -63,7 +63,7 @@ const OnboardingStart = () => {
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👋</div>
           <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '2.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', marginBottom: '0.75rem' }}>
-            Welcome to CareerElite AI
+            Welcome to Forge India Connect
           </h1>
           <p style={{ fontSize: '1.05rem', color: '#64748b', fontWeight: 500, lineHeight: 1.6 }}>
             Let's build your dream resume in just 5 minutes.<br />How would you like to start?

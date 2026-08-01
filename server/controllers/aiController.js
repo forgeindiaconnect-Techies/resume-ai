@@ -67,7 +67,36 @@ const localSkills = {
   'General': ['Git', 'Agile Sprints', 'Technical Writing', 'Problem Solving', 'Team Leadership', 'System Design']
 };
 
-// Help helper to get Gemini responses
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+// OpenAI Completion Helper
+const getOpenAICompletion = async (promptText) => {
+  if (!OPENAI_API_KEY) return null;
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: promptText }],
+        max_tokens: 300,
+        temperature: 0.7
+      })
+    });
+    const data = await res.json();
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      return data.choices[0].message.content.trim();
+    }
+  } catch (e) {
+    console.error('OpenAI API query failed:', e.message);
+  }
+  return null;
+};
+
+// Gemini Completion Helper
 const getGeminiCompletion = async (promptText) => {
   if (!aiClient) return null;
   try {
@@ -76,9 +105,20 @@ const getGeminiCompletion = async (promptText) => {
     const response = await result.response;
     return response.text().trim();
   } catch (e) {
-    console.error('Gemini API query failed, falling back to local heuristic:', e.message);
+    console.error('Gemini API query failed:', e.message);
     return null;
   }
+};
+
+// Combined AI Engine Helper (OpenAI -> Gemini -> Local Fallback)
+const getAICompletion = async (promptText) => {
+  const openAIRes = await getOpenAICompletion(promptText);
+  if (openAIRes) return openAIRes;
+
+  const geminiRes = await getGeminiCompletion(promptText);
+  if (geminiRes) return geminiRes;
+
+  return null;
 };
 
 // 1. Improve Summary
@@ -92,7 +132,7 @@ exports.improveSummary = async (req, res) => {
     const prompt = `You are a professional resume writer. Re-write the following resume summary to make it highly polished, professional, and results-oriented for a "${targetRole}" role. Keep it concise (2-3 sentences max).
     Original Summary: "${summary || 'No summary provided'}"`;
 
-    const aiResponse = await getGeminiCompletion(prompt);
+    const aiResponse = await getAICompletion(prompt);
 
     if (aiResponse) {
       return res.status(200).json({ success: true, text: aiResponse });
@@ -120,7 +160,7 @@ exports.rewriteProject = async (req, res) => {
     const prompt = `You are a professional career coach. Rewrite the following project accomplishment description to make it sound results-oriented, using action verbs (e.g. Spearheaded, Engineered, Optimized) and introducing quantifiable impact.
     Original description: "${desc || 'Created web platform'}"`;
 
-    const aiResponse = await getGeminiCompletion(prompt);
+    const aiResponse = await getAICompletion(prompt);
 
     if (aiResponse) {
       return res.status(200).json({ success: true, text: aiResponse });
@@ -147,7 +187,7 @@ exports.suggestSkills = async (req, res) => {
 
     const prompt = `List the top 8 essential industry skills and technologies for a "${targetRole}" role, formatted strictly as a comma-separated list without numbering or bullets.`;
 
-    const aiResponse = await getGeminiCompletion(prompt);
+    const aiResponse = await getAICompletion(prompt);
 
     if (aiResponse) {
       const skillsArray = aiResponse.split(',').map(s => s.trim().replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')).filter(s => s.length > 0);
@@ -176,7 +216,7 @@ exports.generateCoverLetter = async (req, res) => {
     const prompt = `Write a professional, concise cover letter for ${candidateName} applying for the position of "${targetRole}". 
     Email: ${email || 'candidate@example.com'}. Use the following summary as a professional baseline: "${summary || ''}".`;
 
-    const aiResponse = await getGeminiCompletion(prompt);
+    const aiResponse = await getAICompletion(prompt);
 
     if (aiResponse) {
       return res.status(200).json({ success: true, text: aiResponse });
@@ -200,5 +240,85 @@ ${email || 'candidate@example.com'}`;
   } catch (error) {
     console.error('Cover letter AI error:', error);
     res.status(500).json({ success: false, message: 'AI processing failed' });
+  }
+};
+
+// 5. Full Resume AI Generator
+exports.generateResume = async (req, res) => {
+  try {
+    const { jobTitle, experience, skills } = req.body;
+    const targetTitle = jobTitle || 'Software Engineer';
+    const expYears = experience || 2;
+    const skillList = skills || 'JavaScript, React, Node.js';
+
+    console.log(`AI: Generating full resume for role: ${targetTitle}, exp: ${expYears} yrs, skills: ${skillList}`);
+
+    const prompt = `Generate a professional ATS-friendly resume.
+
+Job Title: ${targetTitle}
+Experience: ${expYears} years
+Skills: ${skillList}
+
+Return ONLY valid JSON with no markdown formatting or extra text.
+
+{
+  "summary": "A 2-3 sentence professional summary",
+  "skills": ["JavaScript", "React", "Node.js"],
+  "experience": [
+    {
+      "company": "Tech Solutions Inc.",
+      "position": "${targetTitle}",
+      "duration": "2022 - Present",
+      "description": "Architected high-performance web applications using modern stacks."
+    }
+  ],
+  "projects": [
+    {
+      "title": "E-Commerce SaaS Application",
+      "description": "Built fullstack web application with payment integration."
+    }
+  ],
+  "certifications": ["Certified Developer (2024)"]
+}`;
+
+    const aiResponse = await getAICompletion(prompt);
+
+    if (aiResponse) {
+      try {
+        const cleanJsonStr = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(cleanJsonStr);
+        return res.status(200).json({ success: true, data: parsed });
+      } catch (parseErr) {
+        console.error('Failed to parse AI JSON response, returning text:', parseErr);
+        return res.status(200).json({ success: true, data: aiResponse });
+      }
+    }
+
+    // Local Fallback Data
+    const fallbackData = {
+      summary: `Dedicated and results-driven ${targetTitle} with over ${expYears} years of experience building scalable applications. Proven track record in ${skillList}.`,
+      skills: skillList.split(',').map(s => s.trim()).filter(Boolean),
+      experience: [
+        {
+          company: 'Apex Digital Solutions',
+          position: targetTitle,
+          duration: '2022 - Present',
+          description: `Spearheaded the development of high-performance web services utilizing ${skillList}.`
+        }
+      ],
+      projects: [
+        {
+          title: `${targetTitle} Core Dashboard`,
+          description: `Designed and deployed responsive web interfaces with automated data pipelines using ${skillList}.`
+        }
+      ],
+      certifications: ['AWS Certified Cloud Practitioner', 'Professional Developer Certification']
+    };
+
+    return res.status(200).json({ success: true, data: fallbackData });
+
+  } catch (error) {
+    console.error('Generate Resume AI error:', error);
+    res.status(500).json({ success: false, message: 'AI resume generation failed' });
   }
 };

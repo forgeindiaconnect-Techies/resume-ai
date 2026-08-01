@@ -1,17 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Briefcase, GraduationCap, Award, Code, Save, 
   Download, Sparkles, Plus, Trash2, X, ChevronRight, ChevronLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2
 } from 'lucide-react';
 import ModernResumeTemplate from '../components/builder/ModernResumeTemplate';
+import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
+import ModernLayout from '../components/layouts/ModernLayout';
+import MinimalLayout from '../components/layouts/MinimalLayout';
+import ExecutiveLayout from '../components/layouts/ExecutiveLayout';
+import CreativeLayout from '../components/layouts/CreativeLayout';
 import ForgeLogo from '../components/common/ForgeLogo';
 
+// Import modular form components
+import PersonalForm from '../components/resume/PersonalForm';
+import SummaryForm from '../components/resume/SummaryForm';
+import EducationForm from '../components/resume/EducationForm';
+import ExperienceForm from '../components/resume/ExperienceForm';
+import ProjectsForm from '../components/resume/ProjectsForm';
+import SkillsForm from '../components/resume/SkillsForm';
+import CertificatesForm from '../components/resume/CertificatesForm';
+import LanguagesForm from '../components/resume/LanguagesForm';
+import AchievementsForm from '../components/resume/AchievementsForm';
+import AIAssistant from '../components/resume/AIAssistant';
+import ResumeToolbar from '../components/resume/ResumeToolbar';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { generateResumeAI } from '../services/aiService';
+
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
+  const { resumeId } = useParams();
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('Auto Saved ✔');
-  const [resumeId, setResumeId] = useState(activeResumeId || null);
+  const [resumeSessionId, setResumeSessionId] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   
   // AI Assistant States
@@ -20,10 +42,106 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [aiAssistantOutput, setAiAssistantOutput] = useState('');
   const [aiAssistantLoading, setAiAssistantLoading] = useState(false);
 
+  // AI Resume Generator States
+  const [showAiGeneratorModal, setShowAiGeneratorModal] = useState(false);
+  const [aiJobTitle, setAiJobTitle] = useState('');
+  const [aiExperience, setAiExperience] = useState('');
+  const [aiSkillsInput, setAiSkillsInput] = useState('');
+  const [loadingAI, setLoadingAI] = useState(false);
+
+  const handleGenerateAI = async () => {
+    if (!aiJobTitle.trim()) {
+      alert('Please enter a target Job Title.');
+      return;
+    }
+
+    try {
+      setLoadingAI(true);
+
+      const res = await generateResumeAI({
+        jobTitle: aiJobTitle,
+        experience: aiExperience,
+        skills: aiSkillsInput,
+      });
+
+      const aiData =
+        typeof res.data.data === 'string'
+          ? JSON.parse(res.data.data)
+          : res.data.data;
+
+      setFormData((prev) => ({
+        ...prev,
+        department: aiJobTitle,
+        personalInfo: {
+          ...prev.personalInfo,
+          summary: aiData.summary || prev.personalInfo.summary
+        },
+        skills: {
+          programming: aiData.skills || prev.skills.programming,
+          frameworks: prev.skills.frameworks,
+          databases: prev.skills.databases
+        },
+        experience: aiData.experience && aiData.experience.length > 0 ? aiData.experience.map(e => ({
+          role: e.position || aiJobTitle,
+          company: e.company || 'Tech Company',
+          duration: e.duration || '2022 - Present',
+          desc: e.description || ''
+        })) : prev.experience,
+        projects: aiData.projects && aiData.projects.length > 0 ? aiData.projects.map(p => ({
+          name: p.title || 'Project',
+          technology: aiSkillsInput || '',
+          desc: p.description || ''
+        })) : prev.projects,
+        certificates: aiData.certifications && aiData.certifications.length > 0 ? aiData.certifications.map(c => ({
+          name: typeof c === 'string' ? c : c.name || 'Certification'
+        })) : prev.certificates
+      }));
+
+      setShowAiGeneratorModal(false);
+      setSaveStatus('AI Generated & Saved ✔');
+    } catch (error) {
+      console.error(error);
+      alert('AI resume generation failed.');
+    } finally {
+      setLoadingAI(false);
+    }
+  };
+
   // Preview Config States
   const [zoomLevel, setZoomLevel] = useState(0.6);
   const [selectedColor, setSelectedColor] = useState('#7c3aed'); // Purple
   const [selectedFont, setSelectedFont] = useState("'Inter', sans-serif");
+  
+  const [theme, setTheme] = useState({
+    primaryColor: '#2563eb',
+    secondaryColor: '#111827',
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 13,
+    lineHeight: 1.6,
+    margin: 35,
+    profilePosition: 'left'
+  });
+  // Structured section objects for @hello-pangea/dnd
+  const [sections, setSections] = useState([
+    { id: 'Summary',      title: 'Professional Summary' },
+    { id: 'Experience',   title: 'Experience' },
+    { id: 'Education',    title: 'Education' },
+    { id: 'Skills',       title: 'Skills' },
+    { id: 'Projects',     title: 'Projects' },
+    { id: 'Certificates', title: 'Certifications' },
+    { id: 'Languages',    title: 'Languages' },
+  ]);
+
+  // Pangea DND drag end – reorders sections state and syncs enabledSections
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    const items = [...sections];
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    setSections(items);
+    // Sync to enabledSections for live preview ordering
+    setEnabledSections(['Personal', ...items.map(s => s.id), 'Preview']);
+  };
 
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
@@ -42,28 +160,214 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       portfolio: 'portfolio.dev',
       summary: 'Experienced software developer specialized in building modern web applications.'
     },
-    experience: [
-      { id: 1, role: 'Senior Software Engineer', company: 'InnovateTech', duration: '2023 - Present', desc: 'Led a team of frontend engineers to build a high-performance web dashboard.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.S. in Computer Science', school: 'State University', department: 'CS Department', cgpa: '9.2', year: '2019 - 2023' }
-    ],
-    projects: [
-      { id: 1, name: 'SaaS Platform', technology: 'React, Node, Express, MongoDB', desc: 'Created an enterprise application handling high traffic.', github: 'github.com/proj', liveDemo: 'demo.com' }
-    ],
+    experience: [],
+    education: [],
+    projects: [],
     skills: {
-      programming: ['Java', 'Python', 'JavaScript'],
-      frameworks: ['React', 'Node'],
-      databases: ['MongoDB', 'MySQL']
+      programming: [],
+      frameworks: [],
+      databases: []
     },
-    certificates: [
-      { id: 1, name: 'AWS Certified Cloud Practitioner', organization: 'Amazon Web Services', year: '2024' }
-    ],
-    languagesList: ['English', 'Hindi'],
+    certificates: [],
+    languagesList: [],
+    achievements: [],
     references: 'Available upon request'
   });
 
-  // Calculate completion progress
+  // Enable dynamic sections list (populated from database categorization)
+  const [enabledSections, setEnabledSections] = useState(['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Preview']);
+
+  // Initialize Session & Dynamic Categorization
+  useEffect(() => {
+    const initializeResumeSession = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        let guestId = localStorage.getItem('guestSessionId');
+        if (!user && !guestId) {
+          guestId = 'guest_' + Math.random().toString(36).substring(2, 9);
+          localStorage.setItem('guestSessionId', guestId);
+        }
+
+        const savedSessionId = resumeId || localStorage.getItem('activeResumeSessionId');
+        if (savedSessionId) {
+          const resSession = await fetch(`http://localhost:5000/api/resume-session/${savedSessionId}`, {
+            headers: {
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            }
+          });
+          const dataSession = await resSession.json();
+          if (dataSession.success && dataSession.data) {
+            const rData = dataSession.data;
+            setResumeSessionId(rData._id);
+            setFormData(prev => ({
+              ...prev,
+              title: rData.title || 'My Professional Resume',
+              templateId: rData.templateId || 'modern',
+              personalInfo: rData.personalInfo || { name: '', email: '', phone: '', location: '', linkedin: '', github: '', portfolio: '', summary: '' },
+              experience: rData.experience || [],
+              education: rData.education || [],
+              projects: rData.projects || [],
+              skills: rData.skills || { programming: [], frameworks: [], databases: [] },
+              certificates: rData.certificates || [],
+              languagesList: rData.languagesList || [],
+              achievements: rData.achievements || [],
+              references: rData.references || ''
+            }));
+            
+            if (rData.templateId) {
+              try {
+                const resTpl = await fetch(`http://localhost:5000/api/template/${rData.templateId}`);
+                const dataTpl = await resTpl.json();
+                if (dataTpl.success && dataTpl.sections) {
+                  const mapped = dataTpl.sections.map(s => {
+                    if (s.toLowerCase().includes('personal')) return 'Personal';
+                    if (s.toLowerCase().includes('summary')) return 'Summary';
+                    if (s.toLowerCase().includes('education')) return 'Education';
+                    if (s.toLowerCase().includes('experience')) return 'Experience';
+                    if (s.toLowerCase().includes('project')) return 'Projects';
+                    if (s.toLowerCase().includes('skill')) return 'Skills';
+                    if (s.toLowerCase().includes('cert')) return 'Certificates';
+                    if (s.toLowerCase().includes('lang')) return 'Languages';
+                    if (s.toLowerCase().includes('achieve')) return 'Achievements';
+                    return s;
+                  });
+                  if (!mapped.includes('Preview')) mapped.push('Preview');
+                  setEnabledSections(mapped);
+                }
+              } catch (err) {}
+            }
+            return;
+          }
+        }
+
+        const templateSlug = localStorage.getItem('selectedTemplateSlug') || 'modern-blue';
+        const jobRole = localStorage.getItem('selectedJobRole') || 'React Developer';
+
+        // 1. Fetch Dynamic Sections list from sitemap/template slug
+        if (templateSlug) {
+          try {
+            const resTpl = await fetch(`http://localhost:5000/api/template/${templateSlug}`);
+            const dataTpl = await resTpl.json();
+            if (dataTpl.success && dataTpl.sections) {
+              const mapped = dataTpl.sections.map(s => {
+                if (s.toLowerCase().includes('personal')) return 'Personal';
+                if (s.toLowerCase().includes('summary')) return 'Summary';
+                if (s.toLowerCase().includes('education')) return 'Education';
+                if (s.toLowerCase().includes('experience')) return 'Experience';
+                if (s.toLowerCase().includes('project')) return 'Projects';
+                if (s.toLowerCase().includes('skill')) return 'Skills';
+                if (s.toLowerCase().includes('cert')) return 'Certificates';
+                if (s.toLowerCase().includes('lang')) return 'Languages';
+                if (s.toLowerCase().includes('achieve')) return 'Achievements';
+                return s;
+              });
+              if (!mapped.includes('Preview')) mapped.push('Preview');
+              setEnabledSections(mapped);
+            }
+          } catch (err) {
+            console.error('Error fetching dynamic sections:', err);
+          }
+        }
+
+        // 2. Initialize or load session on backend
+        const body = {
+          userId: user?._id || null,
+          guestId: user ? null : guestId,
+          templateId: templateSlug,
+          jobRole: jobRole
+        };
+
+        const resSession = await fetch('http://localhost:5000/api/resume-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify(body)
+        });
+
+        const dataSession = await resSession.json();
+        if (dataSession.success) {
+          setResumeSessionId(dataSession.sessionId);
+          const rData = dataSession.data;
+          const sessionInfo = dataSession.session;
+          
+          setFormData(prev => ({
+            ...prev,
+            title: sessionInfo.title || 'My Professional Resume',
+            templateId: sessionInfo.templateId || 'modern',
+            personalInfo: rData.personal || { name: '', email: '', phone: '', location: '', linkedin: '', github: '', portfolio: '', summary: '' },
+            experience: rData.experience || [],
+            education: rData.education || [],
+            projects: rData.projects || [],
+            skills: rData.skills || { programming: [], frameworks: [], databases: [] },
+            certificates: rData.certificates || [],
+            languagesList: rData.languages || [],
+            achievements: rData.achievements || [],
+            references: rData.references || ''
+          }));
+        }
+      } catch (err) {
+        console.error('Error initializing session:', err);
+        // Fallback to local storage draft
+        const localDraft = localStorage.getItem('localResumeDraft');
+        if (localDraft) {
+          try {
+            setFormData(JSON.parse(localDraft));
+          } catch (e) {}
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeResumeSession();
+  }, [user]);
+
+  // Auto-Save Effect (1.5s Debounce)
+  useEffect(() => {
+    if (!resumeSessionId) return;
+
+    setSaveStatus('Saving...');
+    const delayDebounce = setTimeout(async () => {
+      localStorage.setItem('localResumeDraft', JSON.stringify(formData));
+      
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:5000/api/resume-session/${resumeSessionId}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            personal: formData.personalInfo,
+            education: formData.education,
+            experience: formData.experience,
+            projects: formData.projects,
+            skills: formData.skills,
+            certificates: formData.certificates,
+            languages: formData.languagesList,
+            achievements: formData.achievements,
+            references: formData.references
+          })
+        });
+        const result = await response.json();
+        if (result.success) {
+          setSaveStatus('Auto Saved ✔');
+        } else {
+          setSaveStatus('Error Saving');
+        }
+      } catch (err) {
+        setSaveStatus('Offline Mode');
+      }
+    }, 1500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [formData, resumeSessionId]);
+
+  // Calculation Metrics
   const getProgressPercent = () => {
     let score = 20; // baseline
     if (formData.personalInfo.name && formData.personalInfo.name !== 'Your Name') score += 15;
@@ -76,7 +380,6 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     return Math.min(score, 100);
   };
 
-  // Calculate ATS Score Match
   const getAtsScore = () => {
     let score = 70; // base ATS compliance
     score += Math.min((formData.experience?.length || 0) * 4, 12);
@@ -86,193 +389,11 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     return Math.min(score, 98);
   };
 
-  // Restore Guest or Permanent draft on mount
-  // Enabled dynamic sections state
-  const [enabledSections, setEnabledSections] = useState(['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Preview']);
-
-  // Restore Guest or Permanent draft on mount
-  useEffect(() => {
-    const fetchResume = async () => {
-      // 1. Check if we have a dynamic template slug saved from landing page
-      const templateSlug = localStorage.getItem('selectedTemplateSlug');
-      if (templateSlug) {
-        try {
-          const resTpl = await fetch(`http://localhost:5000/api/template/${templateSlug}`);
-          const dataTpl = await resTpl.json();
-          if (dataTpl.success && dataTpl.sections) {
-            // Map raw database sections to step labels
-            const mapped = dataTpl.sections.map(s => {
-              if (s.toLowerCase().includes('personal')) return 'Personal';
-              if (s.toLowerCase().includes('summary')) return 'Summary';
-              if (s.toLowerCase().includes('education')) return 'Education';
-              if (s.toLowerCase().includes('experience')) return 'Experience';
-              if (s.toLowerCase().includes('project')) return 'Projects';
-              if (s.toLowerCase().includes('skill')) return 'Skills';
-              if (s.toLowerCase().includes('cert')) return 'Certificates';
-              return s;
-            });
-            // Ensure Preview is always the final step
-            if (!mapped.includes('Preview')) mapped.push('Preview');
-            setEnabledSections(mapped);
-            localStorage.removeItem('selectedTemplateSlug');
-          }
-        } catch (err) {
-          console.error('Error fetching dynamic sections:', err);
-        }
-      }
-
-      if (resumeId) {
-        try {
-          const token = localStorage.getItem('token');
-          const response = await fetch(`/api/resumes/${resumeId}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          const data = await response.json();
-          if (response.ok && data.success) {
-            setFormData({
-              title: data.data.title || 'My Professional Resume',
-              templateId: data.data.templateId || 'modern',
-              department: data.data.department || 'Fullstack',
-              personalInfo: data.data.personalInfo || { name: '', email: '', phone: '', location: '', linkedin: '', github: '', portfolio: '', summary: '' },
-              experience: data.data.experience || [],
-              education: data.data.education || [],
-              projects: data.data.projects || [],
-              skills: data.data.skills || { programming: [], frameworks: [], databases: [] },
-              certificates: data.data.certificates || [],
-              languagesList: data.data.languagesList || [],
-              references: data.data.references || ''
-            });
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      } else {
-        // Check for template prefill from sitemap library
-        const prefilled = localStorage.getItem('prefilledResumeJson');
-        if (prefilled) {
-          try {
-            const parsed = JSON.parse(prefilled);
-            setFormData(prev => ({
-              ...prev,
-              title: `My ${parsed.role || 'Professional'} Resume`,
-              templateId: localStorage.getItem('selectedTemplateId') || 'modern',
-              personalInfo: {
-                name: parsed.name || '',
-                email: parsed.contact?.email || '',
-                phone: parsed.contact?.phone || '',
-                location: parsed.contact?.location || '',
-                linkedin: parsed.contact?.linkedin || '',
-                github: parsed.contact?.github || '',
-                portfolio: parsed.contact?.portfolio || '',
-                summary: parsed.objective || ''
-              },
-              experience: parsed.experience?.map((exp, idx) => ({
-                id: idx + 1,
-                role: exp.title,
-                company: exp.company,
-                duration: exp.duration,
-                desc: exp.desc
-              })) || [],
-              education: parsed.education?.map((edu, idx) => ({
-                id: idx + 1,
-                degree: edu.degree,
-                school: edu.institution,
-                department: '',
-                cgpa: edu.cgpa || '',
-                year: edu.tenure
-              })) || [],
-              projects: parsed.projects?.map((proj, idx) => ({
-                id: idx + 1,
-                name: proj.title,
-                technology: proj.technology,
-                desc: proj.desc,
-                github: '',
-                liveDemo: ''
-              })) || [],
-              skills: {
-                programming: parsed.skills?.languages?.split(',').map(s => s.trim()) || [],
-                frameworks: parsed.skills?.frameworks?.split(',').map(s => s.trim()) || [],
-                databases: parsed.skills?.tools?.split(',').map(s => s.trim()) || []
-              },
-              certificates: parsed.training?.map((tr, idx) => ({
-                id: idx + 1,
-                name: tr,
-                organization: '',
-                year: ''
-              })) || [],
-              languagesList: parsed.languagesList || [],
-              references: parsed.references || ''
-            }));
-            
-            // Clean up to prevent subsequent reload overrides
-            localStorage.removeItem('prefilledResumeJson');
-            return;
-          } catch (e) {
-            console.error('Prefill parse error:', e);
-          }
-        }
-
-        const guestId = localStorage.getItem('guestSessionId');
-        if (guestId) {
-          try {
-            const response = await fetch(`/api/resume/temp/${guestId}`);
-            const data = await response.json();
-            if (response.ok && data.success && data.data) {
-              setFormData(data.data);
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        }
-      }
-    };
-    fetchResume();
-  }, [resumeId]);
-
-  // Auto-Save Effect (1.5s Debounce)
-  useEffect(() => {
-    setSaveStatus('Saving...');
-    const delayDebounce = setTimeout(async () => {
-      localStorage.setItem('localResumeDraft', JSON.stringify(formData));
-      
-      const guestId = localStorage.getItem('guestSessionId');
-      if (!user && guestId) {
-        try {
-          await fetch('/api/resume/temp-save', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId: guestId, resumeData: formData })
-          });
-          setSaveStatus('Auto Saved ✔');
-        } catch (err) {
-          setSaveStatus('Offline Mode');
-        }
-      } else {
-        setSaveStatus('Saved Locally ✔');
-      }
-    }, 1500);
-
-    return () => clearTimeout(delayDebounce);
-  }, [formData, user]);
-
+  // Handlers for personal details
   const handlePersonalChange = (e) => {
     setFormData({
       ...formData,
       personalInfo: { ...formData.personalInfo, [e.target.name]: e.target.value }
-    });
-  };
-
-  const toggleSkillItem = (category, skill) => {
-    const list = formData.skills[category] || [];
-    const updated = list.includes(skill)
-      ? list.filter(item => item !== skill)
-      : [...list, skill];
-    setFormData({
-      ...formData,
-      skills: {
-        ...formData.skills,
-        [category]: updated
-      }
     });
   };
 
@@ -361,52 +482,102 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     });
   };
 
+  // Skills Handlers
+  const handleToggleSkill = (category, skill) => {
+    const list = formData.skills[category] || [];
+    const updated = list.includes(skill)
+      ? list.filter(item => item !== skill)
+      : [...list, skill];
+    setFormData({
+      ...formData,
+      skills: { ...formData.skills, [category]: updated }
+    });
+  };
+
+  const handleAddSkill = (category, skill) => {
+    const list = formData.skills[category] || [];
+    if (!list.includes(skill)) {
+      setFormData({
+        ...formData,
+        skills: { ...formData.skills, [category]: [...list, skill] }
+      });
+    }
+  };
+
+  const handleRemoveSkill = (category, skill) => {
+    setFormData({
+      ...formData,
+      skills: {
+        ...formData.skills,
+        [category]: (formData.skills[category] || []).filter(s => s !== skill)
+      }
+    });
+  };
+
+  // Languages Handlers
+  const handleAddLanguage = (lang) => {
+    if (!formData.languagesList.includes(lang)) {
+      setFormData({
+        ...formData,
+        languagesList: [...formData.languagesList, lang]
+      });
+    }
+  };
+
+  const handleRemoveLanguage = (lang) => {
+    setFormData({
+      ...formData,
+      languagesList: formData.languagesList.filter(l => l !== lang)
+    });
+  };
+
+  // Achievements Handlers
+  const handleAddAchievement = (ach) => {
+    if (!formData.achievements.includes(ach)) {
+      setFormData({
+        ...formData,
+        achievements: [...formData.achievements, ach]
+      });
+    }
+  };
+
+  const handleDeleteAchievement = (idx) => {
+    setFormData({
+      ...formData,
+      achievements: formData.achievements.filter((_, i) => i !== idx)
+    });
+  };
+
   const handleSave = async () => {
+    if (!resumeSessionId) return;
     setLoading(true);
     setSaveStatus('Saving Draft...');
     
-    const token = localStorage.getItem('token');
-    const url = resumeId ? `/api/resumes/${resumeId}` : '/api/resumes';
-    const method = resumeId ? 'PUT' : 'POST';
-
-    // Format skill tags to array
-    const skillsArray = [
-      ...(formData.skills.programming || []),
-      ...(formData.skills.frameworks || []),
-      ...(formData.skills.databases || [])
-    ];
-
-    const payload = {
-      title: formData.title,
-      templateId: formData.templateId,
-      department: formData.department,
-      personalInfo: formData.personalInfo,
-      experience: formData.experience,
-      education: formData.education,
-      projects: formData.projects,
-      skills: skillsArray,
-      certificates: formData.certificates.map(c => c.name),
-      languagesList: formData.languagesList || [],
-      references: formData.references || ''
-    };
-
     try {
-      const response = await fetch(url, {
-        method,
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/resume-session/${resumeSessionId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          personal: formData.personalInfo,
+          education: formData.education,
+          experience: formData.experience,
+          projects: formData.projects,
+          skills: formData.skills,
+          certificates: formData.certificates,
+          languages: formData.languagesList,
+          achievements: formData.achievements,
+          references: formData.references
+        })
       });
 
       const data = await response.json();
       if (response.ok && data.success) {
         setSaveStatus('Saved Successfully! ✔');
-        if (!resumeId && data.data._id) {
-          setResumeId(data.data._id);
-        }
-        setTimeout(() => setSaveStatus('Auto Saved'), 3000);
+        setTimeout(() => setSaveStatus('Auto Saved ✔'), 3000);
       } else {
         setSaveStatus('Error saving details');
       }
@@ -461,25 +632,6 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     }, 3000);
   };
 
-  const handleGenerateAI = () => {
-    setIsGeneratingAI(true);
-    setGenerationProgress(0);
-    const interval = setInterval(() => {
-      setGenerationProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsGeneratingAI(false);
-            setActiveStep(8); // Jump to preview
-          }, 1200);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 120);
-  };
-
-  // AI Assistant trigger methods
   const runAiAssistant = async (taskName) => {
     setAiAssistantTask(taskName);
     setAiAssistantLoading(true);
@@ -487,20 +639,18 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     setShowAiAssistantModal(true);
 
     let promptContext = '';
-    if (taskName === 'Improve Summary' || taskName === 'AI Generate Summary' || taskName === 'AI Improve Summary') {
+    if (taskName.includes('Summary')) {
       promptContext = formData.personalInfo.summary;
-    } else if (taskName === 'Improve Skills') {
-      promptContext = formData.skills.programming.join(', ');
-    } else if (taskName === 'Generate Experience' || taskName === 'AI Generate Description') {
+    } else if (taskName.includes('Skills')) {
+      promptContext = (formData.skills.programming || []).join(', ');
+    } else if (taskName.includes('Experience')) {
       promptContext = formData.experience.map(e => e.desc).join('\n');
-    } else if (taskName === 'Generate Projects' || taskName === 'AI Improve Project') {
+    } else if (taskName.includes('Project')) {
       promptContext = formData.projects.map(p => p.desc).join('\n');
-    } else if (taskName === 'Generate Achievements') {
-      promptContext = formData.experience.map(e => e.desc).join('\n');
     }
 
     try {
-      const response = await fetch('/api/ai/improve', {
+      const response = await fetch('http://localhost:5000/api/ai/improve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: promptContext, section: taskName.toLowerCase() })
@@ -560,9 +710,9 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       points: e.desc ? e.desc.split('\n').filter(b => b.trim().length > 0) : []
     })),
     skills: {
-      languages: formData.skills.programming.join(', '),
-      frameworks: formData.skills.frameworks.join(', '),
-      tools: formData.skills.databases.join(', ')
+      languages: (formData.skills.programming || []).join(', '),
+      frameworks: (formData.skills.frameworks || []).join(', '),
+      tools: (formData.skills.databases || []).join(', ')
     },
     projects: formData.projects.map(p => ({
       title: p.name || 'Project',
@@ -574,6 +724,35 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     languagesList: formData.languagesList || [],
     references: formData.references || ''
   };
+
+  const renderLayout = () => {
+    const layoutKey = (formData.templateId || 'professional').toLowerCase();
+    const props = {
+      data: templatePreviewData,
+      role: formData.department,
+      customColor: selectedColor,
+      customFont: selectedFont,
+      sectionsOrder: enabledSections,
+      theme: theme
+    };
+
+    switch (layoutKey) {
+      case 'professional':
+        return <ProfessionalLayout {...props} />;
+      case 'modern':
+        return <ModernLayout {...props} />;
+      case 'minimal':
+      case 'minimalist':
+        return <MinimalLayout {...props} />;
+      case 'executive':
+        return <ExecutiveLayout {...props} />;
+      case 'creative':
+        return <CreativeLayout {...props} />;
+      default:
+        return <ProfessionalLayout {...props} />;
+    }
+  };
+
   const currentLabel = steps.find(s => s.num === activeStep)?.label || 'Personal';
 
   return (
@@ -608,6 +787,27 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, color: '#10b981' }}>
             <Check size={14} /> {saveStatus}
           </div>
+
+          <button 
+            onClick={() => setShowAiGeneratorModal(true)}
+            style={{
+              background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 1.25rem',
+              borderRadius: '8px',
+              fontSize: '0.8rem',
+              fontWeight: 900,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+              transition: 'all 0.15s'
+            }}
+          >
+            <Sparkles size={14} /> Generate with AI
+          </button>
 
           {user?.subscription !== 'Premium' && (
             <button 
@@ -673,7 +873,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               <span style={{ fontSize: '0.8rem', fontWeight: isActive ? 800 : 600, color: isActive ? '#7c3aed' : isDone ? '#10b981' : '#64748b' }}>
                 {step.label}
               </span>
-              {step.num < 8 && <ChevronRight size={12} color="#cbd5e1" style={{ marginLeft: '0.4rem' }} />}
+              {step.num < steps.length && <ChevronRight size={12} color="#cbd5e1" style={{ marginLeft: '0.4rem' }} />}
             </div>
           );
         })}
@@ -696,15 +896,17 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           {/* Resume Score Card */}
           <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Resume Score</span>
-            <div style={{ fontSize: '2.2rem', fontWeight: 950, color: '#7c3aed', margin: '0.4rem 0' }}>92%</div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', background: '#e6fcf5', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>Excellent</span>
+            <div style={{ fontSize: '2.2rem', fontWeight: 950, color: '#7c3aed', margin: '0.4rem 0' }}>{getProgressPercent()}%</div>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', background: '#e6fcf5', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>
+              {getProgressPercent() > 80 ? 'Excellent' : getProgressPercent() > 50 ? 'Good' : 'Needs Work'}
+            </span>
           </div>
 
           {/* ATS Score Card */}
           <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>ATS Score</span>
-            <div style={{ fontSize: '2.2rem', fontWeight: 950, color: '#10b981', margin: '0.4rem 0' }}>86%</div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563eb', background: '#eff6ff', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>Good</span>
+            <div style={{ fontSize: '2.2rem', fontWeight: 950, color: '#10b981', margin: '0.4rem 0' }}>{getAtsScore()}%</div>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563eb', background: '#eff6ff', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>Compliant</span>
           </div>
 
           {/* AI Suggestions */}
@@ -721,10 +923,208 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           </div>
 
           <div style={{ height: '1px', background: '#cbd5e1' }} />
+
+          {/* Section Reordering Widget */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a' }}>Arrange Sections</span>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="sections-sidebar">
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}
+                  >
+                    {sections.map((sec, idx) => (
+                      <Draggable key={sec.id} draggableId={sec.id} index={idx}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '0.4rem 0.65rem',
+                              background: snapshot.isDragging ? '#f5f3ff' : '#f8fafc',
+                              border: `1px solid ${snapshot.isDragging ? '#7c3aed' : '#cbd5e1'}`,
+                              borderRadius: '6px',
+                              cursor: 'grab',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              color: '#334155',
+                              userSelect: 'none',
+                              boxShadow: snapshot.isDragging ? '0 4px 12px rgba(124,58,237,0.15)' : 'none',
+                              transition: 'background 0.15s, border-color 0.15s',
+                              ...provided.draggableProps.style
+                            }}
+                          >
+                            <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>⋮⋮</span>
+                            {sec.title}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
+
+          <div style={{ height: '1px', background: '#cbd5e1' }} />
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-            <span style={{ color: '#64748b', fontWeight: 700 }}>Template:</span>
-            <span style={{ fontWeight: 800, color: '#0f172a', textTransform: 'uppercase' }}>{formData.templateId}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', alignItems: 'center' }}>
+            <span style={{ color: '#64748b', fontWeight: 700 }}>Active Layout:</span>
+            <span style={{ fontWeight: 800, color: '#7c3aed', textTransform: 'uppercase', background: '#f5f3ff', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>{formData.templateId || 'professional'}</span>
+          </div>
+
+          {/* Layout Selector Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Switch Layout</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+              {['professional', 'modern', 'minimal', 'executive', 'creative'].map((lType) => {
+                const isActive = (formData.templateId || 'professional').toLowerCase() === lType;
+                return (
+                  <button
+                    key={lType}
+                    onClick={() => setFormData({ ...formData, templateId: lType })}
+                    style={{
+                      flex: '1 1 40%',
+                      padding: '0.4rem 0.5rem',
+                      borderRadius: '6px',
+                      border: `1px solid ${isActive ? '#7c3aed' : '#cbd5e1'}`,
+                      background: isActive ? '#f5f3ff' : 'white',
+                      color: isActive ? '#7c3aed' : '#475569',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      textTransform: 'capitalize',
+                      boxShadow: isActive ? '0 2px 8px rgba(124,58,237,0.15)' : 'none',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    {lType}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ height: '1px', background: '#cbd5e1' }} />
+
+          {/* Theme Customization Panel */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a' }}>Customize Theme</span>
+            
+            {/* Primary & Secondary Color Pickers */}
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Primary</label>
+                <input
+                  type="color"
+                  value={theme.primaryColor}
+                  onChange={(e) => {
+                    setTheme({ ...theme, primaryColor: e.target.value });
+                    setSelectedColor(e.target.value);
+                  }}
+                  style={{ width: '100%', height: '30px', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', background: 'none', padding: 0 }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Secondary</label>
+                <input
+                  type="color"
+                  value={theme.secondaryColor}
+                  onChange={(e) => setTheme({ ...theme, secondaryColor: e.target.value })}
+                  style={{ width: '100%', height: '30px', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', background: 'none', padding: 0 }}
+                />
+              </div>
+            </div>
+
+            {/* Font Family Selector */}
+            <div>
+              <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Font Family</label>
+              <select
+                value={theme.fontFamily}
+                onChange={(e) => {
+                  setTheme({ ...theme, fontFamily: e.target.value });
+                  setSelectedFont(e.target.value);
+                }}
+                style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.75rem', fontWeight: 700, outline: 'none' }}
+              >
+                <option value="'Inter', sans-serif">Inter</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+                <option value="'Poppins', sans-serif">Poppins</option>
+                <option value="'Playfair Display', serif">Playfair</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="Arial, sans-serif">Arial</option>
+              </select>
+            </div>
+
+            {/* Font Size Slider */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', marginBottom: '0.2rem' }}>
+                <span>Font Size</span>
+                <span>{theme.fontSize}px</span>
+              </div>
+              <input
+                type="range"
+                min="11"
+                max="18"
+                value={theme.fontSize}
+                onChange={(e) => setTheme({ ...theme, fontSize: Number(e.target.value) })}
+                style={{ width: '100%', accentColor: '#7c3aed', cursor: 'pointer' }}
+              />
+            </div>
+
+            {/* Line Spacing Slider */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', marginBottom: '0.2rem' }}>
+                <span>Line Spacing</span>
+                <span>{theme.lineHeight}</span>
+              </div>
+              <input
+                type="range"
+                min="1.2"
+                max="2.2"
+                step="0.1"
+                value={theme.lineHeight}
+                onChange={(e) => setTheme({ ...theme, lineHeight: Number(e.target.value) })}
+                style={{ width: '100%', accentColor: '#7c3aed', cursor: 'pointer' }}
+              />
+            </div>
+
+            {/* Page Margins Slider */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', marginBottom: '0.2rem' }}>
+                <span>Page Margins</span>
+                <span>{theme.margin}px</span>
+              </div>
+              <input
+                type="range"
+                min="15"
+                max="60"
+                value={theme.margin}
+                onChange={(e) => setTheme({ ...theme, margin: Number(e.target.value) })}
+                style={{ width: '100%', accentColor: '#7c3aed', cursor: 'pointer' }}
+              />
+            </div>
+
+            {/* Header Alignment Position Selector */}
+            <div>
+              <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Header Alignment</label>
+              <select
+                value={theme.profilePosition}
+                onChange={(e) => setTheme({ ...theme, profilePosition: e.target.value })}
+                style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.75rem', fontWeight: 700, outline: 'none' }}
+              >
+                <option value="left">Left Align</option>
+                <option value="center">Center Align</option>
+                <option value="right">Right Align</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -741,275 +1141,130 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           
           <div style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
             <AnimatePresence mode="wait">
-              
-              {/* Step 1: Personal Details */}
-              {currentLabel === 'Personal' && (
-                <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Personal Details</h3>
-                  <div className="input-group">
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Full Name</label>
-                    <input type="text" name="name" value={formData.personalInfo.name} onChange={handlePersonalChange} style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                  </div>
-                  <div className="input-group">
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Email Address</label>
-                    <input type="email" name="email" value={formData.personalInfo.email} onChange={handlePersonalChange} style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div className="input-group">
-                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Phone</label>
-                      <input type="text" name="phone" value={formData.personalInfo.phone} onChange={handlePersonalChange} style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                    </div>
-                    <div className="input-group">
-                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Location</label>
-                      <input type="text" name="location" value={formData.personalInfo.location} onChange={handlePersonalChange} style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                    </div>
-                  </div>
-                  <div className="input-group">
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>LinkedIn URL</label>
-                    <input type="text" name="linkedin" value={formData.personalInfo.linkedin} onChange={handlePersonalChange} style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div className="input-group">
-                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>GitHub URL</label>
-                      <input type="text" name="github" value={formData.personalInfo.github} onChange={handlePersonalChange} style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                    </div>
-                    <div className="input-group">
-                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Portfolio Link</label>
-                      <input type="text" name="portfolio" value={formData.personalInfo.portfolio} onChange={handlePersonalChange} style={{ width: '100%', padding: '0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Step 2: Summary */}
-              {currentLabel === 'Summary' && (
-                <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Professional Summary</h3>
-                  <textarea 
-                    name="summary" 
-                    value={formData.personalInfo.summary} 
+              <motion.div 
+                key={currentLabel}
+                initial={{ opacity: 0, x: -10 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.15 }}
+              >
+                {currentLabel === 'Personal' && (
+                  <PersonalForm 
+                    personalInfo={formData.personalInfo} 
                     onChange={handlePersonalChange} 
-                    rows={8} 
-                    placeholder="State your key professional highlights..."
-                    style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', outline: 'none', resize: 'none' }}
                   />
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button type="button" onClick={() => runAiAssistant('AI Generate Summary')} style={{ border: 'none', background: '#eff6ff', color: '#2563eb', padding: '0.5rem 1rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', flex: 1 }}>
-                      ✨ AI Generate Summary
-                    </button>
-                    <button type="button" onClick={() => runAiAssistant('AI Improve Summary')} style={{ border: 'none', background: '#f5f3ff', color: '#7c3aed', padding: '0.5rem 1rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', flex: 1 }}>
-                      ✨ AI Improve Summary
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+                )}
 
-              {/* Step 3: Education */}
-              {currentLabel === 'Education' && (
-                <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Education</h3>
-                    <button onClick={addEducation} style={{ border: 'none', background: '#f5f3ff', color: '#7c3aed', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                      + Add Education
-                    </button>
-                  </div>
-                  {formData.education.map((edu, idx) => (
-                    <div key={edu.id || idx} style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
-                      <button onClick={() => deleteEducation(edu.id)} style={{ position: 'absolute', top: '15px', right: '15px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
-                      <div className="input-group" style={{ marginBottom: '0.75rem' }}>
-                        <input placeholder="College/University" value={edu.school} onChange={(e) => updateEducation(edu.id, 'school', e.target.value)} style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                {currentLabel === 'Summary' && (
+                  <SummaryForm 
+                    summary={formData.personalInfo.summary} 
+                    onChange={handlePersonalChange} 
+                    onRunAi={runAiAssistant}
+                  />
+                )}
+
+                {currentLabel === 'Education' && (
+                  <EducationForm 
+                    education={formData.education} 
+                    onAdd={addEducation} 
+                    onUpdate={updateEducation} 
+                    onDelete={deleteEducation} 
+                  />
+                )}
+
+                {currentLabel === 'Experience' && (
+                  <ExperienceForm 
+                    experience={formData.experience} 
+                    onAdd={addExperience} 
+                    onUpdate={updateExperience} 
+                    onDelete={deleteExperience} 
+                    onRunAi={runAiAssistant}
+                  />
+                )}
+
+                {currentLabel === 'Projects' && (
+                  <ProjectsForm 
+                    projects={formData.projects} 
+                    onAdd={addProject} 
+                    onUpdate={updateProject} 
+                    onDelete={deleteProject} 
+                    onRunAi={runAiAssistant}
+                  />
+                )}
+
+                {currentLabel === 'Skills' && (
+                  <SkillsForm 
+                    skills={formData.skills} 
+                    onToggleSkill={handleToggleSkill} 
+                    onAddSkill={handleAddSkill}
+                    onRemoveSkill={handleRemoveSkill}
+                  />
+                )}
+
+                {currentLabel === 'Certificates' && (
+                  <CertificatesForm 
+                    certificates={formData.certificates} 
+                    onAdd={addCert} 
+                    onUpdate={updateCert} 
+                    onDelete={deleteCert} 
+                  />
+                )}
+
+                {currentLabel === 'Languages' && (
+                  <LanguagesForm 
+                    languagesList={formData.languagesList} 
+                    onAddLanguage={handleAddLanguage} 
+                    onRemoveLanguage={handleRemoveLanguage} 
+                  />
+                )}
+
+                {currentLabel === 'Achievements' && (
+                  <AchievementsForm 
+                    achievements={formData.achievements} 
+                    onAddAchievement={handleAddAchievement} 
+                    onDeleteAchievement={handleDeleteAchievement} 
+                    references={formData.references}
+                    onChangeReferences={(val) => setFormData({ ...formData, references: val })}
+                  />
+                )}
+
+                {currentLabel === 'Preview' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>Resume Ready</h3>
+                    <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                        <span style={{ color: '#64748b', fontWeight: 700 }}>Resume Score:</span>
+                        <span style={{ fontWeight: 900, color: '#7c3aed' }}>{getProgressPercent()}%</span>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
-                        <input placeholder="Degree (e.g. B.Tech)" value={edu.degree} onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                        <input placeholder="Department (e.g. CSE)" value={edu.department} onChange={(e) => updateEducation(edu.id, 'department', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                        <span style={{ color: '#64748b', fontWeight: 700 }}>ATS Score:</span>
+                        <span style={{ fontWeight: 900, color: '#10b981' }}>{getAtsScore()}%</span>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <input placeholder="CGPA / Score" value={edu.cgpa} onChange={(e) => updateEducation(edu.id, 'cgpa', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                        <input placeholder="Year" value={edu.year} onChange={(e) => updateEducation(edu.id, 'year', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                        <span style={{ color: '#64748b', fontWeight: 700 }}>Template:</span>
+                        <span style={{ fontWeight: 800, textTransform: 'capitalize' }}>{formData.templateId}</span>
                       </div>
                     </div>
-                  ))}
-                </motion.div>
-              )}
 
-              {/* Step 4: Experience */}
-              {currentLabel === 'Experience' && (
-                <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Experience</h3>
-                    <button onClick={addExperience} style={{ border: 'none', background: '#f5f3ff', color: '#7c3aed', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                      + Add Experience
-                    </button>
-                  </div>
-                  {formData.experience.map((exp, idx) => (
-                    <div key={exp.id || idx} style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
-                      <button onClick={() => deleteExperience(exp.id)} style={{ position: 'absolute', top: '15px', right: '15px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
-                        <input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(exp.id, 'company', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                        <input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(exp.id, 'role', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                      </div>
-                      <div className="input-group" style={{ marginBottom: '0.75rem' }}>
-                        <input placeholder="Duration (e.g. 2023 - Present)" value={exp.duration} onChange={(e) => updateExperience(exp.id, 'duration', e.target.value)} style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b' }}>Description</label>
-                        <button type="button" onClick={() => runAiAssistant('AI Generate Description')} style={{ border: 'none', background: '#eff6ff', color: '#2563eb', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '6px', cursor: 'pointer' }}>
-                          ✨ AI Generate Description
-                        </button>
-                      </div>
-                      <textarea placeholder="List key contributions..." value={exp.desc} onChange={(e) => updateExperience(exp.id, 'desc', e.target.value)} rows={3} style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', resize: 'none' }} />
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-
-              {/* Step 5: Projects */}
-              {currentLabel === 'Projects' && (
-                <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Projects</h3>
-                    <button onClick={addProject} style={{ border: 'none', background: '#f5f3ff', color: '#7c3aed', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                      + Add Project
-                    </button>
-                  </div>
-                  {formData.projects.map((proj, idx) => (
-                    <div key={proj.id || idx} style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
-                      <button onClick={() => deleteProject(proj.id)} style={{ position: 'absolute', top: '15px', right: '15px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
-                        <input placeholder="Project Name" value={proj.name} onChange={(e) => updateProject(proj.id, 'name', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                        <input placeholder="Technology Stack" value={proj.technology} onChange={(e) => updateProject(proj.id, 'technology', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b' }}>Description</label>
-                        <button type="button" onClick={() => runAiAssistant('AI Improve Project')} style={{ border: 'none', background: '#eff6ff', color: '#2563eb', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '6px', cursor: 'pointer' }}>
-                          ✨ AI Improve Project
-                        </button>
-                      </div>
-                      <textarea placeholder="Describe project..." value={proj.desc} onChange={(e) => updateProject(proj.id, 'desc', e.target.value)} rows={2} style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', resize: 'none', marginBottom: '0.75rem' }} />
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <input placeholder="GitHub URL" value={proj.github} onChange={(e) => updateProject(proj.id, 'github', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                        <input placeholder="Live Demo Link" value={proj.liveDemo} onChange={(e) => updateProject(proj.id, 'liveDemo', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-
-              {/* Step 6: Skills */}
-              {currentLabel === 'Skills' && (
-                <motion.div key="s6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Skills & Categorization</h3>
-                  
-                  <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Programming</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      {['Java', 'Python', 'C#', 'JavaScript', 'TypeScript', 'Go'].map(lang => {
-                        const checked = formData.skills.programming.includes(lang);
-                        return (
-                          <label key={lang} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-                            <input type="checkbox" checked={checked} onChange={() => toggleSkillItem('programming', lang)} />
-                            {lang}
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Frameworks</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      {['React', 'Angular', 'Node', 'Express', 'Vue', 'NextJS'].map(f => {
-                        const checked = formData.skills.frameworks.includes(f);
-                        return (
-                          <label key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-                            <input type="checkbox" checked={checked} onChange={() => toggleSkillItem('frameworks', f)} />
-                            {f}
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Databases</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                      {['MongoDB', 'MySQL', 'PostgreSQL', 'Redis', 'Firebase'].map(db => {
-                        const checked = formData.skills.databases.includes(db);
-                        return (
-                          <label key={db} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-                            <input type="checkbox" checked={checked} onChange={() => toggleSkillItem('databases', db)} />
-                            {db}
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                </motion.div>
-              )}
-
-              {/* Step 7: Certificates */}
-              {currentLabel === 'Certificates' && (
-                <motion.div key="s7" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Certifications</h3>
-                    <button onClick={addCert} style={{ border: 'none', background: '#f5f3ff', color: '#7c3aed', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}>
-                      + Add Certificate
+                    <button 
+                      onClick={handleDownload}
+                      style={{ 
+                        width: '100%', 
+                        padding: '1.1rem', 
+                        borderRadius: '12px', 
+                        fontWeight: 900, 
+                        background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                        color: 'white',
+                        border: 'none',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                      }}
+                    >
+                      Download PDF
                     </button>
                   </div>
-                  {formData.certificates.map((cert, idx) => (
-                    <div key={cert.id || idx} style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
-                      <button onClick={() => deleteCert(cert.id)} style={{ position: 'absolute', top: '15px', right: '15px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
-                      <div className="input-group" style={{ marginBottom: '0.75rem' }}>
-                        <input placeholder="Certificate Name" value={cert.name} onChange={(e) => updateCert(cert.id, 'name', e.target.value)} style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <input placeholder="Organization" value={cert.organization} onChange={(e) => updateCert(cert.id, 'organization', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                        <input placeholder="Year" value={cert.year} onChange={(e) => updateCert(cert.id, 'year', e.target.value)} style={{ padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-
-              {/* Step 8: Preview */}
-              {currentLabel === 'Preview' && (
-                <motion.div key="s8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a' }}>Resume Preview</h3>
-                  
-                  <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                      <span style={{ color: '#64748b', fontWeight: 700 }}>Resume Score:</span>
-                      <span style={{ fontWeight: 900, color: '#7c3aed' }}>92%</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                      <span style={{ color: '#64748b', fontWeight: 700 }}>ATS Score:</span>
-                      <span style={{ fontWeight: 900, color: '#10b981' }}>86%</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                      <span style={{ color: '#64748b', fontWeight: 700 }}>Template:</span>
-                      <span style={{ fontWeight: 800, textTransform: 'capitalize' }}>{formData.templateId}</span>
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={handleDownload}
-                    style={{ 
-                      width: '100%', 
-                      padding: '1.1rem', 
-                      borderRadius: '12px', 
-                      fontWeight: 900, 
-                      background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-                      color: 'white',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Download PDF
-                  </button>
-                </motion.div>
-              )}
-
+                )}
+              </motion.div>
             </AnimatePresence>
           </div>
 
@@ -1047,7 +1302,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             </button>
           </div>
 
-          {/* AI Assistant button inside Middle Column */}
+          {/* AI Assistant FAB */}
           <div style={{ position: 'absolute', bottom: '90px', right: '2.5rem', zIndex: 99 }}>
             <button 
               onClick={() => setShowAiAssistantModal(true)}
@@ -1084,92 +1339,18 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         }}>
           
           {/* Preset controls */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            padding: '0.75rem 1.5rem', 
-            background: 'white', 
-            borderBottom: '1px solid #e2e8f0',
-            flexShrink: 0 
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              {['#7c3aed', '#10b981', '#2563eb', '#f59e0b', '#dc2626', '#000000'].map(c => (
-                <button
-                  key={c}
-                  onClick={() => setSelectedColor(c)}
-                  style={{ 
-                    width: '16px', 
-                    height: '16px', 
-                    borderRadius: '50%', 
-                    background: c, 
-                    border: selectedColor === c ? '2px solid white' : '1px solid #cbd5e1', 
-                    cursor: 'pointer'
-                  }}
-                />
-              ))}
-            </div>
-
-            <select 
-              value={formData.templateId} 
-              onChange={(e) => setFormData({ ...formData, templateId: e.target.value })}
-              style={{ border: '1px solid #cbd5e1', background: 'white', padding: '0.2rem 0.4rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, outline: 'none' }}
-            >
-              <option value="modern">Modern</option>
-              <option value="minimalist">Minimalist</option>
-              <option value="executive">Executive</option>
-            </select>
-
-            <select 
-              value={selectedFont} 
-              onChange={(e) => setSelectedFont(e.target.value)}
-              style={{ border: '1px solid #cbd5e1', background: 'white', padding: '0.2rem 0.4rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, outline: 'none' }}
-            >
-              <option value="'Inter', sans-serif">Inter</option>
-              <option value="'Playfair Display', serif">Playfair</option>
-              <option value="'Roboto', sans-serif">Roboto</option>
-            </select>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.15rem' }}>
-              {[0.5, 0.6, 0.8, 1.0].map(val => (
-                <button 
-                  key={val}
-                  onClick={() => setZoomLevel(val)}
-                  style={{ 
-                    border: '1px solid #cbd5e1', 
-                    background: zoomLevel === val ? '#f3f4f6' : 'white', 
-                    padding: '0.2rem 0.4rem', 
-                    fontSize: '0.7rem', 
-                    borderRadius: '4px', 
-                    fontWeight: 800,
-                    cursor: 'pointer'
-                  }}
-                >
-                  {val * 100}%
-                </button>
-              ))}
-            </div>
-
-            <button 
-              onClick={handleDownload}
-              style={{
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.25rem', 
-                padding: '0.4rem 0.85rem', 
-                background: user?.subscription === 'Premium' ? '#10b981' : 'linear-gradient(135deg, #7c3aed, #4f46e5)', 
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px', 
-                fontSize: '0.75rem', 
-                fontWeight: 900, 
-                cursor: 'pointer'
-              }}
-            >
-              {user?.subscription === 'Premium' ? <Download size={13} /> : <Sparkles size={13} />} 
-              {user?.subscription === 'Premium' ? 'Download PDF' : '✨ Unlock Premium'}
-            </button>
-          </div>
+          <ResumeToolbar 
+            selectedColor={selectedColor}
+            onChangeColor={setSelectedColor}
+            templateId={formData.templateId}
+            onChangeTemplate={(val) => setFormData({ ...formData, templateId: val })}
+            selectedFont={selectedFont}
+            onChangeFont={setSelectedFont}
+            zoomLevel={zoomLevel}
+            onChangeZoom={setZoomLevel}
+            isPremiumUser={user?.subscription === 'Premium'}
+            onDownloadAction={handleDownload}
+          />
 
           {/* Canva A4 paper canvas sheet preview */}
           <div style={{ 
@@ -1195,12 +1376,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                 marginBottom: '4rem'
               }}
             >
-              <ModernResumeTemplate 
-                data={templatePreviewData} 
-                role={formData.department} 
-                customColor={selectedColor} 
-                customFont={selectedFont} 
-              />
+              {renderLayout()}
             </div>
           </div>
 
@@ -1209,113 +1385,15 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       </div>
 
       {/* AI Assistant Output Modal */}
-      <AnimatePresence>
-        {showAiAssistantModal && (
-          <>
-            <div onClick={() => setShowAiAssistantModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(3px)', zIndex: 999 }} />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              style={{ 
-                position: 'fixed', 
-                top: '50%', 
-                left: '50%', 
-                transform: 'translate(-50%, -50%)', 
-                width: 'calc(100% - 32px)', 
-                maxWidth: '480px', 
-                background: 'white', 
-                padding: '2rem', 
-                borderRadius: '20px', 
-                boxShadow: '0 20px 40px rgba(0,0,0,0.15)', 
-                zIndex: 1000,
-                textAlign: 'left'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Sparkles size={18} color="#7c3aed" /> AI Assistant Operations
-                </h3>
-                <button onClick={() => setShowAiAssistantModal(false)} style={{ border: 'none', background: 'none', color: '#64748b', cursor: 'pointer' }}><X size={20}/></button>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                {[
-                  'Improve Summary',
-                  'Generate Experience',
-                  'Generate Projects',
-                  'Improve Skills',
-                  'ATS Suggestions',
-                  'Resume Review'
-                ].map(opt => (
-                  <button 
-                    key={opt}
-                    onClick={() => runAiAssistant(opt)}
-                    style={{ padding: '0.75rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 800, color: '#334155', cursor: 'pointer', textAlign: 'center' }}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-
-              {aiAssistantOutput && (
-                <div style={{ padding: '1rem', background: '#f5f3ff', border: '1px solid #d8b4fe', borderRadius: '12px', fontSize: '0.85rem', color: '#5b21b6', lineHeight: 1.6, fontWeight: 600, marginBottom: '1.5rem' }}>
-                  {aiAssistantOutput}
-                </div>
-              )}
-
-              {aiAssistantLoading && (
-                <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700, marginBottom: '1.5rem' }}>AI Generating suggestions...</div>
-              )}
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-                <button onClick={() => setShowAiAssistantModal(false)} style={{ padding: '0.65rem 1.25rem', background: 'none', border: '1px solid #cbd5e1', color: '#0f172a', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>Close</button>
-                {aiAssistantOutput && <button onClick={applyAiText} style={{ padding: '0.65rem 1.25rem', background: '#7c3aed', border: 'none', color: 'white', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>Apply Text</button>}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* AI Resume Generation progress overlay */}
-      <AnimatePresence>
-        {isGeneratingAI && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(15, 23, 42, 0.95)',
-              backdropFilter: 'blur(8px)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 99999,
-              color: 'white',
-              fontFamily: "'Inter', sans-serif"
-            }}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              style={{ textAlign: 'center', width: '90%', maxWidth: '400px' }}
-            >
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '1.5rem', color: 'white' }}>
-                {generationProgress < 100 ? 'Generating Resume...' : 'Resume Generated Successfully'}
-              </h2>
-              <div style={{ width: '100%', height: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', overflow: 'hidden', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.15)' }}>
-                <div style={{ width: `${generationProgress}%`, height: '100%', background: 'linear-gradient(90deg, #06b6d4, #4f46e5)', transition: 'width 0.15s ease-out' }} />
-              </div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#38bdf8' }}>
-                {generationProgress}%
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AIAssistant 
+        isOpen={showAiAssistantModal}
+        onClose={() => setShowAiAssistantModal(false)}
+        onRunAi={runAiAssistant}
+        aiOutput={aiAssistantOutput}
+        loading={aiAssistantLoading}
+        onApply={applyAiText}
+        currentTask={aiAssistantTask}
+      />
 
       {/* Premium Upgrade Modal */}
       <AnimatePresence>
@@ -1360,11 +1438,11 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
                 <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800 }}>Resume Score</span>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#7c3aed' }}>92%</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#7c3aed' }}>{getProgressPercent()}%</div>
                 </div>
                 <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                   <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800 }}>ATS Score</span>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#10b981' }}>86%</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#10b981' }}>{getAtsScore()}%</div>
                 </div>
               </div>
 
@@ -1413,6 +1491,114 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               >
                 Continue
               </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* AI Resume Generator Modal */}
+      <AnimatePresence>
+        {showAiGeneratorModal && (
+          <>
+            <div 
+              onClick={() => setShowAiGeneratorModal(false)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(3px)', zIndex: 999 }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'calc(100% - 32px)',
+                maxWidth: '480px',
+                background: 'white',
+                padding: '2rem',
+                borderRadius: '20px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                zIndex: 1000,
+                textAlign: 'left'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Sparkles size={20} color="#7c3aed" /> AI Resume Generator
+                </h3>
+                <button onClick={() => setShowAiGeneratorModal(false)} style={{ border: 'none', background: 'none', color: '#64748b', cursor: 'pointer' }}>
+                  <X size={20} />
+                </button>
+              </div>
+
+              <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0 0 1.25rem' }}>
+                Enter your target position, years of experience, and key skills to automatically generate an entire ATS-optimized resume.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.35rem' }}>Job Title</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Frontend Developer"
+                    value={aiJobTitle}
+                    onChange={(e) => setAiJobTitle(e.target.value)}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.35rem' }}>Years of Experience</label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 2"
+                    value={aiExperience}
+                    onChange={(e) => setAiExperience(e.target.value)}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.35rem' }}>Skills (comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. React, Node.js, MongoDB"
+                    value={aiSkillsInput}
+                    onChange={(e) => setAiSkillsInput(e.target.value)}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button
+                  onClick={() => setShowAiGeneratorModal(false)}
+                  style={{ padding: '0.65rem 1.25rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', color: '#64748b', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGenerateAI}
+                  disabled={loadingAI}
+                  style={{
+                    padding: '0.65rem 1.5rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+                    color: 'white',
+                    fontSize: '0.85rem',
+                    fontWeight: 900,
+                    cursor: loadingAI ? 'not-allowed' : 'pointer',
+                    opacity: loadingAI ? 0.7 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  {loadingAI ? 'Generating with AI...' : 'Generate with AI'}
+                </button>
+              </div>
             </motion.div>
           </>
         )}

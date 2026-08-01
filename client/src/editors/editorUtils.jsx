@@ -1,0 +1,198 @@
+// Shared utilities and helper components for all template editors
+import React, { useState } from 'react';
+import { Plus, Trash2, Download, ArrowLeft } from 'lucide-react';
+
+// ─── Input Field ──────────────────────────────────────────────────────────
+export const Field = ({ label, name, value, onChange, type = 'text', placeholder = '', accent = '#0284c7' }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+    {label && <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>}
+    <input
+      type={type}
+      name={name}
+      value={value || ''}
+      onChange={onChange}
+      placeholder={placeholder}
+      style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.875rem', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', background: '#fafafa', transition: 'all 0.15s' }}
+      onFocus={e => { e.target.style.border = `1.5px solid ${accent}`; e.target.style.background = '#fff'; e.target.style.boxShadow = `0 0 0 3px ${accent}18`; }}
+      onBlur={e => { e.target.style.border = '1.5px solid #e2e8f0'; e.target.style.background = '#fafafa'; e.target.style.boxShadow = 'none'; }}
+    />
+  </div>
+);
+
+// ─── Textarea Field ───────────────────────────────────────────────────────
+export const TextArea = ({ label, name, value, onChange, placeholder = '', rows = 4, accent = '#0284c7' }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+    {label && <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>}
+    <textarea
+      name={name}
+      value={value || ''}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={rows}
+      style={{ width: '100%', padding: '0.6rem 0.75rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.875rem', outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', background: '#fafafa', lineHeight: 1.6, transition: 'all 0.15s' }}
+      onFocus={e => { e.target.style.border = `1.5px solid ${accent}`; e.target.style.background = '#fff'; e.target.style.boxShadow = `0 0 0 3px ${accent}18`; }}
+      onBlur={e => { e.target.style.border = '1.5px solid #e2e8f0'; e.target.style.background = '#fafafa'; e.target.style.boxShadow = 'none'; }}
+    />
+  </div>
+);
+
+// ─── Section Header ───────────────────────────────────────────────────────
+export const SectionHeader = ({ icon, title, accent }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '1.5rem 0 0.75rem', paddingBottom: '0.5rem', borderBottom: `2px solid ${accent}20` }}>
+    {icon && <span style={{ fontSize: '1rem' }}>{icon}</span>}
+    <h3 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 900, color: accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{title}</h3>
+  </div>
+);
+
+// ─── Add Button ───────────────────────────────────────────────────────────
+export const AddButton = ({ label, onClick, accent }) => (
+  <button onClick={onClick}
+    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%', padding: '0.6rem', borderRadius: '8px', border: `1.5px dashed ${accent}50`, background: `${accent}06`, color: accent, fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', justifyContent: 'center', transition: 'all 0.15s' }}
+    onMouseEnter={e => { e.currentTarget.style.background = `${accent}12`; e.currentTarget.style.borderColor = accent; }}
+    onMouseLeave={e => { e.currentTarget.style.background = `${accent}06`; e.currentTarget.style.borderColor = `${accent}50`; }}>
+    <Plus size={13} /> {label}
+  </button>
+);
+
+// ─── Delete Button ────────────────────────────────────────────────────────
+export const DeleteBtn = ({ onClick }) => (
+  <button onClick={onClick}
+    style={{ background: 'none', border: '1px solid #fecaca', color: '#f87171', width: 26, height: 26, borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'all 0.15s', padding: 0 }}
+    onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#ef4444'; }}
+    onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#f87171'; }}>
+    <Trash2 size={12} />
+  </button>
+);
+
+// ─── Skill Tag Input ─────────────────────────────────────────────────────
+export const SkillTagInput = ({ label, skills = [], onAdd, onRemove, accent, placeholder = 'Type and press Enter' }) => {
+  const [input, setInput] = useState('');
+  const handleKey = (e) => {
+    if ((e.key === 'Enter' || e.key === ',') && input.trim()) {
+      e.preventDefault();
+      onAdd(input.trim().replace(/,$/, ''));
+      setInput('');
+    }
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      {label && <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>}
+      <div style={{ minHeight: 36, display: 'flex', flexWrap: 'wrap', gap: '0.35rem', background: '#fafafa', border: '1.5px solid #e2e8f0', borderRadius: '8px', padding: '0.4rem 0.6rem', alignItems: 'center' }}>
+        {skills.map((sk, i) => (
+          <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: `${accent}15`, color: accent, border: `1px solid ${accent}30`, padding: '0.15rem 0.55rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
+            {sk}<span onClick={() => onRemove(i)} style={{ cursor: 'pointer', fontWeight: 900, marginLeft: '0.1rem', opacity: 0.7 }}>×</span>
+          </span>
+        ))}
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder={skills.length === 0 ? placeholder : '+Add more'}
+          style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '0.82rem', minWidth: 80, flex: 1, fontFamily: 'inherit' }}
+        />
+      </div>
+      <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Press Enter or comma to add</span>
+    </div>
+  );
+};
+
+// ─── 2-column grid ───────────────────────────────────────────────────────
+export const Grid2 = ({ children }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>{children}</div>
+);
+
+// ─── Card for a repeatable item ───────────────────────────────────────────
+export const ItemCard = ({ children, onDelete, accent, index }) => (
+  <div style={{ background: '#f8fafc', border: '1px solid #e8ecf0', borderRadius: '10px', padding: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', position: 'relative' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-0.1rem' }}>
+      {index !== undefined && <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>#{index + 1}</span>}
+      <DeleteBtn onClick={onDelete} />
+    </div>
+    {children}
+  </div>
+);
+
+// ─── Full Editor Shell ────────────────────────────────────────────────────
+export const EditorShell = ({ accentColor, templateName, templateEmoji, onDownload, saveStatus, children, preview }) => (
+  <div style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden' }}>
+
+    {/* ── LEFT FORM PANEL ── */}
+    <div style={{ width: 420, minWidth: 380, maxWidth: 420, background: '#ffffff', borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column', height: '100vh', boxShadow: '2px 0 12px rgba(0,0,0,0.04)' }}>
+
+      {/* Header bar */}
+      <div style={{ padding: '1rem 1.25rem 0.875rem', borderBottom: '1px solid #f0f4f8', background: `linear-gradient(135deg, ${accentColor}0d, #ffffff)`, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{ width: 36, height: 36, borderRadius: '10px', background: `${accentColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>{templateEmoji}</div>
+            <div>
+              <div style={{ fontSize: '0.92rem', fontWeight: 900, color: accentColor, lineHeight: 1.2 }}>{templateName} Editor</div>
+              <div style={{ fontSize: '0.67rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.1rem' }}>{saveStatus}</div>
+            </div>
+          </div>
+          <button onClick={onDownload}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: accentColor, color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer', boxShadow: `0 4px 12px ${accentColor}40` }}>
+            <Download size={13} /> PDF
+          </button>
+        </div>
+        {/* Progress indicator */}
+        <div style={{ marginTop: '0.75rem', height: 3, background: '#f0f4f8', borderRadius: 4, overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: '70%', background: `linear-gradient(90deg, ${accentColor}, ${accentColor}80)`, borderRadius: 4, transition: 'width 0.5s' }} />
+        </div>
+        <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.3rem' }}>Live preview updates as you type →</div>
+      </div>
+
+      {/* Scrollable form body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0.25rem 1.25rem 2rem', scrollbarWidth: 'thin', scrollbarColor: '#e2e8f0 transparent' }}>
+        {children}
+      </div>
+    </div>
+
+    {/* ── RIGHT PREVIEW PANEL ── */}
+    <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Preview header bar */}
+      <div style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Preview · {templateName} Template</span>
+        </div>
+        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>A4 · PDF-ready</span>
+      </div>
+
+      {/* Preview scroll area */}
+      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', justifyContent: 'center', padding: '2rem 1.5rem', scrollbarWidth: 'thin', scrollbarColor: '#c8d0dd transparent' }}>
+        {/* A4 paper */}
+        <div style={{
+          width: 794,
+          minHeight: 1123,
+          background: '#fff',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+          borderRadius: '3px',
+          transformOrigin: 'top center',
+          transform: 'scale(0.82)',
+          marginBottom: '-190px', // compensate for scale shrink so scrolling feels natural
+          flexShrink: 0,
+          overflow: 'hidden'
+        }}>
+          {preview}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// ─── Load session from localStorage ─────────────────────────────────────
+export const loadSession = (sessionId) => {
+  try {
+    const raw = localStorage.getItem(`resume_draft_${sessionId}`);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return null;
+};
+
+// ─── Save session to localStorage ────────────────────────────────────────
+export const saveSession = (sessionId, data) => {
+  try {
+    if (sessionId) localStorage.setItem(`resume_draft_${sessionId}`, JSON.stringify(data));
+    localStorage.setItem('localResumeDraft', JSON.stringify(data));
+  } catch (e) {}
+};

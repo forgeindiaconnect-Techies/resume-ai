@@ -8,5 +8,6 @@ router.post('/improve-summary', protect, aiController.improveSummary);
 router.post('/rewrite-project', protect, aiController.rewriteProject);
 router.post('/suggest-skills', protect, aiController.suggestSkills);
 router.post('/cover-letter', protect, aiController.generateCoverLetter);
+router.post('/generate', aiController.generateResume);
 
 module.exports = router;

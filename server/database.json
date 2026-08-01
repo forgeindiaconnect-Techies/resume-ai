@@ -1,0 +1,131 @@
+{
+  "templates": [
+    {
+      "_id": "template_mock_id_1",
+      "name": "Software Engineer",
+      "industry": "Software Engineering",
+      "category": "Technology",
+      "description": "Perfect for software developers.",
+      "thumbnail": "/templates/software.jpg",
+      "atsScore": 98,
+      "layout": {
+        "_id": "layout_mock_id_123",
+        "layout": "Modern",
+        "columns": 2,
+        "header": "center",
+        "sidebar": "left",
+        "color": "#2563EB",
+        "font": "'Poppins', sans-serif",
+        "fontSize": "medium"
+      },
+      "isPremium": false,
+      "isActive": true,
+      "createdAt": "2026-08-01T07:45:42.803Z",
+      "updatedAt": "2026-08-01T07:45:42.804Z"
+    },
+    {
+      "_id": "template_mock_id_2",
+      "name": "Data Analyst",
+      "industry": "Data Science",
+      "category": "Technology",
+      "description": "Professional data analyst resume.",
+      "thumbnail": "/templates/data.jpg",
+      "atsScore": 96,
+      "layout": {
+        "_id": "layout_mock_id_123",
+        "layout": "Modern",
+        "columns": 2,
+        "header": "center",
+        "sidebar": "left",
+        "color": "#2563EB",
+        "font": "'Poppins', sans-serif",
+        "fontSize": "medium"
+      },
+      "isPremium": false,
+      "isActive": true,
+      "createdAt": "2026-08-01T07:45:42.804Z",
+      "updatedAt": "2026-08-01T07:45:42.804Z"
+    },
+    {
+      "_id": "template_mock_id_3",
+      "name": "Marketing Manager",
+      "industry": "Marketing",
+      "category": "Business",
+      "description": "Creative marketing resume.",
+      "thumbnail": "/templates/marketing.jpg",
+      "atsScore": 95,
+      "layout": {
+        "_id": "layout_mock_id_123",
+        "layout": "Modern",
+        "columns": 2,
+        "header": "center",
+        "sidebar": "left",
+        "color": "#2563EB",
+        "font": "'Poppins', sans-serif",
+        "fontSize": "medium"
+      },
+      "isPremium": false,
+      "isActive": true,
+      "createdAt": "2026-08-01T07:45:42.804Z",
+      "updatedAt": "2026-08-01T07:45:42.804Z"
+    },
+    {
+      "_id": "template_mock_id_4",
+      "name": "Teacher",
+      "industry": "Education",
+      "category": "Education",
+      "description": "Modern teacher resume.",
+      "thumbnail": "/templates/teacher.jpg",
+      "atsScore": 94,
+      "layout": {
+        "_id": "layout_mock_id_123",
+        "layout": "Modern",
+        "columns": 2,
+        "header": "center",
+        "sidebar": "left",
+        "color": "#2563EB",
+        "font": "'Poppins', sans-serif",
+        "fontSize": "medium"
+      },
+      "isPremium": false,
+      "isActive": true,
+      "createdAt": "2026-08-01T07:45:42.804Z",
+      "updatedAt": "2026-08-01T07:45:42.804Z"
+    },
+    {
+      "_id": "template_mock_id_5",
+      "name": "Accountant",
+      "industry": "Finance",
+      "category": "Finance",
+      "description": "Professional finance resume.",
+      "thumbnail": "/templates/accountant.jpg",
+      "atsScore": 97,
+      "layout": {
+        "_id": "layout_mock_id_123",
+        "layout": "Modern",
+        "columns": 2,
+        "header": "center",
+        "sidebar": "left",
+        "color": "#2563EB",
+        "font": "'Poppins', sans-serif",
+        "fontSize": "medium"
+      },
+      "isPremium": false,
+      "isActive": true,
+      "createdAt": "2026-08-01T07:45:42.804Z",
+      "updatedAt": "2026-08-01T07:45:42.804Z"
+    }
+  ],
+  "layouts": [
+    {
+      "_id": "layout_mock_id_123",
+      "layout": "Modern",
+      "columns": 2,
+      "header": "center",
+      "sidebar": "left",
+      "color": "#2563EB",
+      "font": "'Poppins', sans-serif",
+      "fontSize": "medium"
+    }
+  ]
+}

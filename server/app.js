@@ -6,6 +6,9 @@ const aiRoutes = require("./routes/aiRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const industryRoutes = require("./routes/industryRoutes");
+const templateRoutes = require("./routes/templateRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
+const resumeExampleRoutes = require("./routes/resumeExampleRoutes");
 
 const app = express();
 
@@ -18,7 +21,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/guest", guestRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use("/api/resume", resumeRoutes);
+app.use("/api/templates", templateRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/examples", resumeExampleRoutes);
+app.use("/api", resumeRoutes);
 app.use("/api", industryRoutes);
 
 // Home Route

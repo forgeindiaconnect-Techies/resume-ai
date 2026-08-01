@@ -47,7 +47,11 @@ const ResumeSchema = new mongoose.Schema({
   skills: [{ type: String }],
   languages: [{ type: String }],
   certificates: [{ type: String }],
-  premium: { type: Boolean, default: false }
+  premium: { type: Boolean, default: false },
+  layout: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ResumeLayout'
+  }
 }, {
   timestamps: true
 });

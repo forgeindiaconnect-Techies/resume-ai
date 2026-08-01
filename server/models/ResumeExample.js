@@ -1,52 +1,96 @@
 const mongoose = require('mongoose');
 
-const ResumeExampleSchema = new mongoose.Schema({
-  industryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Industry',
-    required: true
+const resumeExampleSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    industry: {
+      type: String,
+      default: 'Software Engineering',
+      trim: true,
+    },
+    experienceLevel: {
+      type: String,
+      default: '2-5 Years',
+    },
+    template: {
+      type: String,
+      default: 'modern',
+    },
+    previewImage: {
+      type: String,
+      default: '',
+    },
+    atsScore: {
+      type: Number,
+      default: 95,
+    },
+    description: {
+      type: String,
+      default: '',
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    resumeData: {
+      personalInfo: {
+        fullName: { type: String, default: '' },
+        role: { type: String, default: '' },
+        email: { type: String, default: '' },
+        phone: { type: String, default: '' },
+        location: { type: String, default: '' },
+        linkedin: { type: String, default: '' },
+        github: { type: String, default: '' },
+        summary: { type: String, default: '' },
+      },
+      summary: { type: String, default: '' },
+      skills: {
+        type: [String],
+        default: [],
+      },
+      experience: [
+        {
+          title: String,
+          company: String,
+          duration: String,
+          desc: String,
+        },
+      ],
+      education: [
+        {
+          degree: String,
+          institution: String,
+          tenure: String,
+          cgpa: String,
+        },
+      ],
+      projects: [
+        {
+          title: String,
+          technology: String,
+          desc: String,
+        },
+      ],
+      certifications: {
+        type: [String],
+        default: [],
+      },
+    },
   },
-  jobTitle: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  experience: {
-    type: String,
-    required: true,
-    default: '2-5 Years'
-  },
-  template: {
-    type: String,
-    required: true,
-    default: 'Modern'
-  },
-  previewImage: {
-    type: String,
-    default: ''
-  },
-  resumeJson: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true,
-    default: {}
-  },
-  atsScore: {
-    type: Number,
-    required: true,
-    default: 90
-  },
-  resumeScore: {
-    type: Number,
-    required: true,
-    default: 90
-  },
-  description: {
-    type: String,
-    trim: true
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-// Ensure job titles are unique per industry category
-ResumeExampleSchema.index({ industryId: 1, jobTitle: 1 }, { unique: true });
-
-module.exports = mongoose.model('ResumeExample', ResumeExampleSchema);
+module.exports = mongoose.model('ResumeExample', resumeExampleSchema);

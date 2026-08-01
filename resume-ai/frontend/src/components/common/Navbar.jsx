@@ -5,9 +5,9 @@ import ForgeLogo from './ForgeLogo';
 const Navbar = () => {
   return (
     <nav style={{
-      background: 'linear-gradient(90deg, rgba(15, 23, 42, 0.97), rgba(30, 41, 59, 0.97))',
-      backdropFilter: 'blur(8px)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(10px)',
+      borderBottom: '1px solid #e2e8f0',
       position: 'sticky',
       top: 0,
       zIndex: 100,
@@ -15,16 +15,17 @@ const Navbar = () => {
       height: '64px',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
     }}>
       <Link to="/" style={{ textDecoration: 'none' }}>
-        <ForgeLogo size={36} showText={true} variant="dark" />
+        <ForgeLogo size={36} showText={true} variant="light" />
       </Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
         {[
+          { label: 'Home', to: '/', isAnchor: false },
           { label: 'Features', to: '/#features', isAnchor: true },
-          { label: 'Templates', to: '/templates' },
           { label: 'Examples', to: '/industry-examples' },
           { label: 'Pricing', to: '/#pricing', isAnchor: true }
         ].map((item) => (
@@ -32,9 +33,9 @@ const Navbar = () => {
             <a
               key={item.label}
               href={item.to}
-              style={{ textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, color: '#cbd5e1', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-              onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}
+              style={{ textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, color: '#475569', transition: 'color 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#0284c7'}
+              onMouseLeave={e => e.currentTarget.style.color = '#475569'}
             >
               {item.label}
             </a>
@@ -42,9 +43,9 @@ const Navbar = () => {
             <Link
               key={item.label}
               to={item.to}
-              style={{ textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, color: '#cbd5e1', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-              onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}
+              style={{ textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, color: '#475569', transition: 'color 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#0284c7'}
+              onMouseLeave={e => e.currentTarget.style.color = '#475569'}
             >
               {item.label}
             </Link>
@@ -53,15 +54,18 @@ const Navbar = () => {
         <Link
           to="/onboarding/start"
           style={{
-            background: 'linear-gradient(135deg, #06b6d4, #0056b8)',
+            background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
             color: 'white',
             padding: '0.5rem 1.4rem',
             borderRadius: '24px',
             textDecoration: 'none',
-            fontWeight: 700,
+            fontWeight: 800,
             fontSize: '0.85rem',
-            boxShadow: '0 4px 14px rgba(6,182,212,0.3)'
+            boxShadow: '0 4px 14px rgba(2, 132, 199, 0.25)',
+            transition: 'transform 0.15s'
           }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         >
           Create Resume
         </Link>

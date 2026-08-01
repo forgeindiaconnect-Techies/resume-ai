@@ -1,0 +1,200 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import ModernLayout from '../components/layouts/ModernLayout';
+import {
+  Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
+  SkillTagInput, EditorShell, loadSession, saveSession
+} from './editorUtils';
+
+const ACCENT = '#0284c7';
+
+const buildFromSession = (session) => ({
+  title: session.title || 'Modern Resume',
+  templateId: 'modern',
+  personalInfo: {
+    name: session.personalInfo?.name || '',
+    role: session.personalInfo?.role || '',
+    email: session.personalInfo?.email || '',
+    phone: session.personalInfo?.phone || '',
+    location: session.personalInfo?.location || '',
+    linkedin: session.personalInfo?.linkedin || '',
+    github: session.personalInfo?.github || '',
+  },
+  summary: session.personalInfo?.summary || '',
+  skills: {
+    languages: session.skills?.programming || [],
+    frameworks: session.skills?.frameworks || [],
+    tools: session.skills?.databases || [],
+  },
+  projects: (session.projects || []).map((p, i) => ({
+    id: i + 1,
+    title: p.name || p.title || '',
+    technology: p.technology || '',
+    github: p.github || '',
+    desc: p.desc || p.description || '',
+  })),
+  experience: (session.experience || []).map((e, i) => ({
+    id: i + 1,
+    title: e.title || e.role || '',
+    company: e.company || '',
+    duration: e.duration || '',
+    desc: e.desc || '',
+  })),
+  education: (session.education || []).map((e, i) => ({
+    id: i + 1,
+    degree: e.degree || '',
+    institution: e.institution || e.school || '',
+    tenure: e.tenure || '',
+    cgpa: e.cgpa || '',
+  })),
+});
+
+const defaultData = () => ({
+  title: 'Modern Resume',
+  templateId: 'modern',
+  personalInfo: {
+    name: 'Your Full Name',
+    role: 'Software Engineer',
+    email: 'dev@email.com',
+    phone: '+1 (555) 000-0000',
+    location: 'San Francisco, CA',
+    linkedin: 'linkedin.com/in/yourname',
+    github: 'github.com/yourname',
+  },
+  summary: 'Performance-driven Software Engineer with 4+ years of experience building high-throughput web applications and REST APIs. Passionate about clean code and scalable architecture.',
+  skills: {
+    languages: ['JavaScript', 'TypeScript', 'Python'],
+    frameworks: ['React', 'Node.js', 'Express', 'Next.js'],
+    tools: ['Docker', 'AWS', 'PostgreSQL', 'Git'],
+  },
+  projects: [
+    { id: 1, title: 'Real-Time Collaboration Engine', technology: 'React, WebSockets, Node.js', github: 'github.com/yourname/project', desc: 'Engineered multi-user document editor supporting concurrent edits.' }
+  ],
+  experience: [
+    { id: 1, title: 'Software Engineer', company: 'CloudScale Technologies', duration: '2020 – Present', desc: 'Architected microservices handling 2M+ daily requests with 99.99% uptime.' }
+  ],
+  education: [
+    { id: 1, degree: 'B.S. in Computer Science', institution: 'University of Washington', tenure: '2016 – 2020', cgpa: '3.9' }
+  ],
+});
+
+const ModernEditor = () => {
+  const { sessionId } = useParams();
+  const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
+  const [data, setData] = useState(() => {
+    const session = loadSession(sessionId);
+    return session ? buildFromSession(session) : defaultData();
+  });
+
+  useEffect(() => {
+    setSaveStatus('Saving…');
+    const t = setTimeout(() => { saveSession(sessionId, data); setSaveStatus('All changes saved ✔'); }, 900);
+    return () => clearTimeout(t);
+  }, [data, sessionId]);
+
+  const setPersonal = (e) => setData(d => ({ ...d, personalInfo: { ...d.personalInfo, [e.target.name]: e.target.value } }));
+  const addLang = (sk) => setData(d => ({ ...d, skills: { ...d.skills, languages: [...d.skills.languages, sk] } }));
+  const removeLang = (i) => setData(d => ({ ...d, skills: { ...d.skills, languages: d.skills.languages.filter((_, idx) => idx !== i) } }));
+  const addFw = (sk) => setData(d => ({ ...d, skills: { ...d.skills, frameworks: [...d.skills.frameworks, sk] } }));
+  const removeFw = (i) => setData(d => ({ ...d, skills: { ...d.skills, frameworks: d.skills.frameworks.filter((_, idx) => idx !== i) } }));
+  const addTool = (sk) => setData(d => ({ ...d, skills: { ...d.skills, tools: [...d.skills.tools, sk] } }));
+  const removeTool = (i) => setData(d => ({ ...d, skills: { ...d.skills, tools: d.skills.tools.filter((_, idx) => idx !== i) } }));
+  const addProj = () => setData(d => ({ ...d, projects: [...d.projects, { id: Date.now(), title: '', technology: '', github: '', desc: '' }] }));
+  const delProj = (id) => setData(d => ({ ...d, projects: d.projects.filter(p => p.id !== id) }));
+  const updProj = (id, f, v) => setData(d => ({ ...d, projects: d.projects.map(p => p.id === id ? { ...p, [f]: v } : p) }));
+  const addExp = () => setData(d => ({ ...d, experience: [...d.experience, { id: Date.now(), title: '', company: '', duration: '', desc: '' }] }));
+  const delExp = (id) => setData(d => ({ ...d, experience: d.experience.filter(e => e.id !== id) }));
+  const updExp = (id, f, v) => setData(d => ({ ...d, experience: d.experience.map(e => e.id === id ? { ...e, [f]: v } : e) }));
+  const addEdu = () => setData(d => ({ ...d, education: [...d.education, { id: Date.now(), degree: '', institution: '', tenure: '', cgpa: '' }] }));
+  const delEdu = (id) => setData(d => ({ ...d, education: d.education.filter(e => e.id !== id) }));
+  const updEdu = (id, f, v) => setData(d => ({ ...d, education: d.education.map(e => e.id === id ? { ...e, [f]: v } : e) }));
+
+  const previewData = {
+    name: data.personalInfo.name,
+    role: data.personalInfo.role,
+    contact: { email: data.personalInfo.email, phone: data.personalInfo.phone, location: data.personalInfo.location, linkedin: data.personalInfo.linkedin, github: data.personalInfo.github },
+    objective: data.summary,
+    skills: { languages: data.skills.languages.join(', '), frameworks: data.skills.frameworks.join(', '), tools: data.skills.tools.join(', ') },
+    experience: data.experience.map(e => ({ title: e.title, company: e.company, duration: e.duration, desc: e.desc })),
+    education: data.education.map(e => ({ degree: e.degree, institution: e.institution, tenure: e.tenure, cgpa: e.cgpa })),
+    projects: data.projects.map(p => ({ title: p.title, technology: p.technology, desc: p.desc })),
+    training: [],
+    languagesList: [],
+  };
+
+  return (
+    <EditorShell accentColor={ACCENT} templateName="Modern" templateEmoji="💻" onDownload={() => window.print()} saveStatus={saveStatus}
+      preview={<ModernLayout data={previewData} role={data.personalInfo.role} customColor={ACCENT} />}>
+
+      <SectionHeader icon="👤" title="Personal Details" accent={ACCENT} />
+      <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={ACCENT} />
+      <Field label="Job Title / Role" name="role" value={data.personalInfo.role} onChange={setPersonal} accent={ACCENT} placeholder="e.g. Senior Software Engineer" />
+      <Grid2>
+        <Field label="Email" name="email" value={data.personalInfo.email} onChange={setPersonal} accent={ACCENT} />
+        <Field label="Phone" name="phone" value={data.personalInfo.phone} onChange={setPersonal} accent={ACCENT} />
+      </Grid2>
+      <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={ACCENT} />
+      <Grid2>
+        <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={ACCENT} placeholder="linkedin.com/in/name" />
+        <Field label="GitHub" name="github" value={data.personalInfo.github} onChange={setPersonal} accent={ACCENT} placeholder="github.com/yourname" />
+      </Grid2>
+
+      <SectionHeader icon="📝" title="Professional Summary" accent={ACCENT} />
+      <TextArea label="Summary" value={data.summary} rows={5}
+        onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={ACCENT} placeholder="Performance-driven engineer specializing in..." />
+
+      <SectionHeader icon="⚙️" title="Technical Skills" accent={ACCENT} />
+      <SkillTagInput label="Programming Languages" skills={data.skills.languages} onAdd={addLang} onRemove={removeLang} accent={ACCENT} placeholder="e.g. JavaScript, Python, Go" />
+      <SkillTagInput label="Frameworks & Libraries" skills={data.skills.frameworks} onAdd={addFw} onRemove={removeFw} accent={ACCENT} placeholder="e.g. React, Node.js, Django" />
+      <SkillTagInput label="Tools & Databases" skills={data.skills.tools} onAdd={addTool} onRemove={removeTool} accent={ACCENT} placeholder="e.g. Docker, PostgreSQL, AWS" />
+
+      <SectionHeader icon="🚀" title="Projects" accent={ACCENT} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {data.projects.map((proj, idx) => (
+          <ItemCard key={proj.id} onDelete={() => delProj(proj.id)} accent={ACCENT} index={idx}>
+            <Field label="Project Name" value={proj.title} onChange={e => updProj(proj.id, 'title', e.target.value)} accent={ACCENT} placeholder="e.g. E-Commerce Platform" />
+            <Grid2>
+              <Field label="Tech Stack" value={proj.technology} onChange={e => updProj(proj.id, 'technology', e.target.value)} accent={ACCENT} placeholder="React, Node.js, MongoDB" />
+              <Field label="GitHub Link" value={proj.github} onChange={e => updProj(proj.id, 'github', e.target.value)} accent={ACCENT} placeholder="github.com/repo" />
+            </Grid2>
+            <TextArea label="Description & Impact" value={proj.desc} onChange={e => updProj(proj.id, 'desc', e.target.value)} accent={ACCENT} rows={3} />
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Project" onClick={addProj} accent={ACCENT} />
+
+      <SectionHeader icon="💼" title="Work Experience" accent={ACCENT} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {data.experience.map((exp, idx) => (
+          <ItemCard key={exp.id} onDelete={() => delExp(exp.id)} accent={ACCENT} index={idx}>
+            <Grid2>
+              <Field label="Job Title" value={exp.title} onChange={e => updExp(exp.id, 'title', e.target.value)} accent={ACCENT} />
+              <Field label="Company" value={exp.company} onChange={e => updExp(exp.id, 'company', e.target.value)} accent={ACCENT} />
+            </Grid2>
+            <Field label="Duration" value={exp.duration} onChange={e => updExp(exp.id, 'duration', e.target.value)} accent={ACCENT} placeholder="2022 – Present" />
+            <TextArea label="Responsibilities & Impact" value={exp.desc} onChange={e => updExp(exp.id, 'desc', e.target.value)} accent={ACCENT} rows={4} />
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Work Experience" onClick={addExp} accent={ACCENT} />
+
+      <SectionHeader icon="🎓" title="Education" accent={ACCENT} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {data.education.map((edu, idx) => (
+          <ItemCard key={edu.id} onDelete={() => delEdu(edu.id)} accent={ACCENT} index={idx}>
+            <Field label="Degree" value={edu.degree} onChange={e => updEdu(edu.id, 'degree', e.target.value)} accent={ACCENT} />
+            <Grid2>
+              <Field label="Institution" value={edu.institution} onChange={e => updEdu(edu.id, 'institution', e.target.value)} accent={ACCENT} />
+              <Field label="Years" value={edu.tenure} onChange={e => updEdu(edu.id, 'tenure', e.target.value)} accent={ACCENT} />
+            </Grid2>
+            <Field label="CGPA / GPA (optional)" value={edu.cgpa} onChange={e => updEdu(edu.id, 'cgpa', e.target.value)} accent={ACCENT} placeholder="e.g. 3.9 / 4.0" />
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Education" onClick={addEdu} accent={ACCENT} />
+      <div style={{ height: '2rem' }} />
+    </EditorShell>
+  );
+};
+
+export default ModernEditor;

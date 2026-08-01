@@ -221,7 +221,6 @@ const LandingPage = () => {
           {[
             { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
             { label: 'Features', href: '#features' },
-            { label: 'Templates', onClick: () => navigate('/templates') },
             { label: 'Examples', onClick: () => navigate('/industry-examples') },
             { label: 'Pricing', href: '#pricing' },
             { label: 'Contact', onClick: () => setShowContactModal(true) }
