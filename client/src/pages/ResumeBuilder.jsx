@@ -871,7 +871,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#f8fafc', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
       
       {/* Top Navbar */}
-      <header style={{ 
+      <header className="no-print" style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
@@ -965,7 +965,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       </header>
 
       {/* Progress Stepper */}
-      <div style={{ 
+      <div className="no-print" style={{ 
         background: 'white', 
         borderBottom: '1px solid #e2e8f0', 
         padding: '0.75rem 2rem', 
@@ -1018,7 +1018,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         
         {/* Left Column (Fixed 240px width): Metrics Sidebar */}
-        <div style={{ 
+        <div className="no-print" style={{ 
           width: '240px',
           minWidth: '240px',
           maxWidth: '240px',
@@ -1266,7 +1266,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         </div>
 
         {/* Middle Column (Form Editor): Step Form */}
-        <div style={{ 
+        <div className="no-print" style={{ 
           flex: '0 0 440px',
           width: '440px', 
           maxWidth: '460px',

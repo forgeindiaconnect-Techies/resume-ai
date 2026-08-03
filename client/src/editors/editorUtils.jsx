@@ -162,7 +162,7 @@ export const EditorShell = ({
     <div style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden' }}>
 
       {/* ── LEFT FORM PANEL ── */}
-      <div style={{ width: 440, minWidth: 400, maxWidth: 440, background: '#ffffff', borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column', height: '100vh', boxShadow: '2px 0 12px rgba(0,0,0,0.04)' }}>
+      <div className="no-print" style={{ width: 440, minWidth: 400, maxWidth: 440, background: '#ffffff', borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column', height: '100vh', boxShadow: '2px 0 12px rgba(0,0,0,0.04)' }}>
 
         {/* Header Bar */}
         <div style={{ padding: '1rem 1.25rem 0.85rem', borderBottom: '1px solid #e2e8f0', background: `linear-gradient(135deg, ${accentColor}0d, #ffffff)`, flexShrink: 0 }}>
@@ -277,7 +277,7 @@ export const EditorShell = ({
       {/* ── RIGHT PREVIEW PANEL ── */}
       <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
         {/* Preview Header Bar */}
-        <div style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div className="no-print" style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Preview · {templateName} Template</span>

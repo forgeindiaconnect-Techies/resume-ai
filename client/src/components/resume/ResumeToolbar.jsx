@@ -17,7 +17,7 @@ const ResumeToolbar = ({
   const zoomLevels = [0.5, 0.6, 0.8, 1.0];
 
   return (
-    <div style={{ 
+    <div className="no-print" style={{ 
       display: 'flex', 
       justifyContent: 'space-between', 
       alignItems: 'center', 
