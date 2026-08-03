@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 import Navbar from '../components/common/Navbar';
 
 const AdminTemplates = () => {
@@ -20,15 +21,15 @@ const AdminTemplates = () => {
   // Fetching Helpers
   const fetchAll = async () => {
     try {
-      const resCat = await fetch('http://localhost:5000/api/admin/categories');
+      const resCat = await fetch(`${API_BASE_URL}/admin/categories`);
       const dataCat = await resCat.json();
       if (dataCat.success) setCategories(dataCat.data);
 
-      const resRoles = await fetch('http://localhost:5000/api/admin/job-roles');
+      const resRoles = await fetch(`${API_BASE_URL}/admin/job-roles`);
       const dataRoles = await resRoles.json();
       if (dataRoles.success) setRoles(dataRoles.data);
 
-      const resTpl = await fetch('http://localhost:5000/api/admin/templates');
+      const resTpl = await fetch(`${API_BASE_URL}/admin/templates`);
       const dataTpl = await resTpl.json();
       if (dataTpl.success) setTemplates(dataTpl.data);
     } catch (e) {
@@ -48,7 +49,7 @@ const AdminTemplates = () => {
     }
     const fetchSections = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/admin/sections?templateId=${selectedTemplateId}`);
+        const res = await fetch(`${API_BASE_URL}/admin/sections?templateId=${selectedTemplateId}`);
         const data = await res.json();
         if (data.success) setSections(data.data);
       } catch (e) {
@@ -62,15 +63,15 @@ const AdminTemplates = () => {
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/admin/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${API_BASE_URL}/admin/categories`, {
+        method: `POST`,
+        headers: { `Content-Type`: `application/json` },
         body: JSON.stringify(categoryForm)
       });
       const data = await res.json();
       if (data.success) {
-        alert('Category added successfully!');
-        setCategoryForm({ name: '', icon: '💻' });
+        alert(`Category added successfully!`);
+        setCategoryForm({ name: ``, icon: `💻` });
         fetchAll();
       }
     } catch (e) {
@@ -79,27 +80,27 @@ const AdminTemplates = () => {
   };
 
   const handleCategoryDelete = async (id) => {
-    if (!window.confirm('Delete category? This will clear all linked job roles too.')) return;
-    await fetch(`http://localhost:5000/api/admin/categories/${id}`, { method: 'DELETE' });
+    if (!window.confirm(`Delete category? This will clear all linked job roles too.`)) return;
+    await fetch(`${API_BASE_URL}/admin/categories/${id}`, { method: `DELETE` });
     fetchAll();
   };
 
   const handleRoleSubmit = async (e) => {
     e.preventDefault();
     if (!roleForm.categoryId) {
-      alert('Please select a Category!');
+      alert(`Please select a Category!`);
       return;
     }
     try {
-      const res = await fetch('http://localhost:5000/api/admin/job-roles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${API_BASE_URL}/admin/job-roles`, {
+        method: `POST`,
+        headers: { `Content-Type`: `application/json` },
         body: JSON.stringify(roleForm)
       });
       const data = await res.json();
       if (data.success) {
-        alert('Job Role created!');
-        setRoleForm({ categoryId: '', title: '' });
+        alert(`Job Role created!`);
+        setRoleForm({ categoryId: ``, title: `` });
         fetchAll();
       }
     } catch (e) {
@@ -108,27 +109,27 @@ const AdminTemplates = () => {
   };
 
   const handleRoleDelete = async (id) => {
-    if (!window.confirm('Delete role?')) return;
-    await fetch(`http://localhost:5000/api/admin/job-roles/${id}`, { method: 'DELETE' });
+    if (!window.confirm(`Delete role?`)) return;
+    await fetch(`${API_BASE_URL}/admin/job-roles/${id}`, { method: `DELETE` });
     fetchAll();
   };
 
   const handleTemplateSubmit = async (e) => {
     e.preventDefault();
     if (!templateForm.jobRoleId) {
-      alert('Please select a Job Role!');
+      alert(`Please select a Job Role!`);
       return;
     }
     try {
-      const res = await fetch('http://localhost:5000/api/admin/templates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${API_BASE_URL}/admin/templates`, {
+        method: `POST`,
+        headers: { `Content-Type`: `application/json` },
         body: JSON.stringify(templateForm)
       });
       const data = await res.json();
       if (data.success) {
-        alert('Resume template created!');
-        setTemplateForm({ jobRoleId: '', templateName: '', layout: 'modern-blue', premium: false });
+        alert(`Resume template created!`);
+        setTemplateForm({ jobRoleId: ``, templateName: ``, layout: `modern-blue`, premium: false });
         fetchAll();
       }
     } catch (e) {
@@ -137,29 +138,29 @@ const AdminTemplates = () => {
   };
 
   const handleTemplateDelete = async (id) => {
-    if (!window.confirm('Delete template?')) return;
-    await fetch(`http://localhost:5000/api/admin/templates/${id}`, { method: 'DELETE' });
+    if (!window.confirm(`Delete template?`)) return;
+    await fetch(`${API_BASE_URL}/admin/templates/${id}`, { method: `DELETE` });
     fetchAll();
   };
 
   const handleSectionSubmit = async (e) => {
     e.preventDefault();
     if (!selectedTemplateId) {
-      alert('Please select a Template first!');
+      alert(`Please select a Template first!`);
       return;
     }
     try {
-      const res = await fetch('http://localhost:5000/api/admin/sections', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${API_BASE_URL}/admin/sections`, {
+        method: `POST`,
+        headers: { `Content-Type`: `application/json` },
         body: JSON.stringify({ ...sectionForm, templateId: selectedTemplateId })
       });
       const data = await res.json();
       if (data.success) {
-        alert('Section order registered!');
-        setSectionForm({ templateId: '', section: '', order: sections.length + 2 });
+        alert(`Section order registered!`);
+        setSectionForm({ templateId: ``, section: ``, order: sections.length + 2 });
         // Refresh active sections list
-        const resSec = await fetch(`http://localhost:5000/api/admin/sections?templateId=${selectedTemplateId}`);
+        const resSec = await fetch(`${API_BASE_URL}/admin/sections?templateId=${selectedTemplateId}`);
         const dataSec = await resSec.json();
         if (dataSec.success) setSections(dataSec.data);
       }
@@ -169,9 +170,9 @@ const AdminTemplates = () => {
   };
 
   const handleSectionDelete = async (id) => {
-    await fetch(`http://localhost:5000/api/admin/sections/${id}`, { method: 'DELETE' });
+    await fetch(`${API_BASE_URL}/admin/sections/${id}`, { method: 'DELETE' });
     // Refresh sections list
-    const resSec = await fetch(`http://localhost:5000/api/admin/sections?templateId=${selectedTemplateId}`);
+    const resSec = await fetch(`${API_BASE_URL}/admin/sections?templateId=${selectedTemplateId}`);
     const dataSec = await resSec.json();
     if (dataSec.success) setSections(dataSec.data);
   };

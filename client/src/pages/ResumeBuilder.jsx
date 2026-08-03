@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -286,7 +287,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         }
 
         if (savedSessionId) {
-          const resSession = await fetch(`http://localhost:5000/api/resume-session/${savedSessionId}`, {
+          const resSession = await fetch(`${API_BASE_URL}/resume-session/${savedSessionId}`, {
             headers: {
               ...(token ? { 'Authorization': `Bearer ${token}` } : {})
             }
@@ -312,7 +313,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             
             if (rData.templateId) {
               try {
-                const resTpl = await fetch(`http://localhost:5000/api/template/${rData.templateId}`);
+                const resTpl = await fetch(`${API_BASE_URL}/template/${rData.templateId}`);
                 const dataTpl = await resTpl.json();
                 if (dataTpl.success && dataTpl.sections) {
                   const mapped = dataTpl.sections.map(s => {
@@ -342,7 +343,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         // 1. Fetch Dynamic Sections list from sitemap/template slug
         if (templateSlug) {
           try {
-            const resTpl = await fetch(`http://localhost:5000/api/template/${templateSlug}`);
+            const resTpl = await fetch(`${API_BASE_URL}/template/${templateSlug}`);
             const dataTpl = await resTpl.json();
             if (dataTpl.success && dataTpl.sections) {
               const mapped = dataTpl.sections.map(s => {
@@ -373,7 +374,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           jobRole: jobRole
         };
 
-        const resSession = await fetch('http://localhost:5000/api/resume-session', {
+        const resSession = await fetch(`${API_BASE_URL}/resume-session`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -430,7 +431,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/resume-session/${resumeSessionId}`, {
+        const response = await fetch(`${API_BASE_URL}/resume-session/${resumeSessionId}`, {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',
@@ -659,7 +660,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/resume-session/${resumeSessionId}`, {
+      const response = await fetch(`${API_BASE_URL}/resume-session/${resumeSessionId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -712,7 +713,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/ai/improve', {
+      const response = await fetch(`${API_BASE_URL}/ai/improve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: promptContext, section: taskName.toLowerCase() })

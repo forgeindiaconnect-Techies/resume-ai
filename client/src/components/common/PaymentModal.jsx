@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { 
   X, Check, Sparkles, ShieldCheck, Download, Zap, CreditCard, 
   Crown, Lock, ArrowRight, Award
@@ -75,7 +76,7 @@ const PaymentModal = ({ isOpen, onClose, onSuccessDownload }) => {
       const planObj = PRICING_PLANS.find(p => p.key === selectedPlan) || PRICING_PLANS[1];
 
       // 1. Create order on backend
-      const resOrder = await fetch('http://localhost:5000/api/payment/create-order', {
+      const resOrder = await fetch(`${API_BASE_URL}/payment/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ planKey: selectedPlan })
@@ -102,7 +103,7 @@ const PaymentModal = ({ isOpen, onClose, onSuccessDownload }) => {
           order_id: orderInfo.orderId,
           handler: async function (response) {
             // Verify payment on backend
-            await fetch('http://localhost:5000/api/payment/verify', {
+            await fetch(`${API_BASE_URL}/payment/verify`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
