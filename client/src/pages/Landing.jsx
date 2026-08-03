@@ -12,10 +12,13 @@ import { generateResumeAI } from '../services/aiService';
 const LandingPage = () => {
   const navigate = useNavigate();
   const onEnterApp = (action) => {
-    if (action === 'create') navigate('/onboarding/start');
-    else if (action === 'upload') navigate('/onboarding/start');
-    else if (action === 'login') navigate('/onboarding/start');
-    else navigate('/onboarding/start');
+    if (action === 'create' || action === 'upload') {
+      localStorage.setItem('builder_mode', 'manual');
+      navigate('/onboarding/start');
+    } else {
+      localStorage.setItem('builder_mode', 'manual');
+      navigate('/onboarding/start');
+    }
   };
   const isLoggedIn = false;
   const [showContactModal, setShowContactModal] = useState(false);

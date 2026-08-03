@@ -1,7 +1,7 @@
-// Shared utilities and helper components for all template editors
 import React, { useState } from 'react';
-import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import PaymentModal from '../components/common/PaymentModal';
 
 // ─── Preset Color Swatches ────────────────────────────────────────────────
 export const PRESET_COLORS = [
@@ -146,6 +146,17 @@ export const EditorShell = ({
   preview 
 }) => {
   const navigate = useNavigate();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  const handleDownloadAction = () => {
+    const isPremium = localStorage.getItem('user_premium') === 'true';
+    if (!isPremium) {
+      setShowPaymentModal(true);
+    } else {
+      if (onDownload) onDownload();
+      else window.print();
+    }
+  };
 
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden' }}>
@@ -170,7 +181,7 @@ export const EditorShell = ({
               <span style={{ fontSize: '0.9rem', fontWeight: 900, color: accentColor }}>{templateName} Editor</span>
             </div>
 
-            <button onClick={onDownload}
+            <button onClick={handleDownloadAction}
               style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: accentColor, color: '#fff', border: 'none', padding: '0.45rem 0.85rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.78rem', cursor: 'pointer', boxShadow: `0 4px 12px ${accentColor}40` }}>
               <Download size={13} /> PDF
             </button>
@@ -264,14 +275,37 @@ export const EditorShell = ({
       </div>
 
       {/* ── RIGHT PREVIEW PANEL ── */}
-      <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
         {/* Preview Header Bar */}
-        <div style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Preview · {templateName} Template</span>
           </div>
-          <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>A4 · PDF-ready</span>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>A4 · PDF-ready</span>
+            <button 
+              onClick={handleDownloadAction}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                color: 'white',
+                border: 'none',
+                padding: '0.45rem 1rem',
+                borderRadius: '8px',
+                fontWeight: 900,
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+                transition: 'all 0.15s'
+              }}
+            >
+              <Download size={14} /> Download PDF
+            </button>
+          </div>
         </div>
 
         {/* Preview Scroll Area */}
@@ -293,6 +327,18 @@ export const EditorShell = ({
           </div>
         </div>
       </div>
+
+      {/* Payment & Upgrade Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onSuccessDownload={() => {
+          localStorage.setItem('user_premium', 'true');
+          setShowPaymentModal(false);
+          if (onDownload) onDownload();
+          else window.print();
+        }}
+      />
     </div>
   );
 };

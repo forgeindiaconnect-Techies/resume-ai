@@ -132,3 +132,74 @@
 .section-padding {
   padding: var(--space-xl) var(--space-sm);
 }
+
+/* ─── High-Resolution Clean A4 Print Rules ─── */
+@media print {
+  /* 1. Hide all navigation bars, sidebars, headers, footers, buttons, and modals/dialogs */
+  nav,
+  header,
+  footer,
+  button,
+  input,
+  select,
+  textarea,
+  .no-print,
+  [role="dialog"],
+  div[style*="position: fixed"],
+  div[style*="position:fixed"],
+  div[style*="backdropFilter"],
+  div[style*="backdrop-filter"],
+  div[style*="zIndex: 9999"],
+  div[style*="zIndex: 10000"] {
+    display: none !important;
+  }
+
+  /* 2. Page setup: A4 portrait with zero margin */
+  @page {
+    size: A4 portrait;
+    margin: 0mm;
+  }
+
+  html, body, #root {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* 3. Hide left editor panel & layout headers */
+  div[style*="width: 440"],
+  div[style*="width:440"],
+  div[style*="min-width: 400"],
+  div[style*="min-width:400"],
+  div[style*="border-bottom: 1px solid"] {
+    display: none !important;
+  }
+
+  /* 4. Display ONLY the clean A4 Paper Sheet */
+  div[style*="width: 210mm"],
+  div[style*="width:210mm"],
+  div[style*="width: 794"],
+  div[style*="width:794"] {
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    transform: scale(1) !important;
+    transform-origin: top left !important;
+    background: white !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}

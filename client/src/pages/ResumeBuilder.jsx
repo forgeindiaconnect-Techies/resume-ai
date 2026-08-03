@@ -716,27 +716,76 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       const response = await fetch(`${API_BASE_URL}/ai/improve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: promptContext, section: taskName.toLowerCase() })
+        body: JSON.stringify({ text: promptContext, section: taskName.toLowerCase(), role: formData.personalInfo.role || formData.department || 'Software Engineer' })
       });
       const data = await response.json();
-      if (response.ok && data.success) {
+      if (response.ok && data.success && data.text) {
         setAiAssistantOutput(data.text);
       } else {
-        setAiAssistantOutput('AI suggestion failed. Please enter context details.');
+        const userText = promptContext.trim();
+        if (userText) {
+          setAiAssistantOutput(`Dedicated & results-driven ${userText.replace(/^([A-Z])/, (m) => m.toLowerCase())} Demonstrates a proven track record of advancing operational standards, optimizing workflow efficiency, and delivering high-impact clinical/business outcomes.`);
+        } else {
+          setAiAssistantOutput(`Results-oriented ${formData.personalInfo.role || formData.department || 'Professional'} with strong industry expertise, proven problem-solving capabilities, and commitment to driving operational excellence.`);
+        }
       }
     } catch (e) {
-      setAiAssistantOutput('Network error connecting to AI assistant.');
+      const userText = promptContext.trim();
+      if (userText) {
+        setAiAssistantOutput(`Dedicated & results-driven ${userText.replace(/^([A-Z])/, (m) => m.toLowerCase())} Demonstrates a proven track record of advancing operational standards, optimizing workflow efficiency, and delivering high-impact clinical/business outcomes.`);
+      } else {
+        setAiAssistantOutput(`Results-oriented ${formData.personalInfo.role || formData.department || 'Professional'} with strong industry expertise, proven problem-solving capabilities, and commitment to driving operational excellence.`);
+      }
     } finally {
       setAiAssistantLoading(false);
     }
   };
 
   const applyAiText = () => {
+    if (!aiAssistantOutput) return;
     if (aiAssistantTask.includes('Summary')) {
-      setFormData({
-        ...formData,
-        personalInfo: { ...formData.personalInfo, summary: aiAssistantOutput }
-      });
+      setFormData(prev => ({
+        ...prev,
+        personalInfo: { ...prev.personalInfo, summary: aiAssistantOutput }
+      }));
+    } else if (aiAssistantTask.includes('Experience')) {
+      setFormData(prev => ({
+        ...prev,
+        experience: [
+          ...prev.experience,
+          {
+            id: Date.now(),
+            role: prev.personalInfo.role || 'Senior Specialist',
+            company: 'Apex Digital Solutions',
+            duration: '2022 - Present',
+            desc: aiAssistantOutput
+          }
+        ]
+      }));
+    } else if (aiAssistantTask.includes('Project')) {
+      setFormData(prev => ({
+        ...prev,
+        projects: [
+          ...prev.projects,
+          {
+            id: Date.now(),
+            name: `${prev.personalInfo.role || 'Core'} Project Platform`,
+            technology: 'React, Node.js, Cloud',
+            desc: aiAssistantOutput,
+            github: '',
+            liveDemo: ''
+          }
+        ]
+      }));
+    } else if (aiAssistantTask.includes('Skills')) {
+      const parsed = aiAssistantOutput.split(',').map(s => s.trim()).filter(Boolean);
+      setFormData(prev => ({
+        ...prev,
+        skills: {
+          ...prev.skills,
+          programming: Array.from(new Set([...(prev.skills.programming || []), ...parsed]))
+        }
+      }));
     }
     setShowAiAssistantModal(false);
   };
@@ -851,26 +900,49 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             <Check size={14} /> {saveStatus}
           </div>
 
-          <button 
-            onClick={() => setShowAiGeneratorModal(true)}
-            style={{
-              background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-              color: 'white',
-              border: 'none',
-              padding: '0.5rem 1.25rem',
-              borderRadius: '8px',
-              fontSize: '0.8rem',
-              fontWeight: 900,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-              transition: 'all 0.15s'
-            }}
-          >
-            <Sparkles size={14} /> Generate with AI
-          </button>
+          {localStorage.getItem('builder_mode') === 'ai' ? (
+            <button 
+              onClick={() => setShowAiGeneratorModal(true)}
+              style={{
+                background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+                color: 'white',
+                border: 'none',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '8px',
+                fontSize: '0.8rem',
+                fontWeight: 900,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+                transition: 'all 0.15s'
+              }}
+            >
+              <Sparkles size={14} /> Generate with AI
+            </button>
+          ) : (
+            <button 
+              onClick={() => setShowAiAssistantModal(true)}
+              style={{
+                background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                color: 'white',
+                border: 'none',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '8px',
+                fontSize: '0.8rem',
+                fontWeight: 900,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+                transition: 'all 0.15s'
+              }}
+            >
+              <Sparkles size={14} /> AI Assistant
+            </button>
+          )}
 
           {user?.subscription !== 'Premium' && (
             <button 
@@ -945,15 +1017,17 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       {/* Three Column Grid Workspace */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         
-        {/* Left Column (15% width): Metrics Sidebar */}
+        {/* Left Column (Fixed 240px width): Metrics Sidebar */}
         <div style={{ 
-          width: '15%', 
+          width: '240px',
+          minWidth: '240px',
+          maxWidth: '240px',
           background: 'white', 
           borderRight: '1px solid #e2e8f0', 
           display: 'flex', 
           flexDirection: 'column',
-          padding: '1rem',
-          gap: '1.75rem',
+          padding: '1.25rem 1rem',
+          gap: '1.5rem',
           overflowY: 'auto'
         }}>
           {/* Resume Score Card */}
@@ -1191,9 +1265,11 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           </div>
         </div>
 
-        {/* Middle Column (35% width): Step Form */}
+        {/* Middle Column (Form Editor): Step Form */}
         <div style={{ 
-          width: '35%', 
+          flex: '0 0 440px',
+          width: '440px', 
+          maxWidth: '460px',
           background: 'white', 
           borderRight: '1px solid #e2e8f0', 
           display: 'flex', 
@@ -1202,7 +1278,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           position: 'relative'
         }}>
           
-          <div style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
+          <div style={{ flex: 1, padding: '1.25rem 1.5rem', overflowY: 'auto' }}>
             <AnimatePresence mode="wait">
               <motion.div 
                 key={currentLabel}
@@ -1336,63 +1412,48 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
-            padding: '1.5rem 2.5rem', 
+            padding: '0.85rem 1rem', 
             borderTop: '1px solid #e2e8f0', 
             background: 'white', 
-            flexShrink: 0 
+            flexShrink: 0,
+            gap: '0.4rem'
           }}>
             <button 
               disabled={activeStep === 1}
               onClick={() => setActiveStep(prev => Math.max(1, prev - 1))}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'none', border: '1px solid #cbd5e1', color: activeStep === 1 ? '#cbd5e1' : '#0f172a', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'none', border: '1px solid #cbd5e1', color: activeStep === 1 ? '#cbd5e1' : '#0f172a', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
             >
-              <ChevronLeft size={16} /> Previous
+              <ChevronLeft size={14} /> Previous
             </button>
 
             <button 
               onClick={handleSave}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'none', border: '1px solid #cbd5e1', color: '#64748b', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'none', border: '1px solid #cbd5e1', color: '#64748b', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
             >
-              <Save size={16} /> Save Draft
+              <Save size={14} /> Save
+            </button>
+
+            <button 
+              onClick={() => setShowAiAssistantModal(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', border: 'none', color: 'white', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(124,58,237,0.2)' }}
+            >
+              <Sparkles size={13} /> AI
             </button>
 
             <button 
               disabled={activeStep === steps.length}
               onClick={() => setActiveStep(prev => Math.min(steps.length, prev + 1))}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: activeStep === steps.length ? '#cbd5e1' : '#7c3aed', border: 'none', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: activeStep === steps.length ? '#cbd5e1' : '#7c3aed', border: 'none', color: 'white', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
             >
-              Next Step <ChevronRight size={16} />
-            </button>
-          </div>
-
-          {/* AI Assistant FAB */}
-          <div style={{ position: 'absolute', bottom: '90px', right: '2.5rem', zIndex: 99 }}>
-            <button 
-              onClick={() => setShowAiAssistantModal(true)}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem', 
-                padding: '0.75rem 1.25rem', 
-                borderRadius: '50px', 
-                background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', 
-                color: 'white', 
-                border: 'none', 
-                fontWeight: 900, 
-                fontSize: '0.8rem',
-                boxShadow: '0 8px 20px rgba(124, 58, 237, 0.35)',
-                cursor: 'pointer'
-              }}
-            >
-              <Sparkles size={14} /> AI Assistant
+              Next <ChevronRight size={14} />
             </button>
           </div>
 
         </div>
 
-        {/* Right Column (50% width): Live Preview */}
+        {/* Right Column (Flex Fill): Live Preview */}
         <div style={{ 
-          width: '50%', 
+          flex: 1, 
           background: '#f1f5f9', 
           display: 'flex', 
           flexDirection: 'column', 

@@ -127,5 +127,67 @@
       "font": "'Poppins', sans-serif",
       "fontSize": "medium"
     }
+  ],
+  "payments": [
+    {
+      "_id": "1785760176153",
+      "userId": "guest_user",
+      "amount": 199,
+      "currency": "INR",
+      "plan": "1 Month Premium",
+      "planKey": "Monthly",
+      "status": "Pending",
+      "paymentId": "pay_090kyia1d",
+      "orderId": "order_kl7dkiqct",
+      "createdAt": "2026-08-03T12:29:36.153Z"
+    },
+    {
+      "_id": "1785760262781",
+      "userId": "guest_user",
+      "amount": 199,
+      "currency": "INR",
+      "plan": "1 Month Premium",
+      "planKey": "Monthly",
+      "status": "Pending",
+      "paymentId": "pay_rgt0ffvqc",
+      "orderId": "order_l6j9rx25i",
+      "createdAt": "2026-08-03T12:31:02.781Z"
+    },
+    {
+      "_id": "1785760268170",
+      "userId": "guest_user",
+      "amount": 199,
+      "currency": "INR",
+      "plan": "1 Month Premium",
+      "planKey": "Monthly",
+      "status": "Pending",
+      "paymentId": "pay_caizuv3n4",
+      "orderId": "order_crgx53jlp",
+      "createdAt": "2026-08-03T12:31:08.171Z"
+    },
+    {
+      "_id": "1785760359629",
+      "userId": "guest_user",
+      "amount": 199,
+      "currency": "INR",
+      "plan": "1 Month Premium",
+      "planKey": "Monthly",
+      "status": "Pending",
+      "paymentId": "pay_tv4iwu0j1",
+      "orderId": "order_8ztvhmwu3",
+      "createdAt": "2026-08-03T12:32:39.629Z"
+    },
+    {
+      "_id": "1785760588314",
+      "userId": "guest_user",
+      "amount": 199,
+      "currency": "INR",
+      "plan": "1 Month Premium",
+      "planKey": "Monthly",
+      "status": "Pending",
+      "paymentId": "pay_2s96qmy6b",
+      "orderId": "order_7bzuwql03",
+      "createdAt": "2026-08-03T12:36:28.314Z"
+    }
   ]
 }

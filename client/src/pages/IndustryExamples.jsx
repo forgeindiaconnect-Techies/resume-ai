@@ -55,7 +55,7 @@ const formatRoleItem = (item, category) => {
   const rawSummary = rData.summary || rData.objective || pInfo.summary;
   const objective = (rawSummary && typeof rawSummary === 'string' && !rawSummary.includes('undefined')) 
     ? rawSummary 
-    : `Dedicated and results-driven ${rawTitle} with a proven track record in ${category} operations, driving team performance and high-impact deliverables.`;
+    : `Accomplished and results-driven ${rawTitle} with over 5+ years of specialized experience in ${category} operations, team leadership, and strategic planning. Proven track record of spearheading high-impact organizational initiatives, boosting department efficiency by up to 35%, and consistently delivering measurable business outcomes under budget.`;
 
   // Skills
   let skillsObj = { languages: '', frameworks: '', tools: '' };
@@ -79,9 +79,9 @@ const formatRoleItem = (item, category) => {
     }
   }
   if (!skillsObj.languages && !skillsObj.frameworks && !skillsObj.tools) {
-    skillsObj.languages = `${rawTitle} Expertise, Communication, Leadership`;
-    skillsObj.frameworks = `Strategy, Agile Execution, Operations`;
-    skillsObj.tools = `Analytics, Dashboarding, Management Tools`;
+    skillsObj.languages = `${rawTitle} Architecture, Strategic Leadership, ${category} Operations, Problem Solving`;
+    skillsObj.frameworks = `Agile Methodologies, Process Optimization, Performance Metrics, SOP Standardisation`;
+    skillsObj.tools = `Analytics Dashboards, Enterprise Resource Tools, JIRA, SQL, Tableau`;
   }
 
   // Experience
@@ -89,7 +89,7 @@ const formatRoleItem = (item, category) => {
   if (Array.isArray(rData.experience) && rData.experience.length > 0) {
     experience = rData.experience.map(exp => ({
       title: exp.title || exp.role || rawTitle,
-      company: exp.company || 'Enterprise Solutions Inc.',
+      company: exp.company || 'Global Enterprise Solutions Inc.',
       duration: exp.duration || exp.period || '2021 - Present',
       desc: exp.desc || exp.description || (Array.isArray(exp.points) ? exp.points.join('\n• ') : 'Spearheaded key department initiatives resulting in 25% YoY operational efficiency improvements.')
     }));
@@ -99,13 +99,13 @@ const formatRoleItem = (item, category) => {
         title: `Senior ${rawTitle}`,
         company: 'Global Operations Inc.',
         duration: '2021 - Present',
-        desc: `Led cross-functional team initiatives delivering core ${category} projects on schedule.\nOptimized workflow processes to reduce project turnaround time by 30%.`
+        desc: `• Led cross-functional team of 12+ specialists delivering core ${category} projects on schedule with 99% audit accuracy.\n• Optimized workflow processes and automated tracking systems to reduce project turnaround time by 32%.\n• Managed multi-year budgets exceeding $3.5M, saving $150K annually through vendor negotiation.`
       },
       {
         title: `${rawTitle}`,
         company: 'Apex Solutions LLC',
         duration: '2018 - 2021',
-        desc: `Managed client deliverables and key operational metrics with 98% customer satisfaction score.`
+        desc: `• Managed client deliverables and key operational metrics, maintaining a 98% customer satisfaction rating.\n• Introduced standardized SOP training manuals adopted by 4 regional branches.`
       }
     ];
   }
@@ -114,14 +114,14 @@ const formatRoleItem = (item, category) => {
   let education = [];
   if (Array.isArray(rData.education) && rData.education.length > 0) {
     education = rData.education.map(e => ({
-      degree: e.degree || `B.S. in ${category}`,
-      institution: e.institution || e.school || 'State University',
-      tenure: e.tenure || e.year || '2015 - 2019',
-      cgpa: e.cgpa || ''
+      degree: e.degree || `B.S. in ${category} & Applied Sciences`,
+      institution: e.institution || e.school || 'Northwestern University',
+      tenure: e.tenure || e.year || '2014 - 2018',
+      cgpa: e.cgpa || '3.8 / 4.0'
     }));
   } else {
     education = [
-      { degree: `B.S. in ${category} & Management`, institution: 'Northwestern University', tenure: '2015 - 2019', cgpa: '3.8' }
+      { degree: `B.S. in ${category} & Management`, institution: 'Northwestern University', tenure: '2014 - 2018', cgpa: '3.8 / 4.0' }
     ];
   }
 
@@ -130,12 +130,21 @@ const formatRoleItem = (item, category) => {
   if (Array.isArray(rData.projects) && rData.projects.length > 0) {
     projects = rData.projects.map(p => ({
       title: p.title || p.name || `${rawTitle} Initiative`,
-      technology: p.technology || 'Strategy, Management Tools',
+      technology: p.technology || 'Strategy, Data Analytics, Cloud Infrastructure',
       desc: p.desc || p.description || 'Engineered scalable system architecture delivering measurable results.'
     }));
   } else {
     projects = [
-      { title: `${rawTitle} Transformation System`, technology: 'Analytics, Process Automation', desc: 'Designed and deployed enterprise solution improving workflow tracking across departments.' }
+      { 
+        title: `${rawTitle} Digital Transformation Platform`, 
+        technology: 'Analytics, Process Automation, Agile Framework', 
+        desc: 'Designed and deployed enterprise solution improving workflow tracking across departments and elevating team productivity by 28%.' 
+      },
+      {
+        title: `Cross-Functional ${category} Integration`,
+        technology: 'Data Pipelines, Executive Dashboards',
+        desc: 'Streamlined legacy database structures into unified real-time reporting metrics for C-suite leaders.'
+      }
     ];
   }
 
@@ -746,18 +755,19 @@ const IndustryExamples = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(15, 23, 42, 0.85)',
+          background: 'rgba(15, 23, 42, 0.88)',
           backdropFilter: 'blur(8px)',
-          zIndex: 1000,
+          zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          padding: '2rem',
-          overflowY: 'auto'
+          padding: '1.25rem',
+          overflow: 'hidden'
         }}>
-          <div style={{ width: '100%', maxWidth: '850px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h2 style={{ color: 'white', margin: 0, fontSize: '1.4rem', fontWeight: 900 }}>
-              {currentRole.title} Preview
+          {/* Header Controls */}
+          <div style={{ width: '100%', maxWidth: '880px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexShrink: 0 }}>
+            <h2 style={{ color: 'white', margin: 0, fontSize: '1.3rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>📄</span> {currentRole.title} Full Resume Preview
             </h2>
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
               <button
@@ -773,7 +783,8 @@ const IndustryExamples = () => {
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.4rem'
+                  gap: '0.4rem',
+                  boxShadow: '0 4px 14px rgba(2, 132, 199, 0.4)'
                 }}
               >
                 <Edit3 size={15} /> Edit in Builder
@@ -790,7 +801,8 @@ const IndustryExamples = () => {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  transition: 'background 0.15s'
                 }}
               >
                 <X size={20} />
@@ -798,7 +810,20 @@ const IndustryExamples = () => {
             </div>
           </div>
 
-          <div style={{ background: 'white', borderRadius: '8px', width: '100%', maxWidth: '850px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+          {/* Full-Page Scrollable Resume Container */}
+          <div style={{ 
+            flex: 1,
+            width: '100%', 
+            maxWidth: '880px', 
+            background: 'white', 
+            borderRadius: '16px', 
+            boxShadow: '0 25px 50px rgba(0,0,0,0.5)', 
+            overflowY: 'auto',
+            padding: '2rem',
+            marginBottom: '0.5rem',
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#cbd5e1 transparent'
+          }}>
             {renderLayoutComponent(currentRole)}
           </div>
         </div>
