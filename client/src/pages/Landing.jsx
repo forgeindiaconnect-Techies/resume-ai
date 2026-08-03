@@ -93,20 +93,54 @@ const LandingPage = () => {
           name: aiData?.personalInfo?.fullName || aiData?.name || 'Alexander Wright',
           role: aiJobTitle,
           email: 'user@forgeindiaconnect.app',
-          summary: aiData?.summary || `Dedicated ${aiJobTitle} with proven results.`
+          phone: '+1 (555) 000-0000',
+          location: 'New York, NY',
+          linkedin: 'linkedin.com/in/alexander-wright',
+          github: 'github.com/alexander-wright',
+          summary: aiData?.summary || `Dedicated and performance-driven ${aiJobTitle} with proven results and technical expertise.`
         },
         skills: {
-          programming: Array.isArray(aiData?.skills) ? aiData.skills : (aiSkills ? aiSkills.split(',').map(s => s.trim()) : ['React', 'Node.js']),
-          frameworks: [],
-          databases: []
+          programming: Array.isArray(aiData?.skills) ? aiData.skills : (aiSkills ? aiSkills.split(',').map(s => s.trim()).filter(Boolean) : ['React.js', 'Node.js', 'TypeScript']),
+          frameworks: ['REST APIs', 'Redux Toolkit', 'Tailwind CSS'],
+          databases: ['PostgreSQL', 'MongoDB', 'AWS']
         },
-        experience: aiData?.experience || [],
-        projects: aiData?.projects || []
+        experience: Array.isArray(aiData?.experience) && aiData.experience.length > 0 
+          ? aiData.experience.map(e => ({
+              title: e.position || e.title || aiJobTitle,
+              company: e.company || 'Enterprise Solutions Ltd.',
+              duration: e.duration || '2022 - Present',
+              desc: e.description || e.desc || `Architected scalable solutions for ${aiJobTitle} initiatives.`
+            }))
+          : [
+              {
+                title: `Senior ${aiJobTitle}`,
+                company: 'Apex Digital Systems',
+                duration: '2022 - Present',
+                desc: `Spearheaded key product developments utilizing ${aiSkills || 'modern technical stack'}.\nOptimized performance metrics resulting in 35% efficiency boost.`
+              }
+            ],
+        projects: Array.isArray(aiData?.projects) && aiData.projects.length > 0
+          ? aiData.projects.map(p => ({
+              name: p.title || p.name || `${aiJobTitle} Core Platform`,
+              technology: aiSkills || 'React, Node.js, Cloud',
+              desc: p.description || p.desc || 'Designed and deployed automated workflows across modern applications.'
+            }))
+          : [
+              {
+                name: `${aiJobTitle} Automation System`,
+                technology: aiSkills || 'React, Node.js, Cloud Services',
+                desc: 'Built fullstack web platform handling high concurrency requests with zero downtime.'
+              }
+            ],
+        education: [
+          { degree: 'B.S. in Computer Science & Engineering', institution: 'University of Washington', tenure: '2016 - 2020', cgpa: '3.9' }
+        ]
       };
       localStorage.setItem('activeResumeSessionId', newSessionId);
       localStorage.setItem(`resume_draft_${newSessionId}`, JSON.stringify(sessionData));
+      localStorage.setItem('localResumeDraft', JSON.stringify(sessionData));
       setShowAiModal(false);
-      navigate(`/builder/${newSessionId}`);
+      navigate(`/ai-resume/${newSessionId}`);
     } catch (err) {
       alert('AI Generation Error: ' + err.message);
     } finally {

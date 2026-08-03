@@ -6,13 +6,11 @@ import {
   SkillTagInput, EditorShell, loadSession, saveSession
 } from './editorUtils';
 
-const ACCENT = '#16a34a';
-
 const defaultData = () => ({
   title: 'Professional Resume',
   templateId: 'professional',
   personalInfo: {
-    name: 'Your Full Name',
+    name: 'Alexander Wright',
     role: 'Project Manager',
     email: 'name@company.com',
     phone: '+1 (555) 000-0000',
@@ -36,6 +34,9 @@ const defaultData = () => ({
 const ProfessionalEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
+  const [accentColor, setAccentColor] = useState('#059669');
+  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  
   const [data, setData] = useState(() => {
     const session = loadSession(sessionId);
     if (session) {
@@ -43,14 +44,14 @@ const ProfessionalEditor = () => {
         title: session.title || 'Professional Resume',
         templateId: 'professional',
         personalInfo: {
-          name: session.personalInfo?.name || '',
-          role: session.personalInfo?.role || '',
-          email: session.personalInfo?.email || '',
-          phone: session.personalInfo?.phone || '',
-          location: session.personalInfo?.location || '',
-          linkedin: session.personalInfo?.linkedin || '',
+          name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Alexander Wright',
+          role: session.personalInfo?.role || session.role || 'Project Manager',
+          email: session.personalInfo?.email || session.email || 'user@forgeindiaconnect.app',
+          phone: session.personalInfo?.phone || session.phone || '+1 (555) 000-0000',
+          location: session.personalInfo?.location || session.location || 'Chicago, IL',
+          linkedin: session.personalInfo?.linkedin || session.linkedin || '',
         },
-        summary: session.personalInfo?.summary || '',
+        summary: session.personalInfo?.summary || session.summary || session.objective || '',
         skills: [
           ...(session.skills?.programming || []),
           ...(session.skills?.frameworks || []),
@@ -109,73 +110,82 @@ const ProfessionalEditor = () => {
   };
 
   return (
-    <EditorShell accentColor={ACCENT} templateName="Professional" templateEmoji="📋" onDownload={() => window.print()} saveStatus={saveStatus}
-      preview={<ProfessionalLayout data={previewData} role={data.personalInfo.role} customColor={ACCENT} />}>
+    <EditorShell 
+      accentColor={accentColor} 
+      onColorChange={setAccentColor}
+      fontFamily={fontFamily}
+      onFontChange={setFontFamily}
+      templateName="Professional" 
+      templateEmoji="📋" 
+      onDownload={() => window.print()} 
+      saveStatus={saveStatus}
+      preview={<ProfessionalLayout data={previewData} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
+    >
 
-      <SectionHeader icon="👤" title="Personal Details" accent={ACCENT} />
-      <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={ACCENT} />
-      <Field label="Professional Title" name="role" value={data.personalInfo.role} onChange={setPersonal} accent={ACCENT} placeholder="e.g. Senior Project Manager" />
+      <SectionHeader icon="👤" title="Personal Details" accent={accentColor} />
+      <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={accentColor} placeholder="e.g. Alexander Wright" />
+      <Field label="Professional Title" name="role" value={data.personalInfo.role} onChange={setPersonal} accent={accentColor} placeholder="e.g. Senior Project Manager" />
       <Grid2>
-        <Field label="Email" name="email" value={data.personalInfo.email} onChange={setPersonal} accent={ACCENT} />
-        <Field label="Phone" name="phone" value={data.personalInfo.phone} onChange={setPersonal} accent={ACCENT} />
+        <Field label="Email" name="email" value={data.personalInfo.email} onChange={setPersonal} accent={accentColor} />
+        <Field label="Phone" name="phone" value={data.personalInfo.phone} onChange={setPersonal} accent={accentColor} />
       </Grid2>
       <Grid2>
-        <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={ACCENT} />
-        <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={ACCENT} />
+        <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={accentColor} />
+        <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={accentColor} />
       </Grid2>
 
-      <SectionHeader icon="📝" title="Professional Summary" accent={ACCENT} />
+      <SectionHeader icon="📝" title="Professional Summary" accent={accentColor} />
       <TextArea label="Summary" value={data.summary} rows={5}
-        onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={ACCENT} placeholder="Results-oriented professional with expertise in..." />
+        onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={accentColor} placeholder="Results-oriented professional with expertise in..." />
 
-      <SectionHeader icon="💼" title="Work Experience" accent={ACCENT} />
+      <SectionHeader icon="💼" title="Work Experience" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {data.experience.map(exp => (
-          <ItemCard key={exp.id} onDelete={() => delExp(exp.id)} accent={ACCENT}>
+          <ItemCard key={exp.id} onDelete={() => delExp(exp.id)} accent={accentColor}>
             <Grid2>
-              <Field label="Job Title" value={exp.role} onChange={e => updExp(exp.id, 'role', e.target.value)} accent={ACCENT} />
-              <Field label="Company" value={exp.company} onChange={e => updExp(exp.id, 'company', e.target.value)} accent={ACCENT} />
+              <Field label="Job Title" value={exp.role} onChange={e => updExp(exp.id, 'role', e.target.value)} accent={accentColor} />
+              <Field label="Company" value={exp.company} onChange={e => updExp(exp.id, 'company', e.target.value)} accent={accentColor} />
             </Grid2>
-            <Field label="Duration" value={exp.duration} onChange={e => updExp(exp.id, 'duration', e.target.value)} accent={ACCENT} placeholder="2020 – Present" />
-            <TextArea label="Responsibilities" value={exp.desc} onChange={e => updExp(exp.id, 'desc', e.target.value)} accent={ACCENT} rows={4} />
+            <Field label="Duration" value={exp.duration} onChange={e => updExp(exp.id, 'duration', e.target.value)} accent={accentColor} placeholder="2020 – Present" />
+            <TextArea label="Responsibilities" value={exp.desc} onChange={e => updExp(exp.id, 'desc', e.target.value)} accent={accentColor} rows={4} />
           </ItemCard>
         ))}
       </div>
-      <AddButton label="Add Work Experience" onClick={addExp} accent={ACCENT} />
+      <AddButton label="Add Work Experience" onClick={addExp} accent={accentColor} />
 
-      <SectionHeader icon="🎓" title="Education" accent={ACCENT} />
+      <SectionHeader icon="🎓" title="Education" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {data.education.map(edu => (
-          <ItemCard key={edu.id} onDelete={() => delEdu(edu.id)} accent={ACCENT}>
-            <Field label="Degree / Qualification" value={edu.degree} onChange={e => updEdu(edu.id, 'degree', e.target.value)} accent={ACCENT} />
+          <ItemCard key={edu.id} onDelete={() => delEdu(edu.id)} accent={accentColor}>
+            <Field label="Degree / Qualification" value={edu.degree} onChange={e => updEdu(edu.id, 'degree', e.target.value)} accent={accentColor} />
             <Grid2>
-              <Field label="Institution" value={edu.institution} onChange={e => updEdu(edu.id, 'institution', e.target.value)} accent={ACCENT} />
-              <Field label="Years" value={edu.tenure} onChange={e => updEdu(edu.id, 'tenure', e.target.value)} accent={ACCENT} />
+              <Field label="Institution" value={edu.institution} onChange={e => updEdu(edu.id, 'institution', e.target.value)} accent={accentColor} />
+              <Field label="Years" value={edu.tenure} onChange={e => updEdu(edu.id, 'tenure', e.target.value)} accent={accentColor} />
             </Grid2>
           </ItemCard>
         ))}
       </div>
-      <AddButton label="Add Education" onClick={addEdu} accent={ACCENT} />
+      <AddButton label="Add Education" onClick={addEdu} accent={accentColor} />
 
-      <SectionHeader icon="⚡" title="Skills" accent={ACCENT} />
-      <SkillTagInput label="Add skills (press Enter)" skills={data.skills} onAdd={addSkill} onRemove={removeSkill} accent={ACCENT} placeholder="e.g. Agile, Risk Management, Jira" />
+      <SectionHeader icon="⚡" title="Skills" accent={accentColor} />
+      <SkillTagInput label="Add skills (press Enter)" skills={data.skills} onAdd={addSkill} onRemove={removeSkill} accent={accentColor} placeholder="e.g. Agile, Risk Management, Jira" />
 
-      <SectionHeader icon="🏆" title="Certifications" accent={ACCENT} />
+      <SectionHeader icon="🏆" title="Certifications" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {data.certifications.map(cert => (
-          <ItemCard key={cert.id} onDelete={() => delCert(cert.id)} accent={ACCENT}>
-            <Field label="Certification Name" value={cert.name} onChange={e => updCert(cert.id, 'name', e.target.value)} accent={ACCENT} placeholder="e.g. PMP – Project Management Professional" />
+          <ItemCard key={cert.id} onDelete={() => delCert(cert.id)} accent={accentColor}>
+            <Field label="Certification Name" value={cert.name} onChange={e => updCert(cert.id, 'name', e.target.value)} accent={accentColor} placeholder="e.g. PMP – Project Management Professional" />
             <Grid2>
-              <Field label="Issuing Organisation" value={cert.org} onChange={e => updCert(cert.id, 'org', e.target.value)} accent={ACCENT} placeholder="e.g. PMI" />
-              <Field label="Year" value={cert.year} onChange={e => updCert(cert.id, 'year', e.target.value)} accent={ACCENT} placeholder="e.g. 2023" />
+              <Field label="Issuing Organisation" value={cert.org} onChange={e => updCert(cert.id, 'org', e.target.value)} accent={accentColor} placeholder="e.g. PMI" />
+              <Field label="Year" value={cert.year} onChange={e => updCert(cert.id, 'year', e.target.value)} accent={accentColor} placeholder="e.g. 2023" />
             </Grid2>
           </ItemCard>
         ))}
       </div>
-      <AddButton label="Add Certification" onClick={addCert} accent={ACCENT} />
+      <AddButton label="Add Certification" onClick={addCert} accent={accentColor} />
 
-      <SectionHeader icon="🌐" title="Languages" accent={ACCENT} />
-      <SkillTagInput label="Add languages (press Enter)" skills={data.languages} onAdd={addLang} onRemove={removeLang} accent={ACCENT} placeholder="e.g. English (Native)" />
+      <SectionHeader icon="🌐" title="Languages" accent={accentColor} />
+      <SkillTagInput label="Add languages (press Enter)" skills={data.languages} onAdd={addLang} onRemove={removeLang} accent={accentColor} placeholder="e.g. English (Native)" />
       <div style={{ height: '2rem' }} />
     </EditorShell>
   );

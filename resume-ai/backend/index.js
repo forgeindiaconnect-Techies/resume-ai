@@ -39,7 +39,7 @@ const adminRoutes = require('./routes/adminRoutes');
 // Helper to load local data (Moved to controllers/candidateController.js)
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());

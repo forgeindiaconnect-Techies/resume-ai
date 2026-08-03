@@ -28,6 +28,8 @@ const EditorLoader = () => (
   </div>
 );
 
+import AiResumeView from './pages/AiResumeView';
+
 function App() {
   return (
     <Router>
@@ -38,6 +40,7 @@ function App() {
         <Route path="/onboarding/wizard" element={<CareerWizard />} />
         <Route path="/builder" element={<ResumeBuilder />} />
         <Route path="/builder/:resumeId" element={<ResumeBuilder />} />
+        <Route path="/ai-resume/:sessionId" element={<AiResumeView />} />
         <Route path="/industry-examples" element={<IndustryExamples />} />
         <Route path="/industry-examples/:industryId" element={<IndustryCategory />} />
         <Route path="/resume-examples/:id" element={<ResumeExample />} />

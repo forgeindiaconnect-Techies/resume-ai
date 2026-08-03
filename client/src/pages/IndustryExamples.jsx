@@ -11,7 +11,7 @@ import CreativeLayout from '../components/layouts/CreativeLayout';
 import { 
   Briefcase, Palette, BookOpen, Settings, DollarSign, 
   Activity, Laptop, TrendingUp, Target, Sparkles, ArrowRight, ShieldCheck,
-  Search, Maximize2, X, Layers, ArrowUp, ArrowDown
+  Search, Maximize2, X, Layers, ArrowUp, ArrowDown, Edit3, ExternalLink
 } from 'lucide-react';
 
 const iconMap = {
@@ -34,6 +34,132 @@ const templateOptions = [
   { id: 'minimal', name: 'Minimal' }
 ];
 
+const formatRoleItem = (item, category) => {
+  const rawTitle = item.title || item.name || `${category} Professional`;
+  const rData = item.resumeData || {};
+  const pInfo = rData.personalInfo || {};
+
+  const name = pInfo.fullName || pInfo.name || rData.name || 'Alexander Wright';
+  const role = pInfo.role || rData.role || rawTitle;
+
+  // Contact
+  const contact = {
+    email: pInfo.email || rData.contact?.email || 'user@forgeindiaconnect.app',
+    phone: pInfo.phone || rData.contact?.phone || '+1 (555) 000-0000',
+    location: pInfo.location || rData.contact?.location || 'New York, NY',
+    linkedin: pInfo.linkedin || rData.contact?.linkedin || '',
+    github: pInfo.github || rData.contact?.github || ''
+  };
+
+  // Summary / Objective
+  const rawSummary = rData.summary || rData.objective || pInfo.summary;
+  const objective = (rawSummary && typeof rawSummary === 'string' && !rawSummary.includes('undefined')) 
+    ? rawSummary 
+    : `Dedicated and results-driven ${rawTitle} with a proven track record in ${category} operations, driving team performance and high-impact deliverables.`;
+
+  // Skills
+  let skillsObj = { languages: '', frameworks: '', tools: '' };
+  if (rData.skills) {
+    if (typeof rData.skills === 'object' && !Array.isArray(rData.skills)) {
+      skillsObj.languages = Array.isArray(rData.skills.languages) 
+        ? rData.skills.languages.join(', ') 
+        : (rData.skills.languages || (rData.skills.programming ? rData.skills.programming.join(', ') : ''));
+      
+      skillsObj.frameworks = Array.isArray(rData.skills.frameworks) 
+        ? rData.skills.frameworks.join(', ') 
+        : (rData.skills.frameworks || '');
+
+      skillsObj.tools = Array.isArray(rData.skills.tools) 
+        ? rData.skills.tools.join(', ') 
+        : (rData.skills.tools || (rData.skills.databases ? rData.skills.databases.join(', ') : ''));
+    } else if (Array.isArray(rData.skills)) {
+      skillsObj.languages = rData.skills.join(', ');
+    } else if (typeof rData.skills === 'string') {
+      skillsObj.languages = rData.skills;
+    }
+  }
+  if (!skillsObj.languages && !skillsObj.frameworks && !skillsObj.tools) {
+    skillsObj.languages = `${rawTitle} Expertise, Communication, Leadership`;
+    skillsObj.frameworks = `Strategy, Agile Execution, Operations`;
+    skillsObj.tools = `Analytics, Dashboarding, Management Tools`;
+  }
+
+  // Experience
+  let experience = [];
+  if (Array.isArray(rData.experience) && rData.experience.length > 0) {
+    experience = rData.experience.map(exp => ({
+      title: exp.title || exp.role || rawTitle,
+      company: exp.company || 'Enterprise Solutions Inc.',
+      duration: exp.duration || exp.period || '2021 - Present',
+      desc: exp.desc || exp.description || (Array.isArray(exp.points) ? exp.points.join('\n• ') : 'Spearheaded key department initiatives resulting in 25% YoY operational efficiency improvements.')
+    }));
+  } else {
+    experience = [
+      {
+        title: `Senior ${rawTitle}`,
+        company: 'Global Operations Inc.',
+        duration: '2021 - Present',
+        desc: `Led cross-functional team initiatives delivering core ${category} projects on schedule.\nOptimized workflow processes to reduce project turnaround time by 30%.`
+      },
+      {
+        title: `${rawTitle}`,
+        company: 'Apex Solutions LLC',
+        duration: '2018 - 2021',
+        desc: `Managed client deliverables and key operational metrics with 98% customer satisfaction score.`
+      }
+    ];
+  }
+
+  // Education
+  let education = [];
+  if (Array.isArray(rData.education) && rData.education.length > 0) {
+    education = rData.education.map(e => ({
+      degree: e.degree || `B.S. in ${category}`,
+      institution: e.institution || e.school || 'State University',
+      tenure: e.tenure || e.year || '2015 - 2019',
+      cgpa: e.cgpa || ''
+    }));
+  } else {
+    education = [
+      { degree: `B.S. in ${category} & Management`, institution: 'Northwestern University', tenure: '2015 - 2019', cgpa: '3.8' }
+    ];
+  }
+
+  // Projects
+  let projects = [];
+  if (Array.isArray(rData.projects) && rData.projects.length > 0) {
+    projects = rData.projects.map(p => ({
+      title: p.title || p.name || `${rawTitle} Initiative`,
+      technology: p.technology || 'Strategy, Management Tools',
+      desc: p.desc || p.description || 'Engineered scalable system architecture delivering measurable results.'
+    }));
+  } else {
+    projects = [
+      { title: `${rawTitle} Transformation System`, technology: 'Analytics, Process Automation', desc: 'Designed and deployed enterprise solution improving workflow tracking across departments.' }
+    ];
+  }
+
+  return {
+    id: item._id || item.id || `role_${Date.now()}_${Math.random()}`,
+    title: rawTitle,
+    category: category,
+    experience: item.experience || item.experienceLevel || '2-5 Years',
+    atsScore: item.atsScore || 96,
+    templateId: item.templateId || item.template || 'modern',
+    description: item.description || `Professional ${rawTitle} resume example tailored for ${category} positions.`,
+    resumeData: {
+      name,
+      role,
+      contact,
+      objective,
+      skills: skillsObj,
+      experience,
+      education,
+      projects
+    }
+  };
+};
+
 const IndustryExamples = () => {
   const navigate = useNavigate();
   const previewRef = useRef(null);
@@ -44,6 +170,7 @@ const IndustryExamples = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeLayoutOverride, setActiveLayoutOverride] = useState(null);
   const [showFullModal, setShowFullModal] = useState(false);
+  const [hoverPreviewPaper, setHoverPreviewPaper] = useState(false);
 
   // Fetch examples from MongoDB API on mount
   useEffect(() => {
@@ -58,54 +185,27 @@ const IndustryExamples = () => {
 
   // Compute merged examples map
   const currentResumeExamples = useMemo(() => {
-    if (dbExamples.length === 0) return fallbackResumeExamples;
-    
     const map = {};
-    dbExamples.forEach(item => {
-      const cat = item.category || 'Business';
-      if (!map[cat]) map[cat] = [];
-      map[cat].push({
-        id: item._id || item.id,
-        title: item.title,
-        category: item.category,
-        experience: item.experienceLevel || '2-5 Years',
-        atsScore: item.atsScore || 95,
-        templateId: item.template || 'modern',
-        description: item.description || `Professional ${item.title} resume example tailored for ${cat} positions.`,
-        resumeData: {
-          name: item.resumeData?.personalInfo?.fullName || 'John Smith',
-          role: item.resumeData?.personalInfo?.role || item.title,
-          contact: {
-            email: item.resumeData?.personalInfo?.email || 'user@forgeindiaconnect.app',
-            phone: item.resumeData?.personalInfo?.phone || '+1 (555) 000-0000',
-            location: item.resumeData?.personalInfo?.location || 'New York, NY',
-            linkedin: item.resumeData?.personalInfo?.linkedin || '',
-            github: item.resumeData?.personalInfo?.github || ''
-          },
-          objective: item.resumeData?.summary || item.resumeData?.personalInfo?.summary || `Dedicated ${item.title} with proven industry results.`,
-          skills: {
-            languages: (item.resumeData?.skills || []).join(', '),
-            frameworks: '',
-            tools: ''
-          },
-          experience: (item.resumeData?.experience || []).map(exp => ({
-            title: exp.title || item.title,
-            company: exp.company || 'Enterprise Solutions',
-            duration: exp.duration || '2021 - Present',
-            desc: exp.desc || exp.description || ''
-          })),
-          education: item.resumeData?.education || [],
-          projects: item.resumeData?.projects || []
-        }
-      });
+
+    // 1. Format static fallback examples for all categories
+    Object.keys(fallbackResumeExamples).forEach(cat => {
+      map[cat] = (fallbackResumeExamples[cat] || []).map(item => formatRoleItem(item, cat));
     });
 
-    // Merge fallback categories if DB doesn't have them yet
-    Object.keys(fallbackResumeExamples).forEach(cat => {
-      if (!map[cat]) {
-        map[cat] = fallbackResumeExamples[cat];
-      }
-    });
+    // 2. Merge MongoDB API examples
+    if (dbExamples.length > 0) {
+      dbExamples.forEach(item => {
+        const cat = item.category || 'Business';
+        if (!map[cat]) map[cat] = [];
+        const formatted = formatRoleItem(item, cat);
+        const existingIdx = map[cat].findIndex(x => x.id === formatted.id || x.title === formatted.title);
+        if (existingIdx >= 0) {
+          map[cat][existingIdx] = formatted;
+        } else {
+          map[cat].unshift(formatted);
+        }
+      });
+    }
 
     return map;
   }, [dbExamples]);
@@ -138,9 +238,8 @@ const IndustryExamples = () => {
   };
 
   const handleUseTemplate = (roleObj) => {
-    const activeLayout = activeLayoutOverride || roleObj?.templateId || 'modern';
+    const activeLayout = (activeLayoutOverride || roleObj?.templateId || 'modern').toLowerCase();
 
-    // Map template IDs to the correct dynamic editor route
     const editorRouteMap = {
       executive:    '/editor/executive',
       creative:     '/editor/creative',
@@ -155,11 +254,11 @@ const IndustryExamples = () => {
       department: selectedCategory,
       templateId: activeLayout,
       personalInfo: {
-        name: roleObj?.resumeData?.name || '',
+        name: roleObj?.resumeData?.name || 'Alexander Wright',
         role: roleObj?.resumeData?.role || roleObj?.title || '',
-        email: roleObj?.resumeData?.contact?.email || '',
-        phone: roleObj?.resumeData?.contact?.phone || '',
-        location: roleObj?.resumeData?.contact?.location || '',
+        email: roleObj?.resumeData?.contact?.email || 'user@forgeindiaconnect.app',
+        phone: roleObj?.resumeData?.contact?.phone || '+1 (555) 000-0000',
+        location: roleObj?.resumeData?.contact?.location || 'New York, NY',
         linkedin: roleObj?.resumeData?.contact?.linkedin || '',
         github: roleObj?.resumeData?.contact?.github || '',
         portfolio: '',
@@ -180,6 +279,7 @@ const IndustryExamples = () => {
         degree: e.degree || '',
         institution: e.institution || e.school || '',
         tenure: e.tenure || e.year || '',
+        cgpa: e.cgpa || '',
       })),
       projects: (roleObj?.resumeData?.projects || []).map(p => ({
         name: p.name || p.title || '',
@@ -196,7 +296,6 @@ const IndustryExamples = () => {
 
     navigate(`${editorRoute}/${newSessionId}`);
   };
-
 
   const scrollPreview = (direction) => {
     if (previewRef.current) {
@@ -244,44 +343,52 @@ const IndustryExamples = () => {
       display: 'flex', 
       flexDirection: 'column' 
     }}>
-      {/* Fixed Navbar (No Outer Scroll) */}
+      {/* Fixed Navbar */}
       <div style={{ flexShrink: 0 }}>
         <Navbar />
       </div>
 
-      {/* Fixed Header Banner (No Outer Scroll) */}
-      <div style={{ flexShrink: 0, padding: '1.15rem 2.5rem 0.95rem', borderBottom: '1px solid #e2e8f0', background: 'white' }}>
+      {/* Ultra-Professional Header Banner */}
+      <div style={{ flexShrink: 0, padding: '1rem 2.5rem', borderBottom: '1px solid #e2e8f0', background: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <span style={{ fontSize: '0.72rem', fontWeight: 900, color: '#0284c7', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block', marginBottom: '0.15rem' }}>
-              FORGE INDIA CONNECT STYLE GUIDE
-            </span>
-            <h1 style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
-              {selectedCategory} Industry Resume Examples
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#0284c7', textTransform: 'uppercase', letterSpacing: '0.12em', background: '#e0f2fe', padding: '0.15rem 0.6rem', borderRadius: '50px', border: '1px solid #bae6fd' }}>
+                FORGE INDIA CONNECT STYLE GUIDE
+              </span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                <ShieldCheck size={12} /> Live Template Editor Ready
+              </span>
+            </div>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+              {selectedCategory} Industry Resume Templates
             </h1>
-            <p style={{ margin: '0.15rem 0 0', color: '#64748b', fontSize: '0.84rem' }}>
-              Browse real-world resume examples. Click any role to test different layouts and launch directly into the builder.
+            <p style={{ margin: '0.15rem 0 0', color: '#64748b', fontSize: '0.83rem' }}>
+              Browse real-world examples. Click any role or template card below to test layouts and open directly in your live editor workspace.
             </p>
           </div>
 
           <button
             onClick={() => handleUseTemplate(currentRole)}
             style={{
-              padding: '0.6rem 1.5rem',
+              padding: '0.7rem 1.6rem',
               borderRadius: '24px',
               border: 'none',
               background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
               color: 'white',
-              fontSize: '0.85rem',
-              fontWeight: 800,
+              fontSize: '0.88rem',
+              fontWeight: 900,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem',
-              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.25)'
+              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)',
+              transition: 'transform 0.2s'
             }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
           >
-            <Sparkles size={16} /> Use Selected Template
+            <Edit3 size={16} /> Open Selected Template in Editor
           </button>
         </div>
       </div>
@@ -289,7 +396,7 @@ const IndustryExamples = () => {
       {/* 3 Independent Internal Scroll Columns Container */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
         
-        {/* Column 1: Left Categories Sidebar (Independent Scroll) */}
+        {/* Column 1: Left Categories Sidebar */}
         <div style={{ 
           width: '230px', 
           background: 'white', 
@@ -348,7 +455,7 @@ const IndustryExamples = () => {
           })}
         </div>
 
-        {/* Column 2: Middle Resume Roles List (Independent Scroll) */}
+        {/* Column 2: Middle Resume Roles List */}
         <div style={{ 
           width: '330px', 
           background: '#f8fafc', 
@@ -402,6 +509,7 @@ const IndustryExamples = () => {
                     setSelectedRole(roleObj);
                     setActiveLayoutOverride(null);
                   }}
+                  onDoubleClick={() => handleUseTemplate(roleObj)}
                   style={{
                     padding: '0.95rem',
                     borderRadius: '12px',
@@ -409,7 +517,8 @@ const IndustryExamples = () => {
                     background: '#ffffff',
                     cursor: 'pointer',
                     transition: 'all 0.15s',
-                    boxShadow: isSelected ? '0 4px 14px rgba(2,132,199,0.18)' : '0 2px 4px rgba(0,0,0,0.02)'
+                    boxShadow: isSelected ? '0 4px 14px rgba(2,132,199,0.18)' : '0 2px 4px rgba(0,0,0,0.02)',
+                    position: 'relative'
                   }}
                   onMouseEnter={e => {
                     if (!isSelected) {
@@ -439,15 +548,15 @@ const IndustryExamples = () => {
                     </span>
                   </div>
 
-                  <p style={{ margin: '0 0 0.5rem', fontSize: '0.75rem', color: '#64748b', lineHeight: 1.45, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p style={{ margin: '0 0 0.65rem', fontSize: '0.75rem', color: '#64748b', lineHeight: 1.45, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {roleObj.description}
                   </p>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: '0.72rem', color: '#64748b' }}>
-                    <span>Exp: {roleObj.experience}</span>
-                    <span style={{ color: isSelected ? '#0284c7' : '#64748b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '3px' }}>
-                      Preview <ArrowRight size={12} />
-                    </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px solid #f1f5f9' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Exp: {roleObj.experience}</span>
+                    {isSelected && (
+                      <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#0284c7' }}>✓ Selected</span>
+                    )}
                   </div>
                 </div>
               );
@@ -459,7 +568,7 @@ const IndustryExamples = () => {
           )}
         </div>
 
-        {/* Column 3: Right Large Resume Preview (Independent Scroll) */}
+        {/* Column 3: Right Large Resume Preview */}
         <div 
           ref={previewRef}
           style={{ 
@@ -477,7 +586,7 @@ const IndustryExamples = () => {
           {currentRole ? (
             <div style={{ maxWidth: '820px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               
-              {/* Interactive Toolbar Header + Preview Scroll Controls */}
+              {/* Interactive Toolbar Header + Layout Switcher */}
               <div style={{ 
                 background: 'white', 
                 padding: '0.85rem 1.25rem', 
@@ -514,7 +623,7 @@ const IndustryExamples = () => {
                     </span>
                   </div>
 
-                  {/* Scroll & View Action Buttons */}
+                  {/* Action Buttons */}
                   <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                     
                     {/* Dedicated Preview Scroll Buttons */}
@@ -571,33 +680,13 @@ const IndustryExamples = () => {
                     >
                       <Maximize2 size={14} /> Full Screen
                     </button>
-
-                    <button
-                      onClick={() => handleUseTemplate(currentRole)}
-                      style={{
-                        padding: '0.5rem 1.3rem',
-                        borderRadius: '8px',
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
-                        color: 'white',
-                        fontSize: '0.85rem',
-                        fontWeight: 800,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.4rem',
-                        boxShadow: '0 4px 12px rgba(2,132,199,0.25)'
-                      }}
-                    >
-                      <Sparkles size={15} /> Use Template
-                    </button>
                   </div>
                 </div>
 
                 {/* Template Layout Switcher Pills */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', paddingTop: '0.4rem', borderTop: '1px solid #f1f5f9' }}>
                   <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Layers size={13} /> Switch Design:
+                    <Layers size={13} /> Switch Layout Design:
                   </span>
                   {templateOptions.map((tOpt) => {
                     const activeT = (activeLayoutOverride || currentRole.templateId || 'modern').toLowerCase() === tOpt.id;
@@ -606,13 +695,13 @@ const IndustryExamples = () => {
                         key={tOpt.id}
                         onClick={() => setActiveLayoutOverride(tOpt.id)}
                         style={{
-                          padding: '0.22rem 0.6rem',
+                          padding: '0.22rem 0.65rem',
                           borderRadius: '16px',
                           border: `1px solid ${activeT ? '#0284c7' : '#e2e8f0'}`,
                           background: activeT ? '#e0f2fe' : 'white',
                           color: activeT ? '#0284c7' : '#64748b',
                           fontSize: '0.73rem',
-                          fontWeight: activeT ? 800 : 600,
+                          fontWeight: activeT ? 900 : 600,
                           cursor: 'pointer',
                           transition: 'all 0.15s'
                         }}
@@ -624,39 +713,23 @@ const IndustryExamples = () => {
                 </div>
               </div>
 
-              {/* Live Resume Sheet Paper Preview */}
-              <div style={{
-                background: 'white',
-                borderRadius: '6px',
-                boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
-                overflow: 'hidden',
-                minHeight: '650px',
-                border: '1px solid #cbd5e1'
-              }}>
+              {/* Live Interactive Resume Sheet Paper Preview */}
+              <div 
+                onClick={() => handleUseTemplate(currentRole)}
+                title="Click to open template in Editor"
+                style={{
+                  background: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.07)',
+                  overflow: 'hidden',
+                  minHeight: '750px',
+                  border: '1.5px solid #cbd5e1',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  marginBottom: '2rem'
+                }}
+              >
                 {renderLayoutComponent(currentRole)}
-              </div>
-
-              {/* Bottom Call to Action */}
-              <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0 2.5rem' }}>
-                <button
-                  onClick={() => handleUseTemplate(currentRole)}
-                  style={{
-                    padding: '0.75rem 2.2rem',
-                    borderRadius: '10px',
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
-                    color: 'white',
-                    fontSize: '0.92rem',
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.6rem',
-                    boxShadow: '0 6px 18px rgba(2,132,199,0.3)'
-                  }}
-                >
-                  <Sparkles size={18} /> Use This Template Now
-                </button>
               </div>
 
             </div>
@@ -695,12 +768,15 @@ const IndustryExamples = () => {
                   border: 'none',
                   background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
                   color: 'white',
-                  fontWeight: 800,
+                  fontWeight: 900,
                   fontSize: '0.85rem',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem'
                 }}
               >
-                Use Template
+                <Edit3 size={15} /> Edit in Builder
               </button>
               <button
                 onClick={() => setShowFullModal(false)}

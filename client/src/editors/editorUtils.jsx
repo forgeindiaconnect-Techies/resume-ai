@@ -1,6 +1,26 @@
 // Shared utilities and helper components for all template editors
 import React, { useState } from 'react';
-import { Plus, Trash2, Download, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+// ─── Preset Color Swatches ────────────────────────────────────────────────
+export const PRESET_COLORS = [
+  { id: 'sky', name: 'Royal Blue', hex: '#0284c7' },
+  { id: 'navy', name: 'Deep Navy', hex: '#1e3a8a' },
+  { id: 'emerald', name: 'Emerald', hex: '#059669' },
+  { id: 'purple', name: 'Violet', hex: '#7c3aed' },
+  { id: 'rose', name: 'Crimson', hex: '#e11d48' },
+  { id: 'amber', name: 'Amber', hex: '#d97706' },
+  { id: 'slate', name: 'Charcoal', hex: '#334155' }
+];
+
+export const PRESET_FONTS = [
+  { id: 'inter', name: 'Inter (Modern)', value: "'Inter', sans-serif" },
+  { id: 'outfit', name: 'Outfit (Clean)', value: "'Outfit', sans-serif" },
+  { id: 'playfair', name: 'Playfair (Serif)', value: "'Playfair Display', serif" },
+  { id: 'poppins', name: 'Poppins (Geometric)', value: "'Poppins', sans-serif" },
+  { id: 'roboto', name: 'Roboto (Standard)', value: "'Roboto', sans-serif" }
+];
 
 // ─── Input Field ──────────────────────────────────────────────────────────
 export const Field = ({ label, name, value, onChange, type = 'text', placeholder = '', accent = '#0284c7' }) => (
@@ -113,74 +133,171 @@ export const ItemCard = ({ children, onDelete, accent, index }) => (
 );
 
 // ─── Full Editor Shell ────────────────────────────────────────────────────
-export const EditorShell = ({ accentColor, templateName, templateEmoji, onDownload, saveStatus, children, preview }) => (
-  <div style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden' }}>
+export const EditorShell = ({ 
+  accentColor = '#0284c7', 
+  onColorChange,
+  fontFamily = "'Inter', sans-serif",
+  onFontChange,
+  templateName = 'Modern', 
+  templateEmoji = '💻', 
+  onDownload, 
+  saveStatus, 
+  children, 
+  preview 
+}) => {
+  const navigate = useNavigate();
 
-    {/* ── LEFT FORM PANEL ── */}
-    <div style={{ width: 420, minWidth: 380, maxWidth: 420, background: '#ffffff', borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column', height: '100vh', boxShadow: '2px 0 12px rgba(0,0,0,0.04)' }}>
+  return (
+    <div style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden' }}>
 
-      {/* Header bar */}
-      <div style={{ padding: '1rem 1.25rem 0.875rem', borderBottom: '1px solid #f0f4f8', background: `linear-gradient(135deg, ${accentColor}0d, #ffffff)`, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <div style={{ width: 36, height: 36, borderRadius: '10px', background: `${accentColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>{templateEmoji}</div>
-            <div>
-              <div style={{ fontSize: '0.92rem', fontWeight: 900, color: accentColor, lineHeight: 1.2 }}>{templateName} Editor</div>
-              <div style={{ fontSize: '0.67rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.1rem' }}>{saveStatus}</div>
+      {/* ── LEFT FORM PANEL ── */}
+      <div style={{ width: 440, minWidth: 400, maxWidth: 440, background: '#ffffff', borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column', height: '100vh', boxShadow: '2px 0 12px rgba(0,0,0,0.04)' }}>
+
+        {/* Header Bar */}
+        <div style={{ padding: '1rem 1.25rem 0.85rem', borderBottom: '1px solid #e2e8f0', background: `linear-gradient(135deg, ${accentColor}0d, #ffffff)`, flexShrink: 0 }}>
+          
+          {/* Top Row: Back link & Title */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+            <button 
+              onClick={() => navigate('/industry-examples')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.7rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+            >
+              <ArrowLeft size={13} /> Examples
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: 28, height: 28, borderRadius: '8px', background: `${accentColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>{templateEmoji}</div>
+              <span style={{ fontSize: '0.9rem', fontWeight: 900, color: accentColor }}>{templateName} Editor</span>
             </div>
+
+            <button onClick={onDownload}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: accentColor, color: '#fff', border: 'none', padding: '0.45rem 0.85rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.78rem', cursor: 'pointer', boxShadow: `0 4px 12px ${accentColor}40` }}>
+              <Download size={13} /> PDF
+            </button>
           </div>
-          <button onClick={onDownload}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: accentColor, color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer', boxShadow: `0 4px 12px ${accentColor}40` }}>
-            <Download size={13} /> PDF
-          </button>
+
+          {/* User-Friendly Color Palette & Font Controls Bar */}
+          <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '0.6rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+            
+            {/* Color Swatches */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Palette size={12} color={accentColor} /> Color Theme:
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                {PRESET_COLORS.map(c => {
+                  const isSel = accentColor.toLowerCase() === c.hex.toLowerCase();
+                  return (
+                    <button
+                      key={c.id}
+                      title={c.name}
+                      onClick={() => onColorChange && onColorChange(c.hex)}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        background: c.hex,
+                        border: isSel ? '2px solid #0f172a' : '1px solid rgba(0,0,0,0.15)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 0,
+                        transform: isSel ? 'scale(1.15)' : 'scale(1)',
+                        transition: 'transform 0.15s'
+                      }}
+                    >
+                      {isSel && <Check size={11} color="white" strokeWidth={3} />}
+                    </button>
+                  );
+                })}
+
+                {/* Custom Color Input */}
+                <input
+                  type="color"
+                  value={accentColor}
+                  onChange={e => onColorChange && onColorChange(e.target.value)}
+                  title="Pick Custom Color"
+                  style={{ width: 22, height: 22, padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
+                />
+              </div>
+            </div>
+
+            {/* Font Family Selector */}
+            {onFontChange && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.4rem', borderTop: '1px solid #f1f5f9' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Type size={12} color={accentColor} /> Font Style:
+                </span>
+                <select
+                  value={fontFamily}
+                  onChange={e => onFontChange(e.target.value)}
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    outline: 'none',
+                    background: '#f8fafc',
+                    cursor: 'pointer',
+                    color: '#0f172a'
+                  }}
+                >
+                  {PRESET_FONTS.map(f => (
+                    <option key={f.id} value={f.value}>{f.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 700, marginTop: '0.4rem', textAlign: 'center' }}>
+            ✨ {saveStatus} • Real-time live preview on right pane
+          </div>
         </div>
-        {/* Progress indicator */}
-        <div style={{ marginTop: '0.75rem', height: 3, background: '#f0f4f8', borderRadius: 4, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: '70%', background: `linear-gradient(90deg, ${accentColor}, ${accentColor}80)`, borderRadius: 4, transition: 'width 0.5s' }} />
+
+        {/* Scrollable Form Body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0.25rem 1.25rem 2rem', scrollbarWidth: 'thin', scrollbarColor: '#e2e8f0 transparent' }}>
+          {children}
         </div>
-        <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.3rem' }}>Live preview updates as you type →</div>
       </div>
 
-      {/* Scrollable form body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0.25rem 1.25rem 2rem', scrollbarWidth: 'thin', scrollbarColor: '#e2e8f0 transparent' }}>
-        {children}
+      {/* ── RIGHT PREVIEW PANEL ── */}
+      <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Preview Header Bar */}
+        <div style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Preview · {templateName} Template</span>
+          </div>
+          <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>A4 · PDF-ready</span>
+        </div>
+
+        {/* Preview Scroll Area */}
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', justifyContent: 'center', padding: '2rem 1.5rem', scrollbarWidth: 'thin', scrollbarColor: '#c8d0dd transparent' }}>
+          {/* A4 Paper Sheet */}
+          <div style={{
+            width: 794,
+            minHeight: 1123,
+            background: '#fff',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+            borderRadius: '3px',
+            transformOrigin: 'top center',
+            transform: 'scale(0.82)',
+            marginBottom: '-190px',
+            flexShrink: 0,
+            overflow: 'hidden'
+          }}>
+            {preview}
+          </div>
+        </div>
       </div>
     </div>
+  );
+};
 
-    {/* ── RIGHT PREVIEW PANEL ── */}
-    <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      {/* Preview header bar */}
-      <div style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Preview · {templateName} Template</span>
-        </div>
-        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>A4 · PDF-ready</span>
-      </div>
-
-      {/* Preview scroll area */}
-      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', justifyContent: 'center', padding: '2rem 1.5rem', scrollbarWidth: 'thin', scrollbarColor: '#c8d0dd transparent' }}>
-        {/* A4 paper */}
-        <div style={{
-          width: 794,
-          minHeight: 1123,
-          background: '#fff',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-          borderRadius: '3px',
-          transformOrigin: 'top center',
-          transform: 'scale(0.82)',
-          marginBottom: '-190px', // compensate for scale shrink so scrolling feels natural
-          flexShrink: 0,
-          overflow: 'hidden'
-        }}>
-          {preview}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-// ─── Load session from localStorage ─────────────────────────────────────
+// ─── Load Session from localStorage ─────────────────────────────────────
 export const loadSession = (sessionId) => {
   try {
     const raw = localStorage.getItem(`resume_draft_${sessionId}`);
@@ -189,7 +306,7 @@ export const loadSession = (sessionId) => {
   return null;
 };
 
-// ─── Save session to localStorage ────────────────────────────────────────
+// ─── Save Session to localStorage ────────────────────────────────────────
 export const saveSession = (sessionId, data) => {
   try {
     if (sessionId) localStorage.setItem(`resume_draft_${sessionId}`, JSON.stringify(data));

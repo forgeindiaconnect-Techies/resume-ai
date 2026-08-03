@@ -6,23 +6,22 @@ import {
   SkillTagInput, EditorShell, loadSession, saveSession
 } from './editorUtils';
 
-const ACCENT = '#0f172a';
-
 const buildFromSession = (session) => ({
   title: session.title || 'Executive Resume',
   templateId: 'executive',
   personalInfo: {
-    name: session.personalInfo?.name || '',
-    role: session.personalInfo?.role || '',
-    email: session.personalInfo?.email || '',
-    phone: session.personalInfo?.phone || '',
-    location: session.personalInfo?.location || '',
-    linkedin: session.personalInfo?.linkedin || '',
+    name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Alexander Wright',
+    role: session.personalInfo?.role || session.role || 'Executive Leader',
+    email: session.personalInfo?.email || session.email || 'user@forgeindiaconnect.app',
+    phone: session.personalInfo?.phone || session.phone || '+1 (555) 000-0000',
+    location: session.personalInfo?.location || session.location || 'New York, NY',
+    linkedin: session.personalInfo?.linkedin || session.linkedin || '',
   },
-  summary: session.personalInfo?.summary || '',
+  summary: session.personalInfo?.summary || session.summary || session.objective || '',
   competencies: [
     ...(session.skills?.programming || []),
     ...(session.skills?.frameworks || []),
+    ...(session.skills?.databases || [])
   ].filter(Boolean),
   experience: (session.experience || []).map((e, i) => ({
     id: i + 1,
@@ -45,7 +44,7 @@ const defaultData = () => ({
   title: 'Executive Resume',
   templateId: 'executive',
   personalInfo: {
-    name: 'Your Full Name',
+    name: 'Alexander Wright',
     role: 'Chief Executive Officer',
     email: 'name@company.com',
     phone: '+1 (555) 000-0000',
@@ -67,6 +66,9 @@ const defaultData = () => ({
 const ExecutiveEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
+  const [accentColor, setAccentColor] = useState('#0f172a');
+  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  
   const [data, setData] = useState(() => {
     const session = loadSession(sessionId);
     return session ? buildFromSession(session) : defaultData();
@@ -110,72 +112,81 @@ const ExecutiveEditor = () => {
   };
 
   return (
-    <EditorShell accentColor={ACCENT} templateName="Executive" templateEmoji="🏛" onDownload={() => window.print()} saveStatus={saveStatus}
-      preview={<ExecutiveLayout data={previewData} role={data.personalInfo.role} customColor={ACCENT} />}>
+    <EditorShell 
+      accentColor={accentColor} 
+      onColorChange={setAccentColor}
+      fontFamily={fontFamily}
+      onFontChange={setFontFamily}
+      templateName="Executive" 
+      templateEmoji="🏛" 
+      onDownload={() => window.print()} 
+      saveStatus={saveStatus}
+      preview={<ExecutiveLayout data={previewData} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
+    >
 
-      <SectionHeader icon="👤" title="Personal Details" accent={ACCENT} />
-      <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={ACCENT} />
-      <Field label="Professional Title" name="role" value={data.personalInfo.role} onChange={setPersonal} accent={ACCENT} placeholder="e.g. Chief Executive Officer" />
+      <SectionHeader icon="👤" title="Personal Details" accent={accentColor} />
+      <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={accentColor} placeholder="e.g. Alexander Wright" />
+      <Field label="Professional Title" name="role" value={data.personalInfo.role} onChange={setPersonal} accent={accentColor} placeholder="e.g. Chief Executive Officer" />
       <Grid2>
-        <Field label="Email" name="email" value={data.personalInfo.email} onChange={setPersonal} accent={ACCENT} />
-        <Field label="Phone" name="phone" value={data.personalInfo.phone} onChange={setPersonal} accent={ACCENT} />
+        <Field label="Email" name="email" value={data.personalInfo.email} onChange={setPersonal} accent={accentColor} />
+        <Field label="Phone" name="phone" value={data.personalInfo.phone} onChange={setPersonal} accent={accentColor} />
       </Grid2>
       <Grid2>
-        <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={ACCENT} />
-        <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={ACCENT} />
+        <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={accentColor} />
+        <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={accentColor} />
       </Grid2>
 
-      <SectionHeader icon="📝" title="Executive Summary" accent={ACCENT} />
+      <SectionHeader icon="📝" title="Executive Summary" accent={accentColor} />
       <TextArea label="Summary" value={data.summary} rows={6}
-        onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={ACCENT}
+        onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={accentColor}
         placeholder="Visionary leader with expertise in..." />
 
-      <SectionHeader icon="⚡" title="Core Competencies & Leadership Skills" accent={ACCENT} />
-      <SkillTagInput label="Add competency and press Enter" skills={data.competencies} onAdd={addComp} onRemove={removeComp} accent={ACCENT} placeholder="e.g. Strategic Leadership" />
+      <SectionHeader icon="⚡" title="Core Competencies & Leadership Skills" accent={accentColor} />
+      <SkillTagInput label="Add competency and press Enter" skills={data.competencies} onAdd={addComp} onRemove={removeComp} accent={accentColor} placeholder="e.g. Strategic Leadership" />
 
-      <SectionHeader icon="💼" title="Work Experience" accent={ACCENT} />
+      <SectionHeader icon="💼" title="Work Experience" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {data.experience.map((exp, idx) => (
-          <ItemCard key={exp.id} onDelete={() => delExp(exp.id)} accent={ACCENT} index={idx}>
+          <ItemCard key={exp.id} onDelete={() => delExp(exp.id)} accent={accentColor} index={idx}>
             <Grid2>
-              <Field label="Job Title" value={exp.title} onChange={e => updExp(exp.id, 'title', e.target.value)} accent={ACCENT} />
-              <Field label="Company" value={exp.company} onChange={e => updExp(exp.id, 'company', e.target.value)} accent={ACCENT} />
+              <Field label="Job Title" value={exp.title} onChange={e => updExp(exp.id, 'title', e.target.value)} accent={accentColor} />
+              <Field label="Company" value={exp.company} onChange={e => updExp(exp.id, 'company', e.target.value)} accent={accentColor} />
             </Grid2>
-            <Field label="Duration" value={exp.duration} onChange={e => updExp(exp.id, 'duration', e.target.value)} accent={ACCENT} placeholder="2020 – Present" />
-            <TextArea label="Key Achievements (one per line)" value={exp.desc} onChange={e => updExp(exp.id, 'desc', e.target.value)} accent={ACCENT} rows={4} placeholder="• Led global expansion into 5 new markets&#10;• Grew revenue by 40%" />
+            <Field label="Duration" value={exp.duration} onChange={e => updExp(exp.id, 'duration', e.target.value)} accent={accentColor} placeholder="2020 – Present" />
+            <TextArea label="Key Achievements (one per line)" value={exp.desc} onChange={e => updExp(exp.id, 'desc', e.target.value)} accent={accentColor} rows={4} placeholder="• Led global expansion into 5 new markets&#10;• Grew revenue by 40%" />
           </ItemCard>
         ))}
       </div>
-      <AddButton label="+ Add Work Experience" onClick={addExp} accent={ACCENT} />
+      <AddButton label="+ Add Work Experience" onClick={addExp} accent={accentColor} />
 
-      <SectionHeader icon="🎓" title="Education" accent={ACCENT} />
+      <SectionHeader icon="🎓" title="Education" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {data.education.map((edu, idx) => (
-          <ItemCard key={edu.id} onDelete={() => delEdu(edu.id)} accent={ACCENT} index={idx}>
-            <Field label="Degree / Qualification" value={edu.degree} onChange={e => updEdu(edu.id, 'degree', e.target.value)} accent={ACCENT} />
+          <ItemCard key={edu.id} onDelete={() => delEdu(edu.id)} accent={accentColor} index={idx}>
+            <Field label="Degree / Qualification" value={edu.degree} onChange={e => updEdu(edu.id, 'degree', e.target.value)} accent={accentColor} />
             <Grid2>
-              <Field label="Institution" value={edu.institution} onChange={e => updEdu(edu.id, 'institution', e.target.value)} accent={ACCENT} />
-              <Field label="Years" value={edu.tenure} onChange={e => updEdu(edu.id, 'tenure', e.target.value)} accent={ACCENT} />
+              <Field label="Institution" value={edu.institution} onChange={e => updEdu(edu.id, 'institution', e.target.value)} accent={accentColor} />
+              <Field label="Years" value={edu.tenure} onChange={e => updEdu(edu.id, 'tenure', e.target.value)} accent={accentColor} />
             </Grid2>
           </ItemCard>
         ))}
       </div>
-      <AddButton label="+ Add Education" onClick={addEdu} accent={ACCENT} />
+      <AddButton label="+ Add Education" onClick={addEdu} accent={accentColor} />
 
-      <SectionHeader icon="🏆" title="Certifications & Awards" accent={ACCENT} />
+      <SectionHeader icon="🏆" title="Certifications & Awards" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {data.certifications.map((cert, i) => (
           <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <Field label="" value={cert} onChange={e => updCert(i, e.target.value)} accent={ACCENT} placeholder="e.g. PMP – Project Management Professional" />
+            <Field label="" value={cert} onChange={e => updCert(i, e.target.value)} accent={accentColor} placeholder="e.g. PMP – Project Management Professional" />
             <button onClick={() => delCert(i)} style={{ background: '#fee2e2', border: 'none', color: '#ef4444', width: 32, height: 32, borderRadius: '6px', cursor: 'pointer', fontWeight: 900, flexShrink: 0, fontSize: '1rem' }}>×</button>
           </div>
         ))}
       </div>
-      <AddButton label="+ Add Certification" onClick={addCert} accent={ACCENT} />
+      <AddButton label="+ Add Certification" onClick={addCert} accent={accentColor} />
 
-      <SectionHeader icon="📋" title="References" accent={ACCENT} />
+      <SectionHeader icon="📋" title="References" accent={accentColor} />
       <TextArea label="References Note" value={data.references} rows={2}
-        onChange={e => setData(d => ({ ...d, references: e.target.value }))} accent={ACCENT} />
+        onChange={e => setData(d => ({ ...d, references: e.target.value }))} accent={accentColor} />
 
       <div style={{ height: '2rem' }} />
     </EditorShell>

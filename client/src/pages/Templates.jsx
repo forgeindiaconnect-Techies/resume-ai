@@ -36,31 +36,20 @@ const Templates = () => {
     fetchTemplatesData();
   }, []);
 
-  const handleUseTemplate = async (template) => {
-    try {
-      const guestId = localStorage.getItem('guestSessionId');
-      
-      const res = await useTemplate(template._id, {
-        userId: null,
-        guestId: guestId
-      });
+  const handleUseTemplate = (template) => {
+    const layoutName = (template.layout?.layout || template.name || 'modern').toLowerCase();
+    const editorRouteMap = {
+      executive:    '/editor/executive',
+      creative:     '/editor/creative',
+      modern:       '/editor/modern',
+      professional: '/editor/professional',
+      minimal:      '/editor/minimal',
+    };
+    const editorRoute = editorRouteMap[layoutName] || '/editor/modern';
 
-      if (res.data && res.data.data) {
-        const newResume = res.data.data;
-        const slug = template.name.toLowerCase().replace(/\s+/g, '-');
-        localStorage.setItem('selectedTemplateSlug', slug);
-        localStorage.setItem('selectedJobRole', template.name);
-        localStorage.setItem('activeResumeSessionId', newResume._id);
-        navigate(`/builder/${newResume._id}`);
-      }
-    } catch (err) {
-      console.error('Error starting template session:', err);
-      // Fallback
-      const slug = template.name.toLowerCase().replace(/\s+/g, '-');
-      localStorage.setItem('selectedTemplateSlug', slug);
-      localStorage.setItem('selectedJobRole', template.name);
-      navigate('/builder');
-    }
+    const newSessionId = 'session_' + Date.now();
+    localStorage.setItem('activeResumeSessionId', newSessionId);
+    navigate(`${editorRoute}/${newSessionId}`);
   };
 
   // Filter & Search Logic

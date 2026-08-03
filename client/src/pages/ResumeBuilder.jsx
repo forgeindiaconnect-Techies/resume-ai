@@ -28,6 +28,8 @@ import ResumeToolbar from '../components/resume/ResumeToolbar';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { generateResumeAI } from '../services/aiService';
 
+import PaymentModal from '../components/common/PaymentModal';
+
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
   const { resumeId } = useParams();
   const [activeStep, setActiveStep] = useState(1);
@@ -35,6 +37,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [saveStatus, setSaveStatus] = useState('Auto Saved ✔');
   const [resumeSessionId, setResumeSessionId] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   
   // AI Assistant States
   const [showAiAssistantModal, setShowAiAssistantModal] = useState(false);
@@ -69,33 +72,64 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           ? JSON.parse(res.data.data)
           : res.data.data;
 
-      setFormData((prev) => ({
-        ...prev,
+      const updatedData = {
+        title: `${aiJobTitle} Resume`,
         department: aiJobTitle,
+        templateId: formData.templateId || 'modern',
         personalInfo: {
-          ...prev.personalInfo,
-          summary: aiData.summary || prev.personalInfo.summary
+          ...formData.personalInfo,
+          name: (formData.personalInfo?.name && formData.personalInfo.name !== 'Your Name') ? formData.personalInfo.name : 'Alexander Wright',
+          role: aiJobTitle,
+          summary: aiData.summary || formData.personalInfo.summary
         },
         skills: {
-          programming: aiData.skills || prev.skills.programming,
-          frameworks: prev.skills.frameworks,
-          databases: prev.skills.databases
+          programming: Array.isArray(aiData.skills) ? aiData.skills : (aiSkillsInput ? aiSkillsInput.split(',').map(s => s.trim()).filter(Boolean) : ['React.js', 'Node.js', 'TypeScript']),
+          frameworks: ['REST APIs', 'Redux Toolkit', 'Tailwind CSS'],
+          databases: ['PostgreSQL', 'MongoDB', 'AWS']
         },
         experience: aiData.experience && aiData.experience.length > 0 ? aiData.experience.map(e => ({
-          role: e.position || aiJobTitle,
-          company: e.company || 'Tech Company',
+          role: e.position || e.title || aiJobTitle,
+          company: e.company || 'Enterprise Solutions Ltd.',
           duration: e.duration || '2022 - Present',
-          desc: e.description || ''
-        })) : prev.experience,
+          desc: e.description || e.desc || ''
+        })) : [
+          {
+            role: `Senior ${aiJobTitle}`,
+            company: 'Apex Digital Systems',
+            duration: '2022 - Present',
+            desc: `Spearheaded key developments using ${aiSkillsInput || 'modern technical stack'}.\nOptimized overall system efficiency by 35%.`
+          }
+        ],
         projects: aiData.projects && aiData.projects.length > 0 ? aiData.projects.map(p => ({
-          name: p.title || 'Project',
-          technology: aiSkillsInput || '',
-          desc: p.description || ''
-        })) : prev.projects,
-        certificates: aiData.certifications && aiData.certifications.length > 0 ? aiData.certifications.map(c => ({
-          name: typeof c === 'string' ? c : c.name || 'Certification'
-        })) : prev.certificates
+          name: p.title || p.name || `${aiJobTitle} Platform`,
+          technology: aiSkillsInput || 'React, Node.js',
+          desc: p.description || p.desc || ''
+        })) : [
+          {
+            name: `${aiJobTitle} Automation Suite`,
+            technology: aiSkillsInput || 'React, Node.js, Cloud',
+            desc: 'Built scalable web solution handling high-concurrency requests with 99.9% uptime.'
+          }
+        ],
+        education: formData.education.length > 0 ? formData.education : [
+          { degree: 'B.S. in Computer Science', institution: 'University of Washington', tenure: '2016 - 2020', cgpa: '3.9' }
+        ]
+      };
+
+      setFormData(prev => ({
+        ...prev,
+        department: aiJobTitle,
+        personalInfo: updatedData.personalInfo,
+        skills: updatedData.skills,
+        experience: updatedData.experience,
+        projects: updatedData.projects,
+        education: updatedData.education
       }));
+
+      const activeSessionId = resumeSessionId || localStorage.getItem('activeResumeSessionId') || 'session_ai_' + Date.now();
+      localStorage.setItem('activeResumeSessionId', activeSessionId);
+      localStorage.setItem(`resume_draft_${activeSessionId}`, JSON.stringify(updatedData));
+      localStorage.setItem('localResumeDraft', JSON.stringify(updatedData));
 
       setShowAiGeneratorModal(false);
       setSaveStatus('AI Generated & Saved ✔');
@@ -190,6 +224,67 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         }
 
         const savedSessionId = resumeId || localStorage.getItem('activeResumeSessionId');
+
+        // 1. Check local draft storage first for instant responsiveness
+        let localDraftRaw = null;
+        if (savedSessionId) {
+          localDraftRaw = localStorage.getItem(`resume_draft_${savedSessionId}`);
+        }
+        if (!localDraftRaw) {
+          localDraftRaw = localStorage.getItem('localResumeDraft');
+        }
+
+        if (localDraftRaw) {
+          try {
+            const draftObj = JSON.parse(localDraftRaw);
+            if (draftObj) {
+              setResumeSessionId(savedSessionId || 'local_session');
+              setFormData(prev => ({
+                ...prev,
+                title: draftObj.title || prev.title,
+                templateId: draftObj.templateId || prev.templateId,
+                department: draftObj.department || prev.department,
+                personalInfo: {
+                  name: draftObj.personalInfo?.name || draftObj.personalInfo?.fullName || prev.personalInfo.name,
+                  email: draftObj.personalInfo?.email || prev.personalInfo.email,
+                  phone: draftObj.personalInfo?.phone || prev.personalInfo.phone,
+                  location: draftObj.personalInfo?.location || prev.personalInfo.location,
+                  linkedin: draftObj.personalInfo?.linkedin || prev.personalInfo.linkedin,
+                  github: draftObj.personalInfo?.github || prev.personalInfo.github,
+                  portfolio: draftObj.personalInfo?.portfolio || prev.personalInfo.portfolio,
+                  summary: draftObj.personalInfo?.summary || draftObj.summary || prev.personalInfo.summary,
+                },
+                skills: {
+                  programming: Array.isArray(draftObj.skills?.programming) ? draftObj.skills.programming : (Array.isArray(draftObj.skills) ? draftObj.skills : []),
+                  frameworks: Array.isArray(draftObj.skills?.frameworks) ? draftObj.skills.frameworks : [],
+                  databases: Array.isArray(draftObj.skills?.databases) ? draftObj.skills.databases : [],
+                },
+                experience: (draftObj.experience || []).map(e => ({
+                  role: e.title || e.role || e.position || '',
+                  company: e.company || '',
+                  duration: e.duration || '',
+                  desc: e.desc || e.description || ''
+                })),
+                education: (draftObj.education || []).map(e => ({
+                  degree: e.degree || '',
+                  institution: e.institution || e.school || '',
+                  tenure: e.tenure || e.year || '',
+                  cgpa: e.cgpa || ''
+                })),
+                projects: (draftObj.projects || []).map(p => ({
+                  name: p.name || p.title || '',
+                  technology: p.technology || '',
+                  desc: p.desc || p.description || ''
+                })),
+              }));
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            console.error('Failed to parse local draft:', e);
+          }
+        }
+
         if (savedSessionId) {
           const resSession = await fetch(`http://localhost:5000/api/resume-session/${savedSessionId}`, {
             headers: {
@@ -387,6 +482,15 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     if (formData.skills.programming.length > 0) score += 4;
     if (formData.skills.frameworks.length > 0) score += 3;
     return Math.min(score, 98);
+  };
+
+  const handleDownload = () => {
+    const isPremium = localStorage.getItem('user_premium') === 'true';
+    if (!isPremium) {
+      setShowPaymentModal(true);
+    } else {
+      window.print();
+    }
   };
 
   // Handlers for personal details
@@ -588,49 +692,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     }
   };
 
-  const handleDownload = () => {
-    if (user?.subscription !== 'Premium') {
-      setShowUpgradeModal(true);
-      return;
-    }
-    const printContent = document.getElementById('resume-preview-sheet').innerHTML;
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
 
-    const doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write(`
-      <html>
-        <head>
-          <title>${formData.title}</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:wght@700;800;900&display=swap');
-            body { margin: 0; font-family: 'Inter', sans-serif; }
-            @media print {
-              @page { margin: 0; size: A4; }
-              body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            }
-          </style>
-        </head>
-        <body onload="window.print();">
-          <div class="resume-print-wrapper" style="width: 100%; max-width: 210mm; min-height: 297mm; margin: 0 auto; box-sizing: border-box; background: white;">
-            ${printContent}
-          </div>
-        </body>
-      </html>
-    `);
-    doc.close();
-
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 3000);
-  };
 
   const runAiAssistant = async (taskName) => {
     setAiAssistantTask(taskName);
@@ -811,7 +873,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
           {user?.subscription !== 'Premium' && (
             <button 
-              onClick={() => onUpgradeRedirect({ type: 'builder', formData })}
+              onClick={() => setShowPaymentModal(true)}
               style={{
                 background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
                 color: 'white',
@@ -1604,6 +1666,12 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         )}
       </AnimatePresence>
 
+      {/* Razorpay Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onSuccessDownload={() => window.print()}
+      />
     </div>
   );
 };
