@@ -360,8 +360,12 @@ export const EditorShell = ({
 // ─── Load Session from localStorage ─────────────────────────────────────
 export const loadSession = (sessionId) => {
   try {
-    const raw = localStorage.getItem(`resume_draft_${sessionId}`);
-    if (raw) return JSON.parse(raw);
+    let raw = localStorage.getItem(`resume_draft_${sessionId}`);
+    if (!raw) raw = localStorage.getItem('localResumeDraft');
+    if (raw) {
+      raw = raw.replace(/enhancv\.com/gi, 'forgeindiaconnect.com');
+      return JSON.parse(raw);
+    }
   } catch (e) {}
   return null;
 };

@@ -241,6 +241,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
         if (localDraftRaw) {
           try {
+            localDraftRaw = localDraftRaw.replace(/enhancv\.com/gi, 'forgeindiaconnect.com');
             const draftObj = JSON.parse(localDraftRaw);
             if (draftObj) {
               setResumeSessionId(savedSessionId || 'local_session');
@@ -251,7 +252,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                 department: draftObj.department || prev.department,
                 personalInfo: {
                   name: draftObj.personalInfo?.name || draftObj.personalInfo?.fullName || prev.personalInfo.name,
-                  email: draftObj.personalInfo?.email || prev.personalInfo.email,
+                  email: (draftObj.personalInfo?.email || prev.personalInfo.email || '').replace(/enhancv\.com/gi, 'forgeindiaconnect.com'),
                   phone: draftObj.personalInfo?.phone || prev.personalInfo.phone,
                   location: draftObj.personalInfo?.location || prev.personalInfo.location,
                   linkedin: draftObj.personalInfo?.linkedin || prev.personalInfo.linkedin,
