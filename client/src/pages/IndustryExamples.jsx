@@ -121,9 +121,12 @@ const initialRoles = [
   { id: 'recruiter',    title: 'Talent Acquisition',  category: 'Human resources resume examples', layout: 'modern',       color: '#6d28d9' },
 
   // --- INFORMATION TECHNOLOGY ---
-  { id: 'it_dir',       title: 'IT Director',         category: 'Information technology resume examples', layout: 'enhancv', color: '#0b2545' },
-  { id: 'sys_admin',    title: 'System Administrator',category: 'Information technology resume examples', layout: 'professional', color: '#1e293b' },
+  { id: 'it_dir',       title: 'IT Director',         category: 'Information technology resume examples', layout: 'modern',       color: '#0b2545' },
+  { id: 'sys_admin',    title: 'System Administrator',category: 'Information technology resume examples', layout: 'enhancv',      color: '#1e293b' },
   { id: 'cyber_sec',    title: 'Cybersecurity Analyst',category:'Information technology resume examples', layout: 'modern',       color: '#134e4a' },
+  { id: 'cloud_arch',   title: 'Cloud Architect',     category: 'Information technology resume examples', layout: 'modern',       color: '#0284c7' },
+  { id: 'devops_spec',  title: 'DevOps Specialist',   category: 'Information technology resume examples', layout: 'enhancv',      color: '#1d4ed8' },
+  { id: 'net_eng',      title: 'Network Engineer',    category: 'Information technology resume examples', layout: 'modern',       color: '#0f172a' },
 
   // --- LEGAL ---
   { id: 'lawyer',       title: 'Attorney / Lawyer',   category: 'Legal resume examples', layout: 'enhancv',      color: '#0f172a' },
@@ -192,6 +195,68 @@ const resumeDataByRole = {
     ]
   },
 
+  'IT Director': {
+    name: 'Marcus Vance',
+    role: 'IT Director | Cloud Transformation | Enterprise Security | Infrastructure',
+    contact: { email: 'm.vance@enhancv.com', phone: '+1-(555)-789-0123', location: 'San Jose, California', linkedin: 'linkedin.com/in/marcus-vance-it' },
+    objective: 'Results-driven IT Director with 10+ years of experience managing enterprise IT infrastructure, cloud migration initiatives, and multi-million dollar technology budgets. Led a 35-person engineering team overseeing 99.99% system uptime.',
+    skills: { languages: 'Enterprise IT Strategy · AWS Cloud Migration · Cybersecurity Governance · Disaster Recovery · Budgeting & P&L · Vendor Management · Agile ITSM' },
+    experience: [
+      { company: 'Apex Technology Partners', location: 'San Jose, CA', title: 'Director of Information Technology', duration: '03/2021 - Present', desc: '• Oversaw global IT infrastructure operations across 12 offices supporting 3,500+ employees.\n• Directed multi-year hybrid cloud migration to AWS, reducing annual server hosting costs by $420,000.\n• Implemented Zero-Trust Security architecture and ISO 27001 compliance standards.' },
+      { company: 'Vanguard Systems Solutions', location: 'San Francisco, CA', title: 'Senior Infrastructure Manager', duration: '06/2017 - 02/2021', desc: '• Managed daily operations of enterprise data centers, SAN storage networks, and Cisco VoIP telephony systems.' }
+    ],
+    education: [{ degree: 'Bachelor of Science in Computer Information Systems', institution: 'San Jose State University', location: 'San Jose, CA', tenure: '09/2012 - 06/2016' }],
+    achievements: [
+      { title: '$420K Cloud Savings', desc: 'Migrated on-premise infrastructure to AWS hybrid cloud architecture.' },
+      { title: '99.99% Uptime SLA', desc: 'Maintained continuous high-availability systems for enterprise applications.' },
+      { title: 'ISO 27001 Certified', desc: 'Secured full compliance certification for global security standards.' }
+    ],
+    languagesList: [
+      { name: 'English', level: 'Native •••••' },
+      { name: 'German', level: 'Professional ••••' }
+    ],
+    interests: [
+      { title: 'Cloud Innovation', desc: 'Passionate about modern serverless architecture and containerized microservices.' },
+      { title: 'Cybersecurity Research', desc: 'Following threat intelligence feeds and zero-day vulnerability patches.' }
+    ],
+    training: [
+      { title: 'AWS Certified Solutions Architect – Professional', org: 'Amazon Web Services', year: '2023' },
+      { title: 'CISSP – Certified Information Systems Security Professional', org: '(ISC)²', year: '2021' }
+    ]
+  },
+
+  'System Administrator': {
+    name: 'Ethan Hunt',
+    role: 'Senior System Administrator | Linux/Windows | Virtualization | Active Directory',
+    contact: { email: 'e.hunt@enhancv.com', phone: '+1-(555)-234-5678', location: 'Seattle, Washington', linkedin: 'linkedin.com/in/ethan-hunt-sysadmin' },
+    objective: 'Proactive Senior System Administrator with 7+ years of experience administering Linux/Windows servers, Active Directory, VMware ESXi cluster environments, and automated bash/Python scripting.',
+    skills: { languages: 'Linux (RHEL/Ubuntu) · Windows Server 2022 · Active Directory · VMware vSphere · Bash · Python Scripting · PowerShell · Ansible · Docker' },
+    experience: [
+      { company: 'CloudScale Managed Services', location: 'Seattle, WA', title: 'Senior System Administrator', duration: '01/2020 - Present', desc: '• Maintained 250+ virtualized Linux & Windows server instances with 99.98% operational reliability.\n• Automated routine system patch management using Ansible playbooks, saving 15 hours per week.' }
+    ],
+    education: [{ degree: 'Bachelor of Science in Information Technology', institution: 'University of Washington', location: 'Seattle, WA', tenure: '2015 - 2019' }],
+    achievements: [
+      { title: 'Automated Patch Management', desc: 'Reduced server patching cycles from 3 days to 4 hours using Ansible.' },
+      { title: 'Disaster Recovery Preparedness', desc: 'Engineered automated offsite Veeam backup pipeline with sub-15-min RTO.' }
+    ]
+  },
+
+  'Cybersecurity Analyst': {
+    name: 'Sophia Chen',
+    role: 'Cybersecurity Threat Analyst | SIEM | Incident Response | SOC',
+    contact: { email: 's.chen@enhancv.com', phone: '+1-(555)-901-2345', location: 'Austin, Texas', linkedin: 'linkedin.com/in/sophia-chen-sec' },
+    objective: 'Certified Security Analyst (CEH) with 5+ years of experience conducting vulnerability assessments, SIEM log monitoring (Splunk), penetration testing, and incident response for financial enterprise networks.',
+    skills: { languages: 'Splunk SIEM · Incident Response · Vulnerability Assessment · Penetration Testing · Wireshark · Python · Threat Hunting · Network Security' },
+    experience: [
+      { company: 'CyberGuard Operations Center', location: 'Austin, TX', title: 'Lead SOC Security Analyst', duration: '04/2021 - Present', desc: '• Monitored real-time threat alerts via Splunk SIEM across 10,000+ endpoints.\n• Investigated and mitigated 45+ critical malware & phishing security incidents.' }
+    ],
+    education: [{ degree: 'Bachelor of Science in Cybersecurity & Networking', institution: 'The University of Texas at Austin', location: 'Austin, TX', tenure: '2016 - 2020' }],
+    achievements: [
+      { title: '45+ Incident Mitigations', desc: 'Zero data breach incidents under active SOC surveillance.' },
+      { title: 'CEH Certified', desc: 'Passed Certified Ethical Hacker exam with distinction.' }
+    ]
+  },
+
   'Actor': {
     name: 'Ava Johnson',
     role: 'Actor | Character Development | Film & TV',
@@ -251,7 +316,7 @@ const IndustryExamples = () => {
   const previewRef = React.useRef(null);
 
   useEffect(() => {
-    const rawHash = location.hash ? location.hash.replace('#', '') : '';
+    const rawHash = location.hash ? location.hash.replace('#', '').toLowerCase().trim() : '';
     if (rawHash && categorySlugMap[rawHash]) {
       const catName = categorySlugMap[rawHash];
       setSelectedCategory(catName);
@@ -298,7 +363,7 @@ const IndustryExamples = () => {
     setSelectedCategory(catName);
     setSearchQuery('');
     const slug = getSlugByCategory(catName);
-    window.history.replaceState(null, '', `#${slug}`);
+    navigate(`/industry-examples#${slug}`, { replace: true });
 
     const categoryRoles = initialRoles.filter(r => r.category === catName || r.altCategory === catName);
     if (categoryRoles.length > 0) {

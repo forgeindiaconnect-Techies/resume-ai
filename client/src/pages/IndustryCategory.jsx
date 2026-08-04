@@ -23,17 +23,10 @@ const IndustryCategory = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadExamples = async () => {
-      const data = await getExamplesByIndustry(industryId);
-      if (data && data.length > 0) {
-        setExamples(data);
-      } else {
-        setExamples(fallbackExamples[industryId] || fallbackExamples['it']);
-      }
-      setLoading(false);
-    };
-    loadExamples();
-  }, [industryId]);
+    if (industryId) {
+      navigate(`/industry-examples#${industryId}`, { replace: true });
+    }
+  }, [industryId, navigate]);
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: '5rem', fontFamily: "'Inter', sans-serif" }}>
