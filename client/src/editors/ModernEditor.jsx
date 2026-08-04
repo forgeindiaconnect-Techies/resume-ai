@@ -20,15 +20,15 @@ const buildFromSession = (session) => ({
   },
   summary: session.personalInfo?.summary || session.summary || session.objective || '',
   skills: {
-    languages: Array.isArray(session.skills?.programming) 
-      ? session.skills.programming 
-      : (typeof session.skills?.languages === 'string' ? session.skills.languages.split(',').map(s => s.trim()) : ['JavaScript', 'TypeScript', 'Python']),
-    frameworks: Array.isArray(session.skills?.frameworks) 
-      ? session.skills.frameworks 
-      : (typeof session.skills?.frameworks === 'string' ? session.skills.frameworks.split(',').map(s => s.trim()) : ['React', 'Node.js', 'Express']),
-    tools: Array.isArray(session.skills?.databases) 
-      ? session.skills.databases 
-      : (typeof session.skills?.tools === 'string' ? session.skills.tools.split(',').map(s => s.trim()) : ['Docker', 'PostgreSQL', 'AWS']),
+    languages: Array.isArray(session.skills?.programming)
+      ? session.skills.programming
+      : (typeof session.skills?.languages === 'string' ? session.skills.languages.split(',').map(s => s.trim()) : []),
+    frameworks: Array.isArray(session.skills?.frameworks)
+      ? session.skills.frameworks
+      : (typeof session.skills?.frameworks === 'string' ? session.skills.frameworks.split(',').map(s => s.trim()) : []),
+    tools: Array.isArray(session.skills?.databases)
+      ? session.skills.databases
+      : (typeof session.skills?.tools === 'string' ? session.skills.tools.split(',').map(s => s.trim()) : []),
   },
   projects: (session.projects || []).map((p, i) => ({
     id: i + 1,
@@ -50,6 +50,22 @@ const buildFromSession = (session) => ({
     institution: e.institution || e.school || '',
     tenure: e.tenure || '',
     cgpa: e.cgpa || '',
+  })),
+  certificates: (session.certificates || []).map((c, i) => ({
+    id: i + 1,
+    name: c.name || c.title || '',
+    organization: c.organization || c.org || '',
+    year: c.year || '',
+  })),
+  achievements: (session.achievements || []).map((a, i) => ({
+    id: i + 1,
+    title: a.title || '',
+    desc: a.desc || a.description || '',
+  })),
+  languagesList: (session.languagesList || []).map((l, i) => ({
+    id: i + 1,
+    name: l.name || '',
+    level: l.level || '',
   })),
 });
 
@@ -80,6 +96,9 @@ const defaultData = () => ({
   education: [
     { id: 1, degree: 'B.S. in Computer Science', institution: 'University of Washington', tenure: '2016 – 2020', cgpa: '3.9' }
   ],
+  certificates: [],
+  achievements: [],
+  languagesList: [],
 });
 
 const ModernEditor = () => {
@@ -100,21 +119,44 @@ const ModernEditor = () => {
   }, [data, sessionId]);
 
   const setPersonal = (e) => setData(d => ({ ...d, personalInfo: { ...d.personalInfo, [e.target.name]: e.target.value } }));
+
+  // Skills
   const addLang = (sk) => setData(d => ({ ...d, skills: { ...d.skills, languages: [...d.skills.languages, sk] } }));
   const removeLang = (i) => setData(d => ({ ...d, skills: { ...d.skills, languages: d.skills.languages.filter((_, idx) => idx !== i) } }));
   const addFw = (sk) => setData(d => ({ ...d, skills: { ...d.skills, frameworks: [...d.skills.frameworks, sk] } }));
   const removeFw = (i) => setData(d => ({ ...d, skills: { ...d.skills, frameworks: d.skills.frameworks.filter((_, idx) => idx !== i) } }));
   const addTool = (sk) => setData(d => ({ ...d, skills: { ...d.skills, tools: [...d.skills.tools, sk] } }));
   const removeTool = (i) => setData(d => ({ ...d, skills: { ...d.skills, tools: d.skills.tools.filter((_, idx) => idx !== i) } }));
+
+  // Projects
   const addProj = () => setData(d => ({ ...d, projects: [...d.projects, { id: Date.now(), title: '', technology: '', github: '', desc: '' }] }));
   const delProj = (id) => setData(d => ({ ...d, projects: d.projects.filter(p => p.id !== id) }));
   const updProj = (id, f, v) => setData(d => ({ ...d, projects: d.projects.map(p => p.id === id ? { ...p, [f]: v } : p) }));
+
+  // Experience
   const addExp = () => setData(d => ({ ...d, experience: [...d.experience, { id: Date.now(), title: '', company: '', duration: '', desc: '' }] }));
   const delExp = (id) => setData(d => ({ ...d, experience: d.experience.filter(e => e.id !== id) }));
   const updExp = (id, f, v) => setData(d => ({ ...d, experience: d.experience.map(e => e.id === id ? { ...e, [f]: v } : e) }));
+
+  // Education
   const addEdu = () => setData(d => ({ ...d, education: [...d.education, { id: Date.now(), degree: '', institution: '', tenure: '', cgpa: '' }] }));
   const delEdu = (id) => setData(d => ({ ...d, education: d.education.filter(e => e.id !== id) }));
   const updEdu = (id, f, v) => setData(d => ({ ...d, education: d.education.map(e => e.id === id ? { ...e, [f]: v } : e) }));
+
+  // Certificates
+  const addCert = () => setData(d => ({ ...d, certificates: [...(d.certificates || []), { id: Date.now(), name: '', organization: '', year: '' }] }));
+  const delCert = (id) => setData(d => ({ ...d, certificates: d.certificates.filter(c => c.id !== id) }));
+  const updCert = (id, f, v) => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === id ? { ...c, [f]: v } : c) }));
+
+  // Achievements
+  const addAch = () => setData(d => ({ ...d, achievements: [...(d.achievements || []), { id: Date.now(), title: '', desc: '' }] }));
+  const delAch = (id) => setData(d => ({ ...d, achievements: d.achievements.filter(a => a.id !== id) }));
+  const updAch = (id, f, v) => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === id ? { ...a, [f]: v } : a) }));
+
+  // Languages
+  const addLangItem = () => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }));
+  const delLangItem = (id) => setData(d => ({ ...d, languagesList: d.languagesList.filter(l => l.id !== id) }));
+  const updLangItem = (id, f, v) => setData(d => ({ ...d, languagesList: d.languagesList.map(l => l.id === id ? { ...l, [f]: v } : l) }));
 
   const previewData = {
     name: data.personalInfo.name,
@@ -125,8 +167,9 @@ const ModernEditor = () => {
     experience: data.experience.map(e => ({ title: e.title, company: e.company, duration: e.duration, desc: e.desc })),
     education: data.education.map(e => ({ degree: e.degree, institution: e.institution, tenure: e.tenure, cgpa: e.cgpa })),
     projects: data.projects.map(p => ({ title: p.title, technology: p.technology, desc: p.desc })),
-    training: [],
-    languagesList: [],
+    training: (data.certificates || []).map(c => ({ title: c.name, org: c.organization, year: c.year })),
+    languagesList: data.languagesList || [],
+    achievements: data.achievements || [],
   };
 
   return (
@@ -160,24 +203,9 @@ const ModernEditor = () => {
         onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={accentColor} placeholder="Performance-driven engineer specializing in..." />
 
       <SectionHeader icon="⚙️" title="Technical Skills" accent={accentColor} />
-      <SkillTagInput label="Programming Languages" skills={data.skills.languages} onAdd={addLang} onRemove={removeLang} accent={accentColor} placeholder="e.g. JavaScript, Python, Go" />
+      <SkillTagInput label="Core Skills / Languages" skills={data.skills.languages} onAdd={addLang} onRemove={removeLang} accent={accentColor} placeholder="e.g. JavaScript, Python, Go" />
       <SkillTagInput label="Frameworks & Libraries" skills={data.skills.frameworks} onAdd={addFw} onRemove={removeFw} accent={accentColor} placeholder="e.g. React, Node.js, Django" />
       <SkillTagInput label="Tools & Databases" skills={data.skills.tools} onAdd={addTool} onRemove={removeTool} accent={accentColor} placeholder="e.g. Docker, PostgreSQL, AWS" />
-
-      <SectionHeader icon="🚀" title="Projects" accent={accentColor} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {data.projects.map((proj, idx) => (
-          <ItemCard key={proj.id} onDelete={() => delProj(proj.id)} accent={accentColor} index={idx}>
-            <Field label="Project Name" value={proj.title} onChange={e => updProj(proj.id, 'title', e.target.value)} accent={accentColor} placeholder="e.g. E-Commerce Platform" />
-            <Grid2>
-              <Field label="Tech Stack" value={proj.technology} onChange={e => updProj(proj.id, 'technology', e.target.value)} accent={accentColor} placeholder="React, Node.js, MongoDB" />
-              <Field label="GitHub Link" value={proj.github} onChange={e => updProj(proj.id, 'github', e.target.value)} accent={accentColor} placeholder="github.com/repo" />
-            </Grid2>
-            <TextArea label="Description & Impact" value={proj.desc} onChange={e => updProj(proj.id, 'desc', e.target.value)} accent={accentColor} rows={3} />
-          </ItemCard>
-        ))}
-      </div>
-      <AddButton label="+ Add Project" onClick={addProj} accent={accentColor} />
 
       <SectionHeader icon="💼" title="Work Experience" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -208,6 +236,60 @@ const ModernEditor = () => {
         ))}
       </div>
       <AddButton label="+ Add Education" onClick={addEdu} accent={accentColor} />
+
+      <SectionHeader icon="🚀" title="Projects" accent={accentColor} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {data.projects.map((proj, idx) => (
+          <ItemCard key={proj.id} onDelete={() => delProj(proj.id)} accent={accentColor} index={idx}>
+            <Field label="Project Name" value={proj.title} onChange={e => updProj(proj.id, 'title', e.target.value)} accent={accentColor} placeholder="e.g. E-Commerce Platform" />
+            <Grid2>
+              <Field label="Tech Stack" value={proj.technology} onChange={e => updProj(proj.id, 'technology', e.target.value)} accent={accentColor} placeholder="React, Node.js, MongoDB" />
+              <Field label="GitHub Link" value={proj.github} onChange={e => updProj(proj.id, 'github', e.target.value)} accent={accentColor} placeholder="github.com/repo" />
+            </Grid2>
+            <TextArea label="Description & Impact" value={proj.desc} onChange={e => updProj(proj.id, 'desc', e.target.value)} accent={accentColor} rows={3} />
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Project" onClick={addProj} accent={accentColor} />
+
+      <SectionHeader icon="🏆" title="Key Achievements" accent={accentColor} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data.achievements || []).map((ach, idx) => (
+          <ItemCard key={ach.id} onDelete={() => delAch(ach.id)} accent={accentColor} index={idx}>
+            <Field label="Achievement Title" value={ach.title} onChange={e => updAch(ach.id, 'title', e.target.value)} accent={accentColor} placeholder="e.g. Reduced costs by 30%" />
+            <TextArea label="Details" value={ach.desc} onChange={e => updAch(ach.id, 'desc', e.target.value)} accent={accentColor} rows={2} />
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Achievement" onClick={addAch} accent={accentColor} />
+
+      <SectionHeader icon="📜" title="Certifications & Training" accent={accentColor} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data.certificates || []).map((cert, idx) => (
+          <ItemCard key={cert.id} onDelete={() => delCert(cert.id)} accent={accentColor} index={idx}>
+            <Field label="Certificate Name" value={cert.name} onChange={e => updCert(cert.id, 'name', e.target.value)} accent={accentColor} placeholder="e.g. AWS Certified Solutions Architect" />
+            <Grid2>
+              <Field label="Issuing Organization" value={cert.organization} onChange={e => updCert(cert.id, 'organization', e.target.value)} accent={accentColor} placeholder="e.g. Amazon Web Services" />
+              <Field label="Year" value={cert.year} onChange={e => updCert(cert.id, 'year', e.target.value)} accent={accentColor} placeholder="e.g. 2023" />
+            </Grid2>
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Certification" onClick={addCert} accent={accentColor} />
+
+      <SectionHeader icon="🌐" title="Languages" accent={accentColor} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data.languagesList || []).map((lang, idx) => (
+          <ItemCard key={lang.id} onDelete={() => delLangItem(lang.id)} accent={accentColor} index={idx}>
+            <Grid2>
+              <Field label="Language" value={lang.name} onChange={e => updLangItem(lang.id, 'name', e.target.value)} accent={accentColor} placeholder="e.g. English" />
+              <Field label="Proficiency Level" value={lang.level} onChange={e => updLangItem(lang.id, 'level', e.target.value)} accent={accentColor} placeholder="e.g. Native, Fluent, Advanced" />
+            </Grid2>
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Language" onClick={addLangItem} accent={accentColor} />
+
       <div style={{ height: '2rem' }} />
     </EditorShell>
   );

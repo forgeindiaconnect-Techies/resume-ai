@@ -326,7 +326,7 @@ export const EditorShell = ({
             transform: 'scale(0.82)',
             marginBottom: '-190px',
             flexShrink: 0,
-            overflow: 'hidden'
+            overflow: 'visible'
           }}>
             {preview}
           </div>

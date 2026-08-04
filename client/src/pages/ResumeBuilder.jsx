@@ -281,6 +281,19 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                   technology: p.technology || '',
                   desc: p.desc || p.description || ''
                 })),
+                certificates: (draftObj.certificates || []).map(c => ({
+                  name: c.name || c.title || '',
+                  organization: c.organization || c.org || '',
+                  year: c.year || ''
+                })),
+                achievements: (draftObj.achievements || []).map(a => ({
+                  title: a.title || '',
+                  desc: a.desc || a.description || ''
+                })),
+                languagesList: (draftObj.languagesList || []).map(l => ({
+                  name: l.name || '',
+                  level: l.level || ''
+                })),
               }));
               setLoading(false);
               return;

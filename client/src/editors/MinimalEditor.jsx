@@ -63,6 +63,9 @@ const MinimalEditor = () => {
           institution: e.institution || '',
           tenure: e.tenure || '',
         })),
+        achievements: (session.achievements || []).map((a, i) => ({ id: i + 1, title: a.title || '', desc: a.desc || '' })),
+        certificates: (session.certificates || []).map((c, i) => ({ id: i + 1, name: c.name || c.title || '', organization: c.organization || c.org || '', year: c.year || '' })),
+        languagesList: (session.languagesList || []).map((l, i) => ({ id: i + 1, name: l.name || '', level: l.level || '' })),
       };
     }
     return defaultData();
@@ -93,6 +96,9 @@ const MinimalEditor = () => {
     experience: data.experience.map(e => ({ title: e.role, company: e.company, duration: e.duration, desc: e.desc })),
     education: data.education.map(e => ({ degree: e.degree, institution: e.institution, tenure: e.tenure })),
     projects: [],
+    training: (data.certificates || []).map(c => ({ title: c.name, org: c.organization, year: c.year })),
+    languagesList: data.languagesList || [],
+    achievements: data.achievements || [],
   };
 
   return (
@@ -144,6 +150,45 @@ const MinimalEditor = () => {
         ))}
       </div>
       <AddButton label="Add Education" onClick={addEdu} accent={ACCENT} />
+
+      <SectionHeader icon="🏆" title="Key Achievements" accent={ACCENT} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data.achievements || []).map((ach, idx) => (
+          <ItemCard key={ach.id} onDelete={() => setData(d => ({ ...d, achievements: d.achievements.filter(a => a.id !== ach.id) }))} accent={ACCENT} index={idx}>
+            <Field label="Achievement" value={ach.title} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, title: e.target.value } : a) }))} accent={ACCENT} placeholder="e.g. Reduced costs by 35%" />
+            <TextArea label="Details" value={ach.desc} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, desc: e.target.value } : a) }))} accent={ACCENT} rows={2} />
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Achievement" onClick={() => setData(d => ({ ...d, achievements: [...(d.achievements || []), { id: Date.now(), title: '', desc: '' }] }))} accent={ACCENT} />
+
+      <SectionHeader icon="📜" title="Certifications" accent={ACCENT} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data.certificates || []).map((cert, idx) => (
+          <ItemCard key={cert.id} onDelete={() => setData(d => ({ ...d, certificates: d.certificates.filter(c => c.id !== cert.id) }))} accent={ACCENT} index={idx}>
+            <Field label="Certificate" value={cert.name} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, name: e.target.value } : c) }))} accent={ACCENT} placeholder="e.g. CPA" />
+            <Grid2>
+              <Field label="Issuer" value={cert.organization} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, organization: e.target.value } : c) }))} accent={ACCENT} />
+              <Field label="Year" value={cert.year} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, year: e.target.value } : c) }))} accent={ACCENT} placeholder="2023" />
+            </Grid2>
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Certification" onClick={() => setData(d => ({ ...d, certificates: [...(d.certificates || []), { id: Date.now(), name: '', organization: '', year: '' }] }))} accent={ACCENT} />
+
+      <SectionHeader icon="🌐" title="Languages" accent={ACCENT} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data.languagesList || []).map((lang, idx) => (
+          <ItemCard key={lang.id} onDelete={() => setData(d => ({ ...d, languagesList: d.languagesList.filter(l => l.id !== lang.id) }))} accent={ACCENT} index={idx}>
+            <Grid2>
+              <Field label="Language" value={lang.name} onChange={e => setData(d => ({ ...d, languagesList: d.languagesList.map(l => l.id === lang.id ? { ...l, name: e.target.value } : l) }))} accent={ACCENT} placeholder="e.g. English" />
+              <Field label="Level" value={lang.level} onChange={e => setData(d => ({ ...d, languagesList: d.languagesList.map(l => l.id === lang.id ? { ...l, level: e.target.value } : l) }))} accent={ACCENT} placeholder="e.g. Native" />
+            </Grid2>
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Language" onClick={() => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }))} accent={ACCENT} />
+
       <div style={{ height: '2rem' }} />
     </EditorShell>
   );

@@ -70,8 +70,9 @@ const ProfessionalEditor = () => {
           institution: e.institution || '',
           tenure: e.tenure || '',
         })),
-        certifications: [],
-        languages: [],
+        certifications: (session.certificates || []).map((c, i) => ({ id: i + 1, name: c.name || c.title || '', org: c.organization || c.org || '', year: c.year || '' })),
+        languages: (session.languagesList || []).map(l => `${l.name}${l.level ? ' (' + l.level + ')' : ''}`).filter(Boolean),
+        achievements: (session.achievements || []).map((a, i) => ({ id: i + 1, title: a.title || '', desc: a.desc || '' })),
       };
     }
     return defaultData();
@@ -107,6 +108,9 @@ const ProfessionalEditor = () => {
     experience: data.experience.map(e => ({ title: e.role, company: e.company, duration: e.duration, desc: e.desc })),
     education: data.education.map(e => ({ degree: e.degree, institution: e.institution, tenure: e.tenure })),
     projects: data.certifications.map(c => ({ title: c.name, technology: c.org, desc: c.year })),
+    training: data.certifications.map(c => ({ title: c.name, org: c.org, year: c.year })),
+    languagesList: (data.languagesList || []),
+    achievements: data.achievements || [],
   };
 
   return (
@@ -183,6 +187,17 @@ const ProfessionalEditor = () => {
         ))}
       </div>
       <AddButton label="Add Certification" onClick={addCert} accent={accentColor} />
+
+      <SectionHeader icon="🏆" title="Key Achievements" accent={accentColor} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data.achievements || []).map((ach, idx) => (
+          <ItemCard key={ach.id} onDelete={() => setData(d => ({ ...d, achievements: d.achievements.filter(a => a.id !== ach.id) }))} accent={accentColor} index={idx}>
+            <Field label="Achievement Title" value={ach.title} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, title: e.target.value } : a) }))} accent={accentColor} placeholder="e.g. Delivered $8M project on time" />
+            <TextArea label="Details" value={ach.desc} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, desc: e.target.value } : a) }))} accent={accentColor} rows={2} />
+          </ItemCard>
+        ))}
+      </div>
+      <AddButton label="+ Add Achievement" onClick={() => setData(d => ({ ...d, achievements: [...(d.achievements || []), { id: Date.now(), title: '', desc: '' }] }))} accent={accentColor} />
 
       <SectionHeader icon="🌐" title="Languages" accent={accentColor} />
       <SkillTagInput label="Add languages (press Enter)" skills={data.languages} onAdd={addLang} onRemove={removeLang} accent={accentColor} placeholder="e.g. English (Native)" />
