@@ -157,7 +157,7 @@ const resumeDataByRole = {
   'Project Manager': {
     name: 'Joshua Nelson',
     role: 'Project Manager | Renewable Energy | Agile | PMP',
-    contact: { email: 'help@enhancv.com', phone: '+1-(234)-555-1234', location: 'Los Angeles, California', linkedin: 'linkedin.com/in/joshua-nelson-pmp' },
+    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Los Angeles, California', linkedin: 'linkedin.com/in/joshua-nelson-pmp' },
     objective: 'Enthusiastic Project Manager with over 5 years of experience in the renewable energy sector, specializing in Agile and Waterfall methodologies. Expertise in project planning and execution, with a proven track record of leading multi-disciplinary teams to achieve on-time, on-budget project delivery.',
     skills: { languages: 'Project Management · Agile Methodologies · Waterfall · Microsoft Project · Jira · Risk Management' },
     experience: [
@@ -175,7 +175,7 @@ const resumeDataByRole = {
   'Business Analyst': {
     name: 'Violet Rodriguez',
     role: 'Business Analyst | Data Insights & Visualization',
-    contact: { email: 'v.rodriguez@enhancv.com', phone: '+1-(555)-555-1234', location: 'Dallas, Texas', linkedin: 'linkedin.com/in/violet-rodriguez' },
+    contact: { email: 'v.rodriguez@forgeindiaconnect.com', phone: '+1-(555)-555-1234', location: 'Dallas, Texas', linkedin: 'linkedin.com/in/violet-rodriguez' },
     objective: 'Business Analyst with 5 years of experience in data analytics and visualization using tools like Power BI and Tableau. Expert in collaboration with cross-functional teams. Successfully increased reporting accuracy by 35%, streamlining strategic decision-making processes.',
     skills: { languages: 'Power BI · Tableau · SQL · Data Modeling · Dashboard Development · JIRA · Confluence · Python · Advanced Excel' },
     experience: [
@@ -206,7 +206,7 @@ const resumeDataByRole = {
   'Accounting Lead': {
     name: 'Eleanor Vance',
     role: 'Accounting Lead | CPA · Financial Reporting · Audit Compliance · Team Leadership',
-    contact: { email: 'e.vance@enhancv.com', phone: '+1-(212)-456-7890', location: 'New York, NY', linkedin: 'linkedin.com/in/eleanor-vance-cpa' },
+    contact: { email: 'e.vance@forgeindiaconnect.com', phone: '+1-(212)-456-7890', location: 'New York, NY', linkedin: 'linkedin.com/in/eleanor-vance-cpa' },
     objective: 'Certified Public Accountant (CPA) with 8+ years of experience leading accounting teams in fast-paced corporate environments. Expert in US GAAP, SEC reporting, internal controls (SOX), and financial audit preparation. Managed annual financial closes across $150M+ operations with zero audit discrepancies.',
     skills: { languages: 'US GAAP · SEC Reporting (10-K, 10-Q) · SOX Compliance · Financial Auditing · SAP S/4HANA · Oracle Financials · Team Leadership · Budgeting & Forecasting · Month-End Close' },
     experience: [
@@ -240,7 +240,7 @@ const resumeDataByRole = {
   'Financial Analyst': {
     name: 'Michael Sterling',
     role: 'Senior Financial Analyst | Financial Modeling | Valuation | Variance Analysis | Corporate Finance',
-    contact: { email: 'm.sterling@enhancv.com', phone: '+1-(312)-789-0123', location: 'Chicago, Illinois', linkedin: 'linkedin.com/in/michaelsterling-fa' },
+    contact: { email: 'm.sterling@forgeindiaconnect.com', phone: '+1-(312)-789-0123', location: 'Chicago, Illinois', linkedin: 'linkedin.com/in/michaelsterling-fa' },
     objective: 'Detail-oriented Financial Analyst with 6+ years of experience specializing in financial modeling, corporate budgeting, variance analysis, and M&A forecasting. Built dynamic financial models driving $40M+ capital allocations with high forecast accuracy.',
     skills: { languages: 'Financial Modeling (DCF, LBO, M&A) · Corporate Budgeting · Variance Analysis · Power BI · Tableau · Advanced Excel (VBA) · SQL · Capital Allocation · FP&A' },
     experience: [
@@ -272,7 +272,7 @@ const resumeDataByRole = {
   'Senior Accountant': {
     name: 'Sophia Martinez',
     role: 'Senior Accountant | General Ledger | Tax Compliance | Payroll | Financial Reconciliation',
-    contact: { email: 's.martinez@enhancv.com', phone: '+1-(713)-555-8901', location: 'Houston, Texas', linkedin: 'linkedin.com/in/sophiamartinez-cpa' },
+    contact: { email: 's.martinez@forgeindiaconnect.com', phone: '+1-(713)-555-8901', location: 'Houston, Texas', linkedin: 'linkedin.com/in/sophiamartinez-cpa' },
     objective: 'CPA-certified Senior Accountant with 7+ years of expertise in full-cycle accounting, tax compliance, bank reconciliations, and payroll processing. Proven track record of improving financial reporting accuracy and managing tax audits with zero discrepancies.',
     skills: { languages: 'General Ledger · Tax Compliance (Corporate & Sales Tax) · QuickBooks Online · NetSuite · Bank Reconciliations · Payroll (ADP) · GAAP Compliance · Financial Audits' },
     experience: [
@@ -304,7 +304,7 @@ const resumeDataByRole = {
   'Bookkeeper': {
     name: 'David Miller',
     role: 'Full-Charge Bookkeeper | QuickBooks Certified | Accounts Payable & Receivable | Payroll',
-    contact: { email: 'd.miller@enhancv.com', phone: '+1-(408)-345-6789', location: 'San Jose, CA', linkedin: 'linkedin.com/in/davidmiller-bk' },
+    contact: { email: 'd.miller@forgeindiaconnect.com', phone: '+1-(408)-345-6789', location: 'San Jose, CA', linkedin: 'linkedin.com/in/davidmiller-bk' },
     objective: 'Meticulous Full-Charge Bookkeeper with 6+ years of experience managing financial records, invoicing, payroll processing, and vendor accounts for small to mid-sized businesses. QuickBooks Online ProAdvisor certified.',
     skills: { languages: 'QuickBooks Online / Desktop · Xero · Accounts Payable (AP) · Accounts Receivable (AR) · Payroll (Gusto, Paychex) · Bank Reconciliation · Financial Statements · Bill.com' },
     experience: [
@@ -334,7 +334,7 @@ const resumeDataByRole = {
   'Investment Banker': {
     name: 'Julian Vance',
     role: 'Investment Banking Associate | M&A Execution | Valuation (LBO/DCF) | Capital Markets',
-    contact: { email: 'j.vance@enhancv.com', phone: '+1-(212)-890-1234', location: 'New York, NY', linkedin: 'linkedin.com/in/julianvance-ib' },
+    contact: { email: 'j.vance@forgeindiaconnect.com', phone: '+1-(212)-890-1234', location: 'New York, NY', linkedin: 'linkedin.com/in/julianvance-ib' },
     objective: 'High-performing Investment Banking Associate with 5+ years of experience executing M&A transactions, leveraged buyouts, and equity offerings in the Technology and Healthcare sectors. Closed 12 transactions totaling $3.2B+ in enterprise value.',
     skills: { languages: 'M&A Structuring & Execution · Financial Modeling (LBO, DCF, Comps) · Pitch Books · Pitch Deck Presentation · Due Diligence · Debt & Equity Capital Markets · Bloomberg Terminal · PitchBook' },
     experience: [
@@ -366,7 +366,7 @@ const resumeDataByRole = {
   'Internal Auditor': {
     name: 'Marcus Sterling',
     role: 'Senior Internal Auditor | Risk Assessment | SOX Compliance | Operational Audits | Fraud Investigation',
-    contact: { email: 'm.sterling@enhancv.com', phone: '+1-(404)-567-8901', location: 'Atlanta, Georgia', linkedin: 'linkedin.com/in/marcussterling-cia' },
+    contact: { email: 'm.sterling@forgeindiaconnect.com', phone: '+1-(404)-567-8901', location: 'Atlanta, Georgia', linkedin: 'linkedin.com/in/marcussterling-cia' },
     objective: 'Certified Internal Auditor (CIA) with 6+ years of experience conducting operational, financial, and compliance audits for enterprise clients. Expert in risk assessment frameworks (COSO, ISO 31000), SOX 404 testing, and internal control design.',
     skills: { languages: 'COSO Framework · SOX 404 Testing · Operational Auditing · Fraud Risk Assessment · ACL Analytics · Internal Controls · Audit Reporting · Risk Management' },
     experience: [
@@ -399,7 +399,7 @@ const resumeDataByRole = {
   'Front-End Developer': {
     name: 'Scarlett Anderson',
     role: 'Front End Developer | HTML | CSS | JavaScript | React | Team Collaboration',
-    contact: { email: 'scarlett.a@enhancv.com', phone: '(800) 840-7371', location: 'Los Angeles, California', linkedin: 'linkedin.com/in/scarlett-anderson', github: 'GitHub' },
+    contact: { email: 'scarlett.a@forgeindiaconnect.com', phone: '(800) 840-7371', location: 'Los Angeles, California', linkedin: 'linkedin.com/in/scarlett-anderson', github: 'GitHub' },
     objective: 'With over 5 years of experience in front-end development, specializing in JavaScript and user-centric design. I have significantly enhanced online platforms for top retailers. Notably, I led projects that have driven user engagement by 43%. My technical expertise and proven track record make me an excellent fit for contributing to your team.',
     skills: { languages: 'HTML · CSS · JavaScript · React · TypeScript · Vue.js · Sass · Webpack · Git · Figma · REST APIs · Performance Optimization · Responsive Design · Accessibility (WCAG)' },
     experience: [
@@ -439,7 +439,7 @@ const resumeDataByRole = {
   'Python Developer': {
     name: 'Owen Wright',
     role: 'Python Developer | Healthcare Solutions | Scalable Applications',
-    contact: { email: 'help@enhancv.com', phone: '+1-(234)-555-5234', location: 'San Jose, CA', linkedin: 'linkedin.com/in/owenwright' },
+    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-5234', location: 'San Jose, CA', linkedin: 'linkedin.com/in/owenwright' },
     objective: 'With over 8 years of experience in Python development, specializes in healthcare applications to enhance patient outcomes. Expertise in developing scalable applications using Django, AWS, and Docker. A key achievement included leading a team to reduce processing time by 30%, improving system efficiency and client satisfaction.',
     skills: { languages: 'Python · Django · Flask · AWS · Docker · PostgreSQL · Redis · Celery · REST APIs · GraphQL · NumPy · Pandas · Scikit-learn · TensorFlow · Kubernetes' },
     experience: [
@@ -478,7 +478,7 @@ const resumeDataByRole = {
   'Full-Stack Developer': {
     name: 'Marcus Chen',
     role: 'Oracle Certified Full Stack Developer',
-    contact: { email: 'hall@enhancv.com', phone: '(234)-253-6094', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/marcuschen', github: 'github.com/danette.aext' },
+    contact: { email: 'hall@forgeindiaconnect.com', phone: '(234)-253-6094', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/marcuschen', github: 'github.com/danette.aext' },
     objective: 'Full Stack Developer with over 10 years of experience in JavaScript/JS, Angular, Vue Stack, Python, NumPy, SciPy, Scikit-learn. Development of CSSS-based algorithms. Web-acquainted with all methodologies.',
     skills: { languages: 'HTML · CSS · JS · Angular · React · Vue · Redux · TypeScript · Backbone · Bootstrap · Python · NumPy · SciPy · Scikit-learn · Keras · EBS · TensorFlow · MySQL · NodeJS · Redis · AWS · MongoDB · Spark · HTTP/2 · JUnit · NUnit · PyUnit · TestCafe · Mocha · Jasmine · Jest · Scrum · Agile · GIT · Azure DevOps' },
     experience: [
@@ -515,7 +515,7 @@ const resumeDataByRole = {
   'IT Project Manager': {
     name: 'Daniel Foster',
     role: 'IT Project Manager | Agile · PMP · Scrum Master · Digital Transformation',
-    contact: { email: 'd.foster@enhancv.com', phone: '+1-(469)-234-5678', location: 'Dallas, Texas', linkedin: 'linkedin.com/in/daniel-foster-itpm', github: 'github.com/danielfoster' },
+    contact: { email: 'd.foster@forgeindiaconnect.com', phone: '+1-(469)-234-5678', location: 'Dallas, Texas', linkedin: 'linkedin.com/in/daniel-foster-itpm', github: 'github.com/danielfoster' },
     objective: 'PMP-certified IT Project Manager with 9+ years of experience delivering complex technology projects on time and within budget. Expert in Agile/Scrum, stakeholder management, and digital transformation initiatives. Successfully delivered 35+ IT projects valued at over $15M with an average on-time delivery rate of 97%.',
     skills: { languages: 'Project Management (PMP) · Agile / Scrum · JIRA · Confluence · MS Project · Risk Management · Stakeholder Communication · Budget Management · Digital Transformation · ITIL · Vendor Management · Waterfall · SAFe' },
     experience: [
@@ -555,7 +555,7 @@ const resumeDataByRole = {
   'Tech Lead': {
     name: 'Jordan Kim',
     role: 'Tech Lead | Software Architecture | Team Leadership | Full-Stack Engineering',
-    contact: { email: 'j.kim@enhancv.com', phone: '+1-(206)-789-3456', location: 'Seattle, Washington', linkedin: 'linkedin.com/in/jordan-kim-techlead', github: 'github.com/jordankimtech' },
+    contact: { email: 'j.kim@forgeindiaconnect.com', phone: '+1-(206)-789-3456', location: 'Seattle, Washington', linkedin: 'linkedin.com/in/jordan-kim-techlead', github: 'github.com/jordankimtech' },
     objective: 'Experienced Tech Lead with 10+ years in software engineering and 4+ years in technical leadership roles. Expert in building high-performance engineering teams, defining technical architecture, and delivering scalable software products. Reduced system latency by 60% and improved team velocity by 45% through architectural improvements and mentorship.',
     skills: { languages: 'React · Node.js · TypeScript · Python · AWS · Docker · Kubernetes · PostgreSQL · Redis · GraphQL · System Design · Technical Mentorship · Code Review · CI/CD · Agile · Microservices Architecture' },
     experience: [
@@ -594,7 +594,7 @@ const resumeDataByRole = {
   'Web Developer': {
     name: 'Luna Thomas',
     role: 'Web Developer | Front-End Technologies | Scalability',
-    contact: { email: 'help@enhancv.com', phone: '+1-(234)-555-1234', location: 'Columbus, Ohio', linkedin: 'linkedin.com/in/lunathomas', github: 'github' },
+    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Columbus, Ohio', linkedin: 'linkedin.com/in/lunathomas', github: 'github' },
     objective: 'Driven Web Developer with 6 years of experience proficient in HTML5, CSS, and JavaScript. Demonstrates exceptional problem-solving skills and attention to detail while efficiently balancing technical and non-technical aspects. Through focus on code optimization, web performance improved website speed by 36% at previous companies, significantly enhancing user experience.',
     skills: { languages: 'HTML · CSS · JavaScript · React · Vue.js · Node.js · Express · MongoDB · PostgreSQL · REST APIs · GraphQL · Git · Webpack · Performance Optimization · Responsive Design · SEO · Accessibility' },
     experience: [
@@ -632,7 +632,7 @@ const resumeDataByRole = {
   'DevOps Engineer': {
     name: 'Alex Rivera',
     role: 'DevOps Engineer | AWS · Kubernetes · Terraform · Jenkins · CI/CD · Docker',
-    contact: { email: 'a.rivera@enhancv.com', phone: '+1-(512)-456-7890', location: 'Austin, Texas', linkedin: 'linkedin.com/in/alex-rivera-devops', github: 'github.com/alexrivera-ops' },
+    contact: { email: 'a.rivera@forgeindiaconnect.com', phone: '+1-(512)-456-7890', location: 'Austin, Texas', linkedin: 'linkedin.com/in/alex-rivera-devops', github: 'github.com/alexrivera-ops' },
     objective: 'Passionate DevOps Engineer with 6+ years of experience designing and maintaining robust CI/CD pipelines, container orchestration platforms, and cloud infrastructure on AWS. Reduced deployment lead time by 80% and production incidents by 55% through automation, observability, and SRE best practices.',
     skills: { languages: 'AWS (EKS, EC2, Lambda, RDS, S3) · Kubernetes · Docker · Terraform · Jenkins · GitHub Actions · Ansible · Prometheus · Grafana · ELK Stack · Python · Bash · Go · Site Reliability Engineering · GitOps · ArgoCD' },
     experience: [
@@ -672,7 +672,7 @@ const resumeDataByRole = {
   'Computer Science': {
     name: 'Emma Liu',
     role: 'Computer Science Graduate | Software Engineering | Machine Learning | Research',
-    contact: { email: 'e.liu@enhancv.com', phone: '+1-(617)-890-1234', location: 'Cambridge, Massachusetts', linkedin: 'linkedin.com/in/emma-liu-cs', github: 'github.com/emmaliu-cs' },
+    contact: { email: 'e.liu@forgeindiaconnect.com', phone: '+1-(617)-890-1234', location: 'Cambridge, Massachusetts', linkedin: 'linkedin.com/in/emma-liu-cs', github: 'github.com/emmaliu-cs' },
     objective: 'Computer Science graduate from MIT with strong foundations in algorithms, machine learning, and distributed systems. Published research in NLP and computer vision. Interned at Google and Amazon, building production ML pipelines and scalable backend systems. Seeking a full-time software engineering or ML engineering role.',
     skills: { languages: 'Python · Java · C++ · JavaScript · TensorFlow · PyTorch · Scikit-learn · SQL · PostgreSQL · Spark · Hadoop · AWS · Docker · Kubernetes · Git · MATLAB · R · Algorithms & Data Structures · System Design' },
     experience: [
@@ -711,7 +711,7 @@ const resumeDataByRole = {
   'IT Director': {
     name: 'Marcus Vance',
     role: 'IT Director | Cloud Transformation | Enterprise Security | Digital Infrastructure',
-    contact: { email: 'm.vance@enhancv.com', phone: '+1-(555)-789-0123', location: 'San Jose, California', linkedin: 'linkedin.com/in/marcus-vance-it', github: 'github.com/marcusvance' },
+    contact: { email: 'm.vance@forgeindiaconnect.com', phone: '+1-(555)-789-0123', location: 'San Jose, California', linkedin: 'linkedin.com/in/marcus-vance-it', github: 'github.com/marcusvance' },
     objective: 'Results-driven IT Director with 12+ years of experience managing enterprise IT infrastructure, cloud migration initiatives, and multi-million dollar technology budgets. Led a 35-person global engineering team overseeing 99.99% system uptime across 12 offices. Expert in aligning IT strategy with organizational goals to drive innovation and measurable cost savings.',
     skills: { languages: 'Enterprise IT Strategy · AWS & Azure Cloud Migration · Cybersecurity Governance · Zero-Trust Architecture · Disaster Recovery Planning · Vendor Management · ITSM · ITIL v4 · Budget & P&L Management · Agile Delivery' },
     experience: [
@@ -751,7 +751,7 @@ const resumeDataByRole = {
   'System Administrator': {
     name: 'Ethan Mitchell',
     role: 'Senior System Administrator | Linux · Windows · VMware · Ansible · Docker',
-    contact: { email: 'e.mitchell@enhancv.com', phone: '+1-(555)-234-5678', location: 'Seattle, Washington', linkedin: 'linkedin.com/in/ethan-mitchell-sysadmin', github: 'github.com/ethanmitchell' },
+    contact: { email: 'e.mitchell@forgeindiaconnect.com', phone: '+1-(555)-234-5678', location: 'Seattle, Washington', linkedin: 'linkedin.com/in/ethan-mitchell-sysadmin', github: 'github.com/ethanmitchell' },
     objective: 'Proactive Senior System Administrator with 8+ years of experience designing and administering highly available Linux/Windows server environments, Active Directory domains, VMware ESXi clusters, and automating operations via Ansible and Python scripting. Reduced operational downtime by 35% through proactive monitoring and automated patch management.',
     skills: { languages: 'Linux RHEL/Ubuntu · Windows Server 2022 · Active Directory · VMware vSphere · Ansible · Docker · Kubernetes · PowerShell · Bash · Python · Nagios · Zabbix · LDAP' },
     experience: [
@@ -791,7 +791,7 @@ const resumeDataByRole = {
   'Cybersecurity Analyst': {
     name: 'Sophia Chen',
     role: 'Cybersecurity Threat Analyst | SOC · SIEM · Incident Response · Penetration Testing',
-    contact: { email: 's.chen@enhancv.com', phone: '+1-(555)-901-2345', location: 'Austin, Texas', linkedin: 'linkedin.com/in/sophia-chen-sec', github: 'github.com/sophiachen-sec' },
+    contact: { email: 's.chen@forgeindiaconnect.com', phone: '+1-(555)-901-2345', location: 'Austin, Texas', linkedin: 'linkedin.com/in/sophia-chen-sec', github: 'github.com/sophiachen-sec' },
     objective: 'Certified Security Analyst (CEH, CompTIA Security+) with 6+ years of experience in SOC threat monitoring, vulnerability assessments, SIEM log analysis, penetration testing, and incident response across financial enterprise networks. Reduced mean incident response time by 45% through automated SOAR playbook implementation.',
     skills: { languages: 'Splunk SIEM · IBM QRadar · CrowdStrike · Incident Response · Vulnerability Assessment · Penetration Testing · Wireshark · Metasploit · Nessus · Python · Threat Hunting · OSINT · NIST Framework · ISO 27001' },
     experience: [
@@ -831,7 +831,7 @@ const resumeDataByRole = {
   'Cloud Architect': {
     name: 'Aiden Torres',
     role: 'Senior Cloud Architect | AWS · Azure · GCP · Terraform · Kubernetes',
-    contact: { email: 'a.torres@enhancv.com', phone: '+1-(415)-234-7890', location: 'San Francisco, California', linkedin: 'linkedin.com/in/aiden-torres-cloud', github: 'github.com/aicloud-torres' },
+    contact: { email: 'a.torres@forgeindiaconnect.com', phone: '+1-(415)-234-7890', location: 'San Francisco, California', linkedin: 'linkedin.com/in/aiden-torres-cloud', github: 'github.com/aicloud-torres' },
     objective: 'Innovative Cloud Architect with 9+ years of experience designing, implementing, and optimizing multi-cloud and hybrid cloud architectures on AWS, Azure, and GCP. Expert in infrastructure-as-code (Terraform, CDK), Kubernetes orchestration, and cost optimization — reducing cloud spend by 35% while improving system resilience and scalability.',
     skills: { languages: 'AWS (EC2, EKS, Lambda, S3, RDS) · Azure (AKS, App Service, Functions) · GCP (GKE, BigQuery) · Terraform · Kubernetes · Helm · Docker · CI/CD · GitOps · Python · Cost Optimization · FinOps' },
     experience: [
@@ -871,7 +871,7 @@ const resumeDataByRole = {
   'DevOps Specialist': {
     name: 'Ryan Patel',
     role: 'DevOps Engineer | CI/CD · Kubernetes · Terraform · Jenkins · Docker · AWS',
-    contact: { email: 'r.patel@enhancv.com', phone: '+1-(312)-567-8901', location: 'Chicago, Illinois', linkedin: 'linkedin.com/in/ryan-patel-devops', github: 'github.com/ryanpatelops' },
+    contact: { email: 'r.patel@forgeindiaconnect.com', phone: '+1-(312)-567-8901', location: 'Chicago, Illinois', linkedin: 'linkedin.com/in/ryan-patel-devops', github: 'github.com/ryanpatelops' },
     objective: 'Results-driven DevOps Engineer with 7+ years specializing in building robust CI/CD pipelines, container orchestration, infrastructure-as-code, and SRE practices. Delivered a 70% improvement in release frequency and 50% reduction in production incidents through automation-first engineering culture.',
     skills: { languages: 'Jenkins · GitLab CI · GitHub Actions · Docker · Kubernetes · Helm · Terraform · Ansible · AWS · Prometheus · Grafana · ELK Stack · Python · Bash · Go · SRE · Agile' },
     experience: [
@@ -911,7 +911,7 @@ const resumeDataByRole = {
   'Network Engineer': {
     name: 'Liam Nguyen',
     role: 'Senior Network Engineer | Cisco · SD-WAN · BGP · MPLS · Network Security',
-    contact: { email: 'l.nguyen@enhancv.com', phone: '+1-(617)-345-9012', location: 'Boston, Massachusetts', linkedin: 'linkedin.com/in/liam-nguyen-network', github: 'github.com/liamnguyen-net' },
+    contact: { email: 'l.nguyen@forgeindiaconnect.com', phone: '+1-(617)-345-9012', location: 'Boston, Massachusetts', linkedin: 'linkedin.com/in/liam-nguyen-network', github: 'github.com/liamnguyen-net' },
     objective: 'CCIE-certified Senior Network Engineer with 10+ years of experience designing, implementing, and optimizing enterprise LAN/WAN networks, SD-WAN deployments, BGP/OSPF routing, and network security infrastructure. Reduced WAN costs by 42% and improved network performance by 55% through strategic SD-WAN migration.',
     skills: { languages: 'Cisco IOS/NX-OS · Juniper JunOS · SD-WAN (VeloCloud, Meraki) · BGP · OSPF · MPLS · VLAN · QoS · Palo Alto Firewalls · F5 Load Balancers · Python (Netmiko) · Ansible · SNMP · Wireshark · Network Automation' },
     experience: [
@@ -951,7 +951,7 @@ const resumeDataByRole = {
   'Actor': {
     name: 'Ava Johnson',
     role: 'Actor | Character Development | Film & TV',
-    contact: { email: 'help@enhancv.com', phone: '+1-(234)-555-1234', location: 'Austin, Texas', linkedin: 'linkedin.com/in/ava-johnson-acting' },
+    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Austin, Texas', linkedin: 'linkedin.com/in/ava-johnson-acting' },
     objective: 'Accomplished Actor with 6 years of experience in film and television, excelling in character development and script interpretation. Skilled in collaboration and adaptability while maintaining professionalism and consistency across performances. Received critical acclaim for a performance that increased viewership by 30%, driven by effective communication and passion for storytelling.',
     skills: { languages: 'Script Analysis - Character Development - Voice-over Techniques - Improvisational Acting - Film Production - Audio Recording' },
     experience: [
@@ -974,7 +974,7 @@ const resumeDataByRole = {
   'Executive': {
     name: 'Victoria Sterling',
     role: 'Executive Vice President | Operations & Corporate Strategy',
-    contact: { email: 'v.sterling@enhancv.com', phone: '+1-(212)-901-2345', location: 'New York, NY', linkedin: 'linkedin.com/in/victoriasterling-exec' },
+    contact: { email: 'v.sterling@forgeindiaconnect.com', phone: '+1-(212)-901-2345', location: 'New York, NY', linkedin: 'linkedin.com/in/victoriasterling-exec' },
     objective: 'Senior Executive with 15+ years leading global business transformation, operational scaling, and cross-functional teams across Fortune 500 tech companies. Oversaw $400M+ P&L while growing enterprise valuation by 40%.',
     skills: { languages: 'Corporate Strategy · Executive Leadership · P&L Management · Global Operations · Mergers & Acquisitions · Digital Transformation · Board Governance' },
     experience: [
@@ -995,7 +995,7 @@ const resumeDataByRole = {
   'Data Scientist': {
     name: 'Dr. Aris Thorne',
     role: 'Lead Data Scientist | Machine Learning | Predictive Analytics | NLP',
-    contact: { email: 'a.thorne@enhancv.com', phone: '+1-(415)-555-0199', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/aris-thorne-ds' },
+    contact: { email: 'a.thorne@forgeindiaconnect.com', phone: '+1-(415)-555-0199', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/aris-thorne-ds' },
     objective: 'Data Scientist with 7+ years of experience engineering predictive models, neural networks, and scalable data pipelines. Deployed ML models boosting customer retention by 28% and generating $4.5M in incremental revenue.',
     skills: { languages: 'Python · PyTorch · TensorFlow · SQL · Scikit-Learn · Spark · Data Pipeline Design · A/B Testing · Deep Learning · NLP' },
     experience: [
@@ -1015,7 +1015,7 @@ const resumeDataByRole = {
   'Product Manager': {
     name: 'Claire Dupont',
     role: 'Senior Product Manager | SaaS Platform | User Growth | Agile',
-    contact: { email: 'c.dupont@enhancv.com', phone: '+1-(415)-890-4321', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/claire-dupont-pm' },
+    contact: { email: 'c.dupont@forgeindiaconnect.com', phone: '+1-(415)-890-4321', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/claire-dupont-pm' },
     objective: 'Product Manager with 6+ years driving end-to-end product lifecycles for high-growth B2B SaaS products. Scaled monthly active users from 100K to 1.2M while reducing churn by 35%.',
     skills: { languages: 'Product Strategy · User Research · Agile / Scrum · Product Analytics (Amplitude, Mixpanel) · Roadmap Planning · Wireframing · A/B Testing' },
     experience: [
@@ -1035,7 +1035,7 @@ const resumeDataByRole = {
   'Software Engineer': {
     name: 'David Vance',
     role: 'Senior Software Engineer | Distributed Systems | Java · Go · AWS',
-    contact: { email: 'd.vance@enhancv.com', phone: '+1-(206)-555-7812', location: 'Seattle, WA', linkedin: 'linkedin.com/in/davidvance-dev' },
+    contact: { email: 'd.vance@forgeindiaconnect.com', phone: '+1-(206)-555-7812', location: 'Seattle, WA', linkedin: 'linkedin.com/in/davidvance-dev' },
     objective: 'Software Engineer with 8+ years building high-throughput microservices and distributed database architectures. Improved API throughput by 4x and decreased p99 latency to under 15ms.',
     skills: { languages: 'Java · Go · C++ · AWS (DynamoDB, ECS, SQS) · Docker · Kubernetes · Microservices · System Architecture · PostgreSQL' },
     experience: [
@@ -1055,7 +1055,7 @@ const resumeDataByRole = {
   'Digital Marketing': {
     name: 'Jessica Alba-Reyes',
     role: 'Digital Marketing Director | Growth Strategy | SEO | Paid Media · Analytics',
-    contact: { email: 'j.reyes@enhancv.com', phone: '+1-(310)-555-6543', location: 'Los Angeles, CA', linkedin: 'linkedin.com/in/jessicareyes-mktg' },
+    contact: { email: 'j.reyes@forgeindiaconnect.com', phone: '+1-(310)-555-6543', location: 'Los Angeles, CA', linkedin: 'linkedin.com/in/jessicareyes-mktg' },
     objective: 'Data-driven Digital Marketer with 7+ years driving multi-channel growth campaigns. Scaled digital ad revenue by 140% YoY while reducing Customer Acquisition Cost (CAC) by 32%.',
     skills: { languages: 'SEO & SEM · Google Ads · Meta Ads · Content Strategy · Google Analytics 4 · Email Marketing · Conversion Rate Optimization (CRO)' },
     experience: [
@@ -1075,7 +1075,7 @@ const resumeDataByRole = {
   'Sales Director': {
     name: 'Robert Sterling',
     role: 'Sales Director | Enterprise B2B SaaS | Revenue Growth | Team Building',
-    contact: { email: 'r.sterling@enhancv.com', phone: '+1-(312)-555-9087', location: 'Chicago, IL', linkedin: 'linkedin.com/in/robertsterling-sales' },
+    contact: { email: 'r.sterling@forgeindiaconnect.com', phone: '+1-(312)-555-9087', location: 'Chicago, IL', linkedin: 'linkedin.com/in/robertsterling-sales' },
     objective: 'Results-driven Sales Director with 10+ years closing enterprise SaaS deals and building high-performing sales organizations. Closed $28M+ in ARR while leading a 20-person account executive team.',
     skills: { languages: 'Enterprise B2B Sales · Sales Operations · Salesforce CRM · Account-Based Marketing · Negotiation · Contract Closing · Pipeline Management' },
     experience: [
@@ -1095,7 +1095,7 @@ const resumeDataByRole = {
   'Teacher': {
     name: 'Hannah Abbott',
     role: 'STEM Educator & Department Head | Curriculum Development | EdTech',
-    contact: { email: 'h.abbott@enhancv.com', phone: '+1-(617)-555-4321', location: 'Boston, MA', linkedin: 'linkedin.com/in/hannahabbott-edu' },
+    contact: { email: 'h.abbott@forgeindiaconnect.com', phone: '+1-(617)-555-4321', location: 'Boston, MA', linkedin: 'linkedin.com/in/hannahabbott-edu' },
     objective: 'Dedicated STEM Educator with 9+ years experience designing interactive science curricula and integrating EdTech tools. Improved state standardized test pass rates by 24%.',
     skills: { languages: 'STEM Curriculum Design · Classroom Management · EdTech Integration · Differentiated Instruction · Parent & Administration Communication' },
     experience: [
@@ -1115,7 +1115,7 @@ const resumeDataByRole = {
   'Mechanical Engineer': {
     name: 'Carlos Mendez',
     role: 'Senior Mechanical Engineer | Thermal Systems | CAD · SolidWorks · FEA',
-    contact: { email: 'c.mendez@enhancv.com', phone: '+1-(313)-555-7766', location: 'Detroit, MI', linkedin: 'linkedin.com/in/carlosmendez-eng' },
+    contact: { email: 'c.mendez@forgeindiaconnect.com', phone: '+1-(313)-555-7766', location: 'Detroit, MI', linkedin: 'linkedin.com/in/carlosmendez-eng' },
     objective: 'Mechanical Engineer with 8+ years designing automotive & aerospace mechanical components. Led structural FEA analysis reducing product defect rate by 45%.',
     skills: { languages: 'SolidWorks · ANSYS FEA · CATIA · Thermal Modeling · GD&T · Rapid Prototyping · Manufacturing Processes · HVAC Systems' },
     experience: [
@@ -1135,7 +1135,7 @@ const resumeDataByRole = {
   'Voice Actor': {
     name: 'Ethan Hunt',
     role: 'Voice Actor | Animation, Audiobooks, Commercials & Gaming',
-    contact: { email: 'e.hunt@enhancv.com', phone: '+1-(818)-555-9988', location: 'Burbank, CA', linkedin: 'linkedin.com/in/ethanhunt-vo' },
+    contact: { email: 'e.hunt@forgeindiaconnect.com', phone: '+1-(818)-555-9988', location: 'Burbank, CA', linkedin: 'linkedin.com/in/ethanhunt-vo' },
     objective: 'Versatile Voice Actor with 6+ years voicing over 100+ commercials, animated series, and AAA video games. Recorded audiobooks exceeding 50,000 downloads.',
     skills: { languages: 'Voice Acting · Character Dialects · Home Studio Recording (Pro Tools) · Commercial Voiceover · Audiobook Narration · ADR' },
     experience: [
@@ -1148,7 +1148,7 @@ const resumeDataByRole = {
   'Content Writer': {
     name: 'Chloe Bennett',
     role: 'Senior Content Strategist & Writer | B2B SaaS | Copywriting & SEO',
-    contact: { email: 'c.bennett@enhancv.com', phone: '+1-(503)-555-3210', location: 'Portland, OR', linkedin: 'linkedin.com/in/chloebennett-writer' },
+    contact: { email: 'c.bennett@forgeindiaconnect.com', phone: '+1-(503)-555-3210', location: 'Portland, OR', linkedin: 'linkedin.com/in/chloebennett-writer' },
     objective: 'SEO Content Writer with 5+ years producing viral tech blogs, whitepapers, and landing pages. Grew organic blog traffic by 250% in 12 months.',
     skills: { languages: 'SEO Writing · B2B Copywriting · Content Strategy · WordPress · Ahrefs / SEMrush · Technical Documentation · Email Newsletters' },
     experience: [
@@ -1161,7 +1161,7 @@ const resumeDataByRole = {
   'Graphic Designer': {
     name: 'Liam Walker',
     role: 'Senior Graphic Designer | Brand Identity | Adobe Creative Suite | UI Visuals',
-    contact: { email: 'l.walker@enhancv.com', phone: '+1-(415)-555-7654', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/liamwalker-design' },
+    contact: { email: 'l.walker@forgeindiaconnect.com', phone: '+1-(415)-555-7654', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/liamwalker-design' },
     objective: 'Creative Graphic Designer with 7+ years shaping brand identities, marketing collateral, and packaging for tier-1 brands. Redesigned brand identity driving 50% brand recognition gain.',
     skills: { languages: 'Adobe Photoshop · Illustrator · InDesign · Figma · Brand Strategy · Typography · Print & Digital Media · Illustration' },
     experience: [
@@ -1174,7 +1174,7 @@ const resumeDataByRole = {
   'Video Editor': {
     name: 'Noah Miller',
     role: 'Senior Video Editor & Motion Designer | Premiere Pro · After Effects · DaVinci',
-    contact: { email: 'n.miller@enhancv.com', phone: '+1-(310)-555-8811', location: 'Culver City, CA', linkedin: 'linkedin.com/in/noahmiller-video' },
+    contact: { email: 'n.miller@forgeindiaconnect.com', phone: '+1-(310)-555-8811', location: 'Culver City, CA', linkedin: 'linkedin.com/in/noahmiller-video' },
     objective: 'Video Editor with 6+ years producing high-impact brand videos, YouTube commercials, and documentary shorts. Videos generated over 15M combined views.',
     skills: { languages: 'Adobe Premiere Pro · After Effects · DaVinci Resolve · Color Grading · Sound Design · Motion Graphics · Video Production' },
     experience: [
@@ -1187,7 +1187,7 @@ const resumeDataByRole = {
   'Art Director': {
     name: 'Sophia Chen-Ross',
     role: 'Creative Art Director | Visual Campaigns | Brand Strategy | UX & Design',
-    contact: { email: 's.chenross@enhancv.com', phone: '+1-(212)-555-2233', location: 'New York, NY', linkedin: 'linkedin.com/in/sophiachenross' },
+    contact: { email: 's.chenross@forgeindiaconnect.com', phone: '+1-(212)-555-2233', location: 'New York, NY', linkedin: 'linkedin.com/in/sophiachenross' },
     objective: 'Art Director with 10+ years directing commercial photoshoots, brand campaigns, and UI style guides for global luxury brands.',
     skills: { languages: 'Creative Direction · Brand Strategy · Photography Direction · Team Leadership · Adobe CC · UI/UX Style Guides' },
     experience: [
@@ -1200,7 +1200,7 @@ const resumeDataByRole = {
   'Operations Manager': {
     name: 'Jameson Reed',
     role: 'Director of Operations | Supply Chain | Process Optimization | Lean Six Sigma',
-    contact: { email: 'j.reed@enhancv.com', phone: '+1-(404)-555-6677', location: 'Atlanta, GA', linkedin: 'linkedin.com/in/jamesonreed-ops' },
+    contact: { email: 'j.reed@forgeindiaconnect.com', phone: '+1-(404)-555-6677', location: 'Atlanta, GA', linkedin: 'linkedin.com/in/jamesonreed-ops' },
     objective: 'Operations Manager with 9+ years managing logistics, facility operations, and vendor networks. Reduced annual operating costs by $2.3M using Lean Six Sigma methodology.',
     skills: { languages: 'Supply Chain Management · Operations Strategy · Lean Six Sigma Green Belt · Vendor Negotiations · Logistics · ERP Systems' },
     experience: [
@@ -1213,7 +1213,7 @@ const resumeDataByRole = {
   'Management Consultant': {
     name: 'Audrey Hepburn-Wright',
     role: 'Management Consultant | Strategy & Restructuring | McKinsey Alum',
-    contact: { email: 'a.wright@enhancv.com', phone: '+1-(212)-555-3456', location: 'New York, NY', linkedin: 'linkedin.com/in/audreywright-consulting' },
+    contact: { email: 'a.wright@forgeindiaconnect.com', phone: '+1-(212)-555-3456', location: 'New York, NY', linkedin: 'linkedin.com/in/audreywright-consulting' },
     objective: 'Former Tier-1 Management Consultant with 7+ years advising C-suite executives on strategic growth, cost optimization, and post-merger integration ($500M+ transactions).',
     skills: { languages: 'Corporate Strategy · M&A Integration · Financial Modeling · Market Entry Strategy · Executive Presentation · Change Management' },
     experience: [
@@ -1226,7 +1226,7 @@ const resumeDataByRole = {
   'Scrum Master': {
     name: 'Brandon Hayes',
     role: 'Certified Scrum Master (CSM) | Agile Coaching | JIRA | Team Velocity',
-    contact: { email: 'b.hayes@enhancv.com', phone: '+1-(512)-555-9012', location: 'Austin, TX', linkedin: 'linkedin.com/in/brandonhayes-agile' },
+    contact: { email: 'b.hayes@forgeindiaconnect.com', phone: '+1-(512)-555-9012', location: 'Austin, TX', linkedin: 'linkedin.com/in/brandonhayes-agile' },
     objective: 'Agile Scrum Master with 6+ years facilitating high-performing engineering teams. Increased team sprint velocity by 40% while reducing bug escapes by 65%.',
     skills: { languages: 'Agile / Scrum · SAFe · JIRA & Confluence · Sprint Planning · Retrospectives · Team Mentorship · KanBan' },
     experience: [
@@ -1239,7 +1239,7 @@ const resumeDataByRole = {
   'Machine Learning Eng': {
     name: 'Dr. Maya Patel',
     role: 'Machine Learning Engineer | PyTorch · TensorFlow · MLOps · LLM Fine-Tuning',
-    contact: { email: 'm.patel@enhancv.com', phone: '+1-(650)-555-1122', location: 'Palo Alto, CA', linkedin: 'linkedin.com/in/mayapatel-ml' },
+    contact: { email: 'm.patel@forgeindiaconnect.com', phone: '+1-(650)-555-1122', location: 'Palo Alto, CA', linkedin: 'linkedin.com/in/mayapatel-ml' },
     objective: 'ML Engineer with 6+ years building production recommendation engines, transformer models, and real-time inference pipelines handling 50M daily API calls.',
     skills: { languages: 'Python · PyTorch · TensorFlow · MLOps (Kubeflow, MLflow) · Docker · CUDA · LLM Fine-Tuning · C++' },
     experience: [
@@ -1252,7 +1252,7 @@ const resumeDataByRole = {
   'Data Analyst': {
     name: 'Kevin Zhang',
     role: 'Senior Data Analyst | SQL · Tableau · Python · Business Intelligence',
-    contact: { email: 'k.zhang@enhancv.com', phone: '+1-(206)-555-4433', location: 'Seattle, WA', linkedin: 'linkedin.com/in/kevinzhang-data' },
+    contact: { email: 'k.zhang@forgeindiaconnect.com', phone: '+1-(206)-555-4433', location: 'Seattle, WA', linkedin: 'linkedin.com/in/kevinzhang-data' },
     objective: 'Data Analyst with 5+ years translating complex datasets into executive dashboards and strategic growth insights. Discovered $3.5M revenue leak via SQL analysis.',
     skills: { languages: 'SQL (PostgreSQL, Snowflake) · Tableau · Power BI · Python (Pandas) · Data Modeling · A/B Testing' },
     experience: [
@@ -1265,7 +1265,7 @@ const resumeDataByRole = {
   'AI Engineer': {
     name: 'Sebastian Vance',
     role: 'AI Engineer | Generative AI · LangChain · RAG · Computer Vision',
-    contact: { email: 's.vance@enhancv.com', phone: '+1-(415)-555-9900', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/sebastianvance-ai' },
+    contact: { email: 's.vance@forgeindiaconnect.com', phone: '+1-(415)-555-9900', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/sebastianvance-ai' },
     objective: 'AI Engineer specializing in Generative AI, RAG architecture, and fine-tuning LLMs for enterprise applications. Built AI assistant serving 200,000 active users.',
     skills: { languages: 'Python · LangChain · LlamaIndex · OpenAI API · Vector DBs (Pinecone, Chroma) · PyTorch · FastAPI' },
     experience: [
@@ -1278,7 +1278,7 @@ const resumeDataByRole = {
   'UI/UX Designer': {
     name: 'Elena Rostova',
     role: 'Lead UI/UX Designer | Product Design · Design Systems · Figma',
-    contact: { email: 'e.rostova@enhancv.com', phone: '+1-(212)-555-7788', location: 'New York, NY', linkedin: 'linkedin.com/in/elenarostova-design' },
+    contact: { email: 'e.rostova@forgeindiaconnect.com', phone: '+1-(212)-555-7788', location: 'New York, NY', linkedin: 'linkedin.com/in/elenarostova-design' },
     objective: 'UI/UX Designer with 7+ years crafting intuitive digital interfaces for web & mobile apps. Redesigned core checkout flow increasing conversion rate by 34%.',
     skills: { languages: 'Figma · Design Systems · Wireframing · User Research · Usability Testing · Information Architecture · Prototyping' },
     experience: [
@@ -1291,7 +1291,7 @@ const resumeDataByRole = {
   'Product Designer': {
     name: 'Oliver Bennett',
     role: 'Senior Product Designer | User Research · Wireframing · Prototyping',
-    contact: { email: 'o.bennett@enhancv.com', phone: '+1-(415)-555-3344', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/oliverbennett-design' },
+    contact: { email: 'o.bennett@forgeindiaconnect.com', phone: '+1-(415)-555-3344', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/oliverbennett-design' },
     objective: 'Product Designer with 6+ years combining human-centered design principles with rapid prototyping to build top-rated iOS and Web products.',
     skills: { languages: 'Product Design · Figma · Principle · User Interviews · Interactive Prototyping · HTML/CSS' },
     experience: [
@@ -1304,7 +1304,7 @@ const resumeDataByRole = {
   'Web Designer': {
     name: 'Grace Taylor',
     role: 'Web Designer | Responsive Web Design · Webflow · HTML/CSS · Branding',
-    contact: { email: 'g.taylor@enhancv.com', phone: '+1-(503)-555-6611', location: 'Portland, OR', linkedin: 'linkedin.com/in/gracetaylor-web' },
+    contact: { email: 'g.taylor@forgeindiaconnect.com', phone: '+1-(503)-555-6611', location: 'Portland, OR', linkedin: 'linkedin.com/in/gracetaylor-web' },
     objective: 'Web Designer with 5+ years crafting high-converting marketing websites and landing pages for tech startups.',
     skills: { languages: 'Webflow · HTML5 / CSS3 · Figma · Responsive Design · SEO Basics · JavaScript' },
     experience: [
@@ -1317,7 +1317,7 @@ const resumeDataByRole = {
   'Motion Designer': {
     name: 'Lucas Silva',
     role: 'Senior Motion Designer | 2D/3D Animation · Cinema 4D · After Effects',
-    contact: { email: 'l.silva@enhancv.com', phone: '+1-(310)-555-2244', location: 'Los Angeles, CA', linkedin: 'linkedin.com/in/lucassilva-motion' },
+    contact: { email: 'l.silva@forgeindiaconnect.com', phone: '+1-(310)-555-2244', location: 'Los Angeles, CA', linkedin: 'linkedin.com/in/lucassilva-motion' },
     objective: 'Motion Graphics Designer with 6+ years creating 3D product animations, broadcast graphics, and UI micro-interactions for global brands.',
     skills: { languages: 'Cinema 4D · Octane Render · After Effects · Premiere Pro · 3D Modeling · Character Rigging' },
     experience: [
@@ -1330,7 +1330,7 @@ const resumeDataByRole = {
   'Civil Engineer': {
     name: 'Robert Lawson',
     role: 'Senior Civil Engineer | Infrastructure & Structural Engineering | AutoCAD',
-    contact: { email: 'r.lawson@enhancv.com', phone: '+1-(214)-555-8899', location: 'Dallas, TX', linkedin: 'linkedin.com/in/robertlawson-ce' },
+    contact: { email: 'r.lawson@forgeindiaconnect.com', phone: '+1-(214)-555-8899', location: 'Dallas, TX', linkedin: 'linkedin.com/in/robertlawson-ce' },
     objective: 'Licensed Professional Engineer (PE) with 9+ years overseeing commercial & highway infrastructure projects up to $80M.',
     skills: { languages: 'Civil 3D · AutoCAD · Structural Design · Site Development · Project Management · Stormwater Management' },
     experience: [
@@ -1343,7 +1343,7 @@ const resumeDataByRole = {
   'Electrical Engineer': {
     name: 'Dr. Vikram Patel',
     role: 'Senior Electrical Engineer | PCB Design · Embedded Systems · Power Electronics',
-    contact: { email: 'v.patel@enhancv.com', phone: '+1-(408)-555-3322', location: 'San Jose, CA', linkedin: 'linkedin.com/in/vikrampatel-ee' },
+    contact: { email: 'v.patel@forgeindiaconnect.com', phone: '+1-(408)-555-3322', location: 'San Jose, CA', linkedin: 'linkedin.com/in/vikrampatel-ee' },
     objective: 'Electrical Engineer with 8+ years designing high-speed PCB layouts, IoT hardware, and power management circuits.',
     skills: { languages: 'Altium Designer · C/C++ Embedded · PCB Layout · Oscilloscopes · Signal Integrity · FPGA' },
     experience: [
@@ -1356,7 +1356,7 @@ const resumeDataByRole = {
   'Chemical Engineer': {
     name: 'Samantha Reed',
     role: 'Senior Chemical Engineer | Process Optimization · Aspen Plus · Refining',
-    contact: { email: 's.reed@enhancv.com', phone: '+1-(713)-555-4455', location: 'Houston, TX', linkedin: 'linkedin.com/in/samanthareed-cheme' },
+    contact: { email: 's.reed@forgeindiaconnect.com', phone: '+1-(713)-555-4455', location: 'Houston, TX', linkedin: 'linkedin.com/in/samanthareed-cheme' },
     objective: 'Chemical Process Engineer with 7+ years optimizing industrial chemical plant operations, yields, and safety protocols.',
     skills: { languages: 'Aspen Plus · Process Safety Management (PSM) · Chemical Reaction Engineering · P&ID · HAZOP' },
     experience: [
@@ -1369,7 +1369,7 @@ const resumeDataByRole = {
   'Chief Executive Officer': {
     name: 'Harrison Vance',
     role: 'Chief Executive Officer | Global Enterprise Scaling | Board Governance',
-    contact: { email: 'h.vance@enhancv.com', phone: '+1-(212)-555-1000', location: 'New York, NY', linkedin: 'linkedin.com/in/harrisonvance-ceo' },
+    contact: { email: 'h.vance@forgeindiaconnect.com', phone: '+1-(212)-555-1000', location: 'New York, NY', linkedin: 'linkedin.com/in/harrisonvance-ceo' },
     objective: 'Visionary CEO with 18+ years leading enterprise growth, fundraising ($150M+ Series A-D), and strategic M&A exits ($800M+ valuation).',
     skills: { languages: 'Executive Leadership · Venture Capital & Private Equity · Corporate M&A · Investor Relations · Strategic Vision' },
     experience: [
@@ -1382,7 +1382,7 @@ const resumeDataByRole = {
   'VP of Sales': {
     name: 'Catherine Ross',
     role: 'VP of Global Sales | Revenue Generation | Enterprise SaaS Scaling',
-    contact: { email: 'c.ross@enhancv.com', phone: '+1-(312)-555-7711', location: 'Chicago, IL', linkedin: 'linkedin.com/in/catherineross-sales' },
+    contact: { email: 'c.ross@forgeindiaconnect.com', phone: '+1-(312)-555-7711', location: 'Chicago, IL', linkedin: 'linkedin.com/in/catherineross-sales' },
     objective: 'Executive Sales Leader with 14+ years scaling annual recurring revenue (ARR) from $10M to $100M+ across international markets.',
     skills: { languages: 'Global Sales Strategy · GTM Execution · Enterprise Deals · Sales Team Leadership · Compensation Planning' },
     experience: [
@@ -1395,7 +1395,7 @@ const resumeDataByRole = {
   'Chief Technology Officer': {
     name: 'Dr. Alexander Wright',
     role: 'Chief Technology Officer (CTO) | Cloud Architecture & Engineering Leadership',
-    contact: { email: 'a.wright@enhancv.com', phone: '+1-(415)-555-8833', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/alexwright-cto' },
+    contact: { email: 'a.wright@forgeindiaconnect.com', phone: '+1-(415)-555-8833', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/alexwright-cto' },
     objective: 'CTO with 16+ years building enterprise SaaS platforms, scaling 150+ person engineering organizations, and leading cloud modernizations.',
     skills: { languages: 'Technology Vision · Cloud Architecture · Engineering Leadership · AI Strategy · Cybersecurity Governance' },
     experience: [
@@ -1450,7 +1450,7 @@ const resumeDataByRole = {
   'Head Chef': {
     name: 'Chef Antoine Laurent',
     role: 'Executive Head Chef | Michelin Star Dining | Farm-to-Table Cuisine',
-    contact: { email: 'a.laurent@enhancv.com', phone: '+1-(212)-555-6633', location: 'New York, NY', linkedin: 'linkedin.com/in/chef-antoine-laurent' },
+    contact: { email: 'a.laurent@forgeindiaconnect.com', phone: '+1-(212)-555-6633', location: 'New York, NY', linkedin: 'linkedin.com/in/chef-antoine-laurent' },
     objective: 'Executive Head Chef with 12+ years leading Michelin-recognized kitchens, crafting seasonal menus, and managing kitchen inventory.',
     skills: { languages: 'Culinary Arts · Menu Design · Kitchen Management · French Gastronomy · Food Safety (ServSafe) · Inventory Control' },
     experience: [
@@ -1463,7 +1463,7 @@ const resumeDataByRole = {
   'Restaurant Manager': {
     name: 'Maria Santos',
     role: 'Restaurant General Manager | Hospitality Excellence | P&L Management',
-    contact: { email: 'm.santos@enhancv.com', phone: '+1-(305)-555-4422', location: 'Miami, FL', linkedin: 'linkedin.com/in/mariasantos-hospitality' },
+    contact: { email: 'm.santos@forgeindiaconnect.com', phone: '+1-(305)-555-4422', location: 'Miami, FL', linkedin: 'linkedin.com/in/mariasantos-hospitality' },
     objective: 'Hospitality General Manager with 8+ years managing high-volume fine dining establishments ($6M+ annual revenue).',
     skills: { languages: 'Restaurant Operations · Staff Training · POS Systems (Toast) · Inventory Auditing · Guest Relations · P&L Management' },
     experience: [
@@ -1476,7 +1476,7 @@ const resumeDataByRole = {
   'Mixologist / Bartender': {
     name: 'Julian Drake',
     role: 'Master Mixologist & Beverage Director | Craft Cocktails & Menu Design',
-    contact: { email: 'j.drake@enhancv.com', phone: '+1-(702)-555-8833', location: 'Las Vegas, NV', linkedin: 'linkedin.com/in/juliandrake-mixology' },
+    contact: { email: 'j.drake@forgeindiaconnect.com', phone: '+1-(702)-555-8833', location: 'Las Vegas, NV', linkedin: 'linkedin.com/in/juliandrake-mixology' },
     objective: 'Award-winning Mixologist with 7+ years crafting bespoke cocktail programs for luxury hotel lounges and upscale speakeasies.',
     skills: { languages: 'Craft Cocktails · Beverage Costing · Spirits Pairing · Bar Operations · Menu Creation · High-Volume Service' },
     experience: [
@@ -1489,7 +1489,7 @@ const resumeDataByRole = {
   'Freelance Consultant': {
     name: 'Derek Morgan',
     role: 'Independent Strategy & Growth Consultant | B2B Scale-ups',
-    contact: { email: 'd.morgan@enhancv.com', phone: '+1-(415)-555-1199', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/derekmorgan-consultant' },
+    contact: { email: 'd.morgan@forgeindiaconnect.com', phone: '+1-(415)-555-1199', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/derekmorgan-consultant' },
     objective: 'Independent Strategy Consultant with 8+ years helping SaaS and eCommerce startups scale operations and unlock new market growth.',
     skills: { languages: 'Growth Consulting · Go-To-Market Strategy · Business Audits · Financial Planning · Pitch Decks' },
     experience: [
@@ -1502,7 +1502,7 @@ const resumeDataByRole = {
   'Freelance Web Dev': {
     name: 'Nora Vance',
     role: 'Freelance Full-Stack Developer | React · Node.js · Shopify · Webflow',
-    contact: { email: 'n.vance@enhancv.com', phone: '+1-(503)-555-2277', location: 'Portland, OR', linkedin: 'linkedin.com/in/noravance-dev' },
+    contact: { email: 'n.vance@forgeindiaconnect.com', phone: '+1-(503)-555-2277', location: 'Portland, OR', linkedin: 'linkedin.com/in/noravance-dev' },
     objective: 'Freelance Developer with 6+ years building custom web applications, eCommerce stores, and API integrations for global clients.',
     skills: { languages: 'React · Node.js · TypeScript · Shopify Liquid · Webflow · Tailwind CSS · GraphQL' },
     experience: [
@@ -1528,7 +1528,7 @@ const resumeDataByRole = {
   'Public Policy Analyst': {
     name: 'Dr. Evelyn Reed',
     role: 'Senior Policy Analyst | Legislative Strategy · Environmental & Economic Policy',
-    contact: { email: 'e.reed@enhancv.com', phone: '+1-(202)-555-3388', location: 'Washington, D.C.', linkedin: 'linkedin.com/in/evelynreed-policy' },
+    contact: { email: 'e.reed@forgeindiaconnect.com', phone: '+1-(202)-555-3388', location: 'Washington, D.C.', linkedin: 'linkedin.com/in/evelynreed-policy' },
     objective: 'Policy Analyst with 7+ years researching environmental regulation, drafting legislative briefs, and advising congressional committees.',
     skills: { languages: 'Public Policy Research · Econometrics · Legislative Briefings · Data Analysis (STATA) · Stakeholder Engagement' },
     experience: [
@@ -1541,7 +1541,7 @@ const resumeDataByRole = {
   'Government Specialist': {
     name: 'Marcus Brody',
     role: 'Government Operations Specialist | Grants Management & Compliance',
-    contact: { email: 'm.brody@enhancv.com', phone: '+1-(202)-555-7799', location: 'Washington, D.C.', linkedin: 'linkedin.com/in/marcusbrody-gov' },
+    contact: { email: 'm.brody@forgeindiaconnect.com', phone: '+1-(202)-555-7799', location: 'Washington, D.C.', linkedin: 'linkedin.com/in/marcusbrody-gov' },
     objective: 'Government Operations Specialist with 8+ years managing federal grant programs ($50M+ distribution) and agency compliance audits.',
     skills: { languages: 'Grants.gov · Federal Regulatory Compliance · Audit Preparation · Agency Operations · Budget Oversight' },
     experience: [
@@ -1567,7 +1567,7 @@ const resumeDataByRole = {
   'Registered Nurse': {
     name: 'Sarah Jenkins, RN',
     role: 'Registered Nurse (BSN, RN) | ICU & Critical Care Nursing',
-    contact: { email: 's.jenkins@enhancv.com', phone: '+1-(617)-555-1144', location: 'Boston, MA', linkedin: 'linkedin.com/in/sarahjenkins-rn' },
+    contact: { email: 's.jenkins@forgeindiaconnect.com', phone: '+1-(617)-555-1144', location: 'Boston, MA', linkedin: 'linkedin.com/in/sarahjenkins-rn' },
     objective: 'Compassionate ICU Registered Nurse with 7+ years delivering critical patient care in Level 1 Trauma Centers.',
     skills: { languages: 'Critical Care (ICU) · Patient Triage · Ventilator Management · BLS/ACLS Certified · EHR (Epic) · Pharmacology' },
     experience: [
@@ -1580,7 +1580,7 @@ const resumeDataByRole = {
   'Medical Assistant': {
     name: 'Emily Watson, CMA',
     role: 'Certified Medical Assistant (CMA) | Clinical & Administrative Support',
-    contact: { email: 'e.watson@enhancv.com', phone: '+1-(312)-555-6655', location: 'Chicago, IL', linkedin: 'linkedin.com/in/emilywatson-cma' },
+    contact: { email: 'e.watson@forgeindiaconnect.com', phone: '+1-(312)-555-6655', location: 'Chicago, IL', linkedin: 'linkedin.com/in/emilywatson-cma' },
     objective: 'Certified Medical Assistant with 5+ years providing clinical triage, patient intake, and EHR management for busy outpatient clinics.',
     skills: { languages: 'Clinical Triage · Vital Signs · Phlebotomy · EHR (Cerner, Epic) · Patient Scheduling · Medical Billing' },
     experience: [
@@ -1593,7 +1593,7 @@ const resumeDataByRole = {
   'Healthcare Administrator': {
     name: 'Dr. Arthur Pendelton',
     role: 'Healthcare Operations Administrator | Hospital Management & HIPAA',
-    contact: { email: 'a.pendelton@enhancv.com', phone: '+1-(404)-555-8800', location: 'Atlanta, GA', linkedin: 'linkedin.com/in/arthurpendelton-ha' },
+    contact: { email: 'a.pendelton@forgeindiaconnect.com', phone: '+1-(404)-555-8800', location: 'Atlanta, GA', linkedin: 'linkedin.com/in/arthurpendelton-ha' },
     objective: 'Healthcare Administrator with 11+ years directing clinical operations, hospital staff workflow, and healthcare regulatory compliance.',
     skills: { languages: 'Healthcare Operations · HIPAA & Joint Commission Compliance · Clinical Budgeting · Staff Management' },
     experience: [
@@ -1606,7 +1606,7 @@ const resumeDataByRole = {
   'HR Manager': {
     name: 'Rachel Green',
     role: 'Human Resources Manager | Employee Relations · Talent Strategy · SHRM-SCP',
-    contact: { email: 'r.green@enhancv.com', phone: '+1-(212)-555-9944', location: 'New York, NY', linkedin: 'linkedin.com/in/rachelgreen-hr' },
+    contact: { email: 'r.green@forgeindiaconnect.com', phone: '+1-(212)-555-9944', location: 'New York, NY', linkedin: 'linkedin.com/in/rachelgreen-hr' },
     objective: 'SHRM-SCP certified HR Manager with 8+ years leading employee engagement, performance management, and HR operations for 600+ staff.',
     skills: { languages: 'Employee Relations · SHRM-SCP · Performance Management · HRIS (Workday, BambooHR) · Onboarding & Offboarding' },
     experience: [
@@ -1619,7 +1619,7 @@ const resumeDataByRole = {
   'Talent Acquisition': {
     name: 'Jason Miller',
     role: 'Senior Technical Recruiter | Executive Search · Tech Recruiting',
-    contact: { email: 'j.miller@enhancv.com', phone: '+1-(415)-555-2200', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/jasonmiller-recruiter' },
+    contact: { email: 'j.miller@forgeindiaconnect.com', phone: '+1-(415)-555-2200', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/jasonmiller-recruiter' },
     objective: 'Technical Recruiter with 6+ years placing software engineers, engineering managers, and executive tech leaders at high-growth startups.',
     skills: { languages: 'Technical Sourcing · LinkedIn Recruiter · ATS (Greenhouse, Lever) · Offer Negotiation · Executive Search' },
     experience: [
@@ -1645,7 +1645,7 @@ const resumeDataByRole = {
   'Paralegal': {
     name: 'Nathan Drake',
     role: 'Certified Senior Paralegal | Legal Research · Trial Prep · Corporate Filings',
-    contact: { email: 'n.drake@enhancv.com', phone: '+1-(312)-555-7744', location: 'Chicago, IL', linkedin: 'linkedin.com/in/nathandrake-paralegal' },
+    contact: { email: 'n.drake@forgeindiaconnect.com', phone: '+1-(312)-555-7744', location: 'Chicago, IL', linkedin: 'linkedin.com/in/nathandrake-paralegal' },
     objective: 'Certified Senior Paralegal with 6+ years supporting trial attorneys in complex civil litigation, discovery management, and legal research.',
     skills: { languages: 'Legal Research (Westlaw, LexisNexis) · E-Discovery · Trial Exhibits · Deposition Preparation · Docketing' },
     experience: [
@@ -1658,7 +1658,7 @@ const resumeDataByRole = {
   'SEO Specialist': {
     name: 'Alex Turner',
     role: 'Senior SEO Manager | Technical SEO · Organic Growth · Content Strategy',
-    contact: { email: 'a.turner@enhancv.com', phone: '+1-(206)-555-8822', location: 'Seattle, WA', linkedin: 'linkedin.com/in/alexturner-seo' },
+    contact: { email: 'a.turner@forgeindiaconnect.com', phone: '+1-(206)-555-8822', location: 'Seattle, WA', linkedin: 'linkedin.com/in/alexturner-seo' },
     objective: 'Technical SEO Specialist with 6+ years driving organic growth for enterprise websites. Increased organic search traffic by 320% in 18 months.',
     skills: { languages: 'Technical SEO · Screaming Frog · Ahrefs / SEMrush · Google Search Console · Schema Markup · Site Architecture' },
     experience: [
@@ -1671,7 +1671,7 @@ const resumeDataByRole = {
   'Brand Manager': {
     name: 'Sophia Laurent',
     role: 'Global Brand Manager | Brand Positioning · Product Marketing · PR',
-    contact: { email: 's.laurent@enhancv.com', phone: '+1-(212)-555-5511', location: 'New York, NY', linkedin: 'linkedin.com/in/sophialaurent-brand' },
+    contact: { email: 's.laurent@forgeindiaconnect.com', phone: '+1-(212)-555-5511', location: 'New York, NY', linkedin: 'linkedin.com/in/sophialaurent-brand' },
     objective: 'Brand Manager with 7+ years managing multi-million dollar global brand campaigns, market positioning, and product launches for CPG brands.',
     skills: { languages: 'Brand Strategy · Product Marketing · PR & Communications · Campaign Execution · Market Research' },
     experience: [
@@ -1684,7 +1684,7 @@ const resumeDataByRole = {
   'Account Executive': {
     name: 'Marcus Vance',
     role: 'Senior Enterprise Account Executive | B2B SaaS Sales · Quota Crusher',
-    contact: { email: 'm.vance@enhancv.com', phone: '+1-(415)-555-6600', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/marcusvance-ae' },
+    contact: { email: 'm.vance@forgeindiaconnect.com', phone: '+1-(415)-555-6600', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/marcusvance-ae' },
     objective: 'Enterprise Account Executive with 6+ years selling high-ticket SaaS solutions to Fortune 500 accounts. Consistently achieved 140%+ of annual quota.',
     skills: { languages: 'B2B SaaS Sales · Enterprise Account Closing · MEDDIC · Salesforce CRM · Contract Negotiation' },
     experience: [
@@ -1697,7 +1697,7 @@ const resumeDataByRole = {
   'Business Development': {
     name: 'Elena Rostova',
     role: 'Director of Business Development | Strategic Partnerships & Alliances',
-    contact: { email: 'e.rostova@enhancv.com', phone: '+1-(212)-555-8877', location: 'New York, NY', linkedin: 'linkedin.com/in/elenarostova-bizdev' },
+    contact: { email: 'e.rostova@forgeindiaconnect.com', phone: '+1-(212)-555-8877', location: 'New York, NY', linkedin: 'linkedin.com/in/elenarostova-bizdev' },
     objective: 'Business Development Executive with 8+ years structuring revenue-generating strategic partnerships, channel distribution, and co-marketing deals.',
     skills: { languages: 'Strategic Partnerships · Channel Sales · Deal Structuring · B2B Contract Negotiation · Executive Presentation' },
     experience: [
