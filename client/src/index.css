@@ -135,71 +135,81 @@
 
 /* ─── High-Resolution Clean A4 Print Rules ─── */
 @media print {
-  /* 1. Hide all navigation bars, sidebars, form editors, headers, footers, buttons, and modals */
-  nav,
-  header,
-  footer,
-  button,
-  input,
-  select,
-  textarea,
-  .no-print,
-  [role="dialog"],
-  div[style*="width: 240px"],
-  div[style*="width:240px"],
-  div[style*="min-width: 240px"],
-  div[style*="min-width:240px"],
-  div[style*="width: 440px"],
-  div[style*="width:440px"],
-  div[style*="flex: 0 0 440px"],
-  div[style*="flex:0 0 440px"],
-  div[style*="min-width: 400px"],
-  div[style*="min-width:400px"],
-  div[style*="position: fixed"],
-  div[style*="position:fixed"],
-  div[style*="backdropFilter"],
-  div[style*="backdrop-filter"],
-  div[style*="zIndex: 9999"],
-  div[style*="zIndex: 10000"] {
-    display: none !important;
-  }
-
-  /* 2. Reset ALL parent containers so flexbox/overflow:hidden never clips printing */
-  html, body, #root, #root > div, div {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
-    position: static !important;
-    background: white !important;
-    box-shadow: none !important;
-  }
-
   @page {
     size: A4 portrait;
     margin: 0mm;
   }
 
-  /* 3. Isolate ONLY the A4 Resume Sheet in crisp high resolution */
-  #resume-preview-sheet,
-  .print-paper-sheet,
-  div[style*="width: 210mm"],
-  div[style*="width:210mm"],
-  div[style*="width: 794"],
-  div[style*="width:794"] {
-    display: block !important;
+  /* Force background colors and graphics to render in high quality */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 1. Reset root page background and scrolling */
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* 2. Strip position: relative / flex / grid offsets from parent layout wrappers so resume anchors at true page (0,0) */
+  #root, #root > div, main, section, article {
     position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    display: block !important;
+    float: none !important;
+    flex: none !important;
+    grid: none !important;
+    width: 100% !important;
+  }
+
+  /* 3. Hide all non-resume UI elements by default */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* 4. Show ONLY the resume preview sheet and its internal nodes */
+  #resume-preview-sheet,
+  #resume-preview-sheet *,
+  #printable-resume,
+  #printable-resume *,
+  .print-paper-sheet,
+  .print-paper-sheet * {
+    visibility: visible !important;
+  }
+
+  /* 5. Position the resume sheet cleanly at top-left (0,0) of the A4 page */
+  #resume-preview-sheet,
+  #printable-resume,
+  .print-paper-sheet {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 210mm !important;
     min-height: 297mm !important;
-    margin: 0 auto !important;
-    padding: 15mm 20mm !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    zoom: 1 !important;
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
-    transform: none !important;
+    overflow: visible !important;
     background: white !important;
-    page-break-after: avoid !important;
+    z-index: 999999 !important;
+  }
+
+  /* Prevent section splitting across page breaks */
+  #resume-preview-sheet section,
+  #printable-resume section {
     page-break-inside: avoid !important;
-    box-sizing: border-box !important;
+    break-inside: avoid !important;
   }
 }

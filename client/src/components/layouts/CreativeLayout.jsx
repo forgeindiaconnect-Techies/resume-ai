@@ -1,199 +1,367 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Globe, Code2, Link2, Award, Sparkles } from 'lucide-react';
+import ResumeFooter from './ResumeFooter';
 
-const CreativeLayout = ({ data, customColor, customFont, sectionsOrder, theme }) => {
+/**
+ * CreativeLayout - Exact replica of Enhancv's flagship Creative / Actor / Product Manager template
+ * Reference: Enhancv "Ava Johnson - Actor" & "Jessica Martinez - Product Manager" two-column layout
+ */
+const CreativeLayout = ({ data, customColor, customFont }) => {
   if (!data) return null;
 
-  const primaryColor = theme?.primaryColor || customColor || '#7c3aed';
-  const secondaryColor = theme?.secondaryColor || '#0f172a';
-  const fontFamily = theme?.fontFamily || customFont || "'Inter', sans-serif";
-  const fontSize = theme?.fontSize || 13;
-  const lineHeight = theme?.lineHeight || 1.6;
-  const margin = theme?.margin !== undefined ? theme.margin : 35;
+  const sidebarBg = customColor || '#1f5756'; // Dark teal/green like Ava Johnson template
+  const accentTeal = '#2d8a87';
+  const fontFamily = customFont || "'Inter', sans-serif";
 
-  const { name, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], training = [], languagesList = [], references } = data;
+  const {
+    name = 'AVA JOHNSON',
+    role = 'Actor | Character Development | Film & TV',
+    contact = {},
+    objective,
+    education = [],
+    skills = {},
+    projects = [],
+    experience = [],
+    achievements = []
+  } = data;
 
-  const SectionHeading = ({ label }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-      <span style={{ width: '8px', height: '18px', background: primaryColor, borderRadius: '3px' }} />
-      <h2 style={{
-        fontSize: `${fontSize * 0.95}px`,
-        fontWeight: 900,
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-        color: secondaryColor,
-        margin: 0
-      }}>{label}</h2>
-    </div>
-  );
-
-  const renderSection = (sectionLabel) => {
-    switch (sectionLabel) {
-      case 'Summary':
-        return objective && (
-          <section key="Summary" style={{ marginBottom: '1.5rem', background: '#faf5ff', padding: '1rem 1.25rem', borderRadius: '12px', borderLeft: `4px solid ${primaryColor}` }}>
-            <p style={{ margin: 0, color: '#3b0764', lineHeight: lineHeight, fontSize: `${fontSize}px`, fontWeight: 500 }}>{objective}</p>
-          </section>
-        );
-      case 'Experience':
-        return experience && experience.length > 0 && (
-          <section key="Experience" style={{ marginBottom: '1.5rem' }}>
-            <SectionHeading label="Experience" />
-            {experience.map((exp, i) => (
-              <div key={i} style={{ marginBottom: '1.2rem', padding: '0.85rem 1rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #f1f5f9' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
-                  <h3 style={{ margin: 0, fontSize: `${fontSize * 1.05}px`, fontWeight: 800, color: secondaryColor }}>{exp.title || exp.role}</h3>
-                  <span style={{ fontSize: `${fontSize * 0.88}px`, fontWeight: 800, color: primaryColor, background: '#f3e8ff', padding: '0.15rem 0.55rem', borderRadius: '20px' }}>{exp.duration || exp.period}</span>
-                </div>
-                <div style={{ fontSize: `${fontSize * 0.95}px`, fontWeight: 700, color: primaryColor, margin: '0.2rem 0 0.4rem' }}>{exp.company}</div>
-                {exp.points && exp.points.length > 0 ? (
-                  <ul style={{ margin: '0.3rem 0 0', paddingLeft: '1.1rem' }}>
-                    {exp.points.map((pt, j) => (
-                      <li key={j} style={{ color: '#475569', marginBottom: '0.2rem', fontSize: `${fontSize}px`, lineHeight: lineHeight }}>{pt}</li>
-                    ))}
-                  </ul>
-                ) : exp.desc ? (
-                  <p style={{ margin: '0.3rem 0 0', color: '#475569', fontSize: `${fontSize}px`, lineHeight: lineHeight }}>{exp.desc}</p>
-                ) : null}
-              </div>
-            ))}
-          </section>
-        );
-      case 'Projects':
-        return projects && projects.length > 0 && (
-          <section key="Projects" style={{ marginBottom: '1.5rem' }}>
-            <SectionHeading label="Projects" />
-            {projects.map((p, i) => (
-              <div key={i} style={{ marginBottom: '1rem', padding: '0.85rem 1rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #f1f5f9' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <h3 style={{ margin: 0, fontSize: `${fontSize * 1.05}px`, fontWeight: 800, color: secondaryColor }}>{p.title || p.name}</h3>
-                  {p.period && <span style={{ fontSize: `${fontSize * 0.88}px`, fontWeight: 600, color: '#64748b' }}>{p.period}</span>}
-                </div>
-                {p.technology && <div style={{ fontSize: `${fontSize * 0.9}px`, fontWeight: 700, color: primaryColor, margin: '0.2rem 0' }}>{p.technology}</div>}
-                {p.desc && <p style={{ margin: '0.2rem 0 0', color: '#475569', fontSize: `${fontSize}px`, lineHeight: lineHeight }}>{p.desc}</p>}
-              </div>
-            ))}
-          </section>
-        );
-      case 'Education':
-        return education && education.length > 0 && (
-          <section key="Education" style={{ marginBottom: '1.5rem' }}>
-            <SectionHeading label="Education" />
-            {education.map((e, i) => (
-              <div key={i} style={{ marginBottom: '0.75rem' }}>
-                <div style={{ fontWeight: 800, fontSize: `${fontSize * 1.02}px`, color: secondaryColor }}>{e.degree}</div>
-                <div style={{ fontSize: `${fontSize * 0.95}px`, fontWeight: 700, color: primaryColor }}>{e.institution || e.school}</div>
-                <div style={{ fontSize: `${fontSize * 0.9}px`, color: '#64748b' }}>{e.tenure || e.year}{e.cgpa ? ` • CGPA: ${e.cgpa}` : ''}</div>
-              </div>
-            ))}
-          </section>
-        );
-      case 'Skills':
-        return skills && (skills.languages || skills.frameworks || skills.tools) && (
-          <section key="Skills" style={{ marginBottom: '1.5rem' }}>
-            <SectionHeading label="Skills Stack" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: `${fontSize}px` }}>
-              {skills.languages && (
-                <div>
-                  <span style={{ fontSize: `${fontSize * 0.88}px`, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>Languages</span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                    {skills.languages.split(',').map((item, idx) => (
-                      <span key={idx} style={{ background: '#f3e8ff', color: '#6b21a8', padding: '0.15rem 0.6rem', borderRadius: '12px', fontSize: `${fontSize * 0.9}px`, fontWeight: 700 }}>{item.trim()}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {skills.frameworks && (
-                <div>
-                  <span style={{ fontSize: `${fontSize * 0.88}px`, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.2rem' }}>Frameworks & Libs</span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                    {skills.frameworks.split(',').map((item, idx) => (
-                      <span key={idx} style={{ background: '#eff6ff', color: '#1d4ed8', padding: '0.15rem 0.6rem', borderRadius: '12px', fontSize: `${fontSize * 0.9}px`, fontWeight: 700 }}>{item.trim()}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        );
-      case 'Certificates':
-        return training && training.length > 0 && (
-          <section key="Certificates" style={{ marginBottom: '1.5rem' }}>
-            <SectionHeading label="Certifications" />
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
-              {training.map((cert, i) => (
-                <span key={i} style={{ fontSize: `${fontSize * 0.9}px`, fontWeight: 700, color: secondaryColor, background: '#faf5ff', border: `1px solid ${primaryColor}40`, padding: '0.25rem 0.75rem', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <Sparkles size={10} color={primaryColor} /> {cert}
-                </span>
-              ))}
-            </div>
-          </section>
-        );
-      case 'Languages':
-        return languagesList && languagesList.length > 0 && (
-          <section key="Languages" style={{ marginBottom: '1.5rem' }}>
-            <SectionHeading label="Languages" />
-            <p style={{ margin: 0, fontSize: `${fontSize}px`, color: '#475569' }}>{languagesList.join(' • ')}</p>
-          </section>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const orderToUse = sectionsOrder && sectionsOrder.length > 0 
-    ? sectionsOrder.filter(s => s !== 'Personal' && s !== 'Preview')
-    : ['Summary', 'Experience', 'Projects', 'Education', 'Skills', 'Certificates', 'Languages'];
+  const skillsList = typeof skills === 'object'
+    ? [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' - ')
+    : (Array.isArray(skills) ? skills.join(' - ') : (skills || ''));
 
   return (
-    <div
-      id="printable-resume"
-      className="resume-print-wrapper"
-      style={{
-        width: '100%',
-        minHeight: '100%',
-        background: 'white',
-        fontFamily: fontFamily,
-        color: secondaryColor,
-        boxSizing: 'border-box',
-        fontSize: `${fontSize}px`,
-        lineHeight: lineHeight,
-        display: 'flex'
-      }}
-    >
-      {/* CREATIVE SIDE STRIPE */}
-      <div style={{ width: '16px', background: primaryColor, flexShrink: 0 }} />
-
-      <div style={{ flex: 1, padding: `${margin}px` }}>
-        {/* HEADER */}
-        <header style={{ textAlign: theme?.profilePosition === 'right' ? 'right' : theme?.profilePosition === 'center' ? 'center' : 'left', marginBottom: '1.75rem', borderBottom: `2px solid #f1f5f9`, paddingBottom: '1.25rem' }}>
-          <h1 style={{ fontSize: `${fontSize * 2.5}px`, fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: secondaryColor }}>
-            {name || 'Your Name'}
-          </h1>
-          {data.role && (
-            <p style={{ fontSize: `${fontSize * 1.05}px`, fontWeight: 800, color: primaryColor, margin: '0.25rem 0 0.75rem' }}>
-              {data.role}
-            </p>
-          )}
-          <div style={{ display: 'flex', justifyContent: theme?.profilePosition === 'right' ? 'flex-end' : theme?.profilePosition === 'center' ? 'center' : 'flex-start', flexWrap: 'wrap', gap: '0.6rem 1.25rem', fontSize: `${fontSize * 0.9}px`, color: '#64748b', marginTop: '0.4rem' }}>
-            {contact.email && <span>{contact.email}</span>}
-            {contact.phone && <span>{contact.phone}</span>}
-            {contact.location && <span>{contact.location}</span>}
-            {contact.linkedin && <span>{contact.linkedin}</span>}
-            {contact.github && <span>{contact.github}</span>}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '297mm',
+      width: '210mm',
+      fontFamily: fontFamily,
+      background: 'white',
+      color: '#1e293b',
+      boxSizing: 'border-box',
+      lineHeight: 1.5,
+      textAlign: 'left'
+    }}>
+      <div style={{ display: 'flex', flex: 1 }}>
+        {/* LEFT SIDEBAR (Enhancv Dark Sidebar) */}
+        <div style={{
+          width: '35%',
+          background: sidebarBg,
+          color: '#ffffff',
+          padding: '2.2rem 1.4rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          {/* Name */}
+          <div>
+            <h1 style={{
+              fontSize: '1.65rem',
+              fontWeight: 900,
+              letterSpacing: '0.04em',
+              color: '#ffffff',
+              margin: '0 0 0.35rem',
+              lineHeight: 1.15,
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              {name}
+            </h1>
           </div>
-        </header>
 
-        {/* DYNAMIC SECTIONS */}
-        {orderToUse.map(s => renderSection(s))}
+          {/* LANGUAGES */}
+          <div>
+            <h3 style={{
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#ffffff',
+              borderBottom: '1px solid rgba(255,255,255,0.25)',
+              paddingBottom: '0.3rem',
+              margin: '0 0 0.65rem'
+            }}>
+              LANGUAGES
+            </h3>
+            <div style={{ fontSize: '0.75rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>English</span>
+                <span style={{ fontSize: '0.7rem', color: '#cbd5e1' }}>Native •••••</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Spanish</span>
+                <span style={{ fontSize: '0.7rem', color: '#cbd5e1' }}>Advanced •••••</span>
+              </div>
+            </div>
+          </div>
 
-        {/* REFERENCES */}
-        {references && (
-          <section style={{ marginTop: '1.5rem' }}>
-            <SectionHeading label="References" />
-            <p style={{ margin: 0, color: '#64748b', fontSize: `${fontSize * 0.9}px`, fontStyle: 'italic' }}>{references}</p>
-          </section>
-        )}
+          {/* KEY ACHIEVEMENTS (Sidebar Bullet Points with Icons) */}
+          <div>
+            <h3 style={{
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#ffffff',
+              borderBottom: '1px solid rgba(255,255,255,0.25)',
+              paddingBottom: '0.3rem',
+              margin: '0 0 0.65rem'
+            }}>
+              KEY ACHIEVEMENTS
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.74rem' }}>
+              {(achievements.length > 0 ? achievements : [
+                { title: 'Critically Acclaimed Lead Role', desc: 'Received critical acclaim for leading role that boosted project viewership by 30%.' },
+                { title: 'Featured in Film Festival', desc: 'Acted in a film selected for Sundance Film Festival.' },
+                { title: 'Social Media Campaign Success', desc: 'Promoted film release effectively on social media.' }
+              ]).map((ach, idx) => {
+                const icons = ['♥', '♥', '✂', '✂'];
+                return (
+                  <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#93c5fd', marginTop: '1px' }}>{icons[idx % 4]}</span>
+                    <div>
+                      <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: 1.25, marginBottom: '0.15rem' }}>
+                        {ach.title}
+                      </div>
+                      <div style={{ color: '#cbd5e1', fontSize: '0.7rem', lineHeight: 1.35 }}>
+                        {ach.desc}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* SKILLS */}
+          <div>
+            <h3 style={{
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#ffffff',
+              borderBottom: '1px solid rgba(255,255,255,0.25)',
+              paddingBottom: '0.3rem',
+              margin: '0 0 0.65rem'
+            }}>
+              SKILLS
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.74rem', color: '#e2e8f0', lineHeight: 1.6, fontWeight: 500 }}>
+              {skillsList || 'Script Analysis - Character Development - Voice-over Techniques - Improvisational Acting - Film Production'}
+            </p>
+          </div>
+
+          {/* INTERESTS */}
+          <div>
+            <h3 style={{
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: '#ffffff',
+              borderBottom: '1px solid rgba(255,255,255,0.25)',
+              paddingBottom: '0.3rem',
+              margin: '0 0 0.65rem'
+            }}>
+              INTERESTS
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.72rem' }}>
+              <div>
+                <div style={{ fontWeight: 800, color: '#ffffff' }}>Independent Films</div>
+                <div style={{ color: '#cbd5e1', fontSize: '0.68rem', lineHeight: 1.35 }}>Deep interest in analyzing and participating in storytelling.</div>
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, color: '#ffffff' }}>Voice Acting</div>
+                <div style={{ color: '#cbd5e1', fontSize: '0.68rem', lineHeight: 1.35 }}>Exploring different vocal techniques for animated characters.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT MAIN COLUMN */}
+        <div style={{
+          flex: 1,
+          padding: '2.2rem 1.8rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.25rem',
+          boxSizing: 'border-box'
+        }}>
+          {/* Header Role & Contact Row */}
+          <div>
+            <h2 style={{
+              fontSize: '1rem',
+              fontWeight: 800,
+              color: accentTeal,
+              margin: '0 0 0.4rem'
+            }}>
+              {role}
+            </h2>
+
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+              fontSize: '0.72rem',
+              color: '#64748b',
+              borderBottom: '1px solid #e2e8f0',
+              paddingBottom: '0.65rem'
+            }}>
+              {contact.phone && <span>📞 {contact.phone}</span>}
+              {contact.email && <span>✉ {contact.email}</span>}
+              {contact.linkedin && <span>🔗 {contact.linkedin}</span>}
+              {contact.location && <span>📍 {contact.location}</span>}
+            </div>
+          </div>
+
+          {/* SUMMARY */}
+          {objective && (
+            <div>
+              <h3 style={{
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: '#334155',
+                borderBottom: '1px solid #e2e8f0',
+                paddingBottom: '0.25rem',
+                margin: '0 0 0.45rem'
+              }}>
+                SUMMARY
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.76rem', color: '#334155', lineHeight: 1.55 }}>
+                {objective}
+              </p>
+            </div>
+          )}
+
+          {/* EXPERIENCE */}
+          {experience && experience.length > 0 && (
+            <div>
+              <h3 style={{
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: '#334155',
+                borderBottom: '1px solid #e2e8f0',
+                paddingBottom: '0.25rem',
+                margin: '0 0 0.65rem'
+              }}>
+                EXPERIENCE
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {experience.map((exp, idx) => (
+                  <div key={idx}>
+                    {/* Row 1: Job Title + Dates */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#0f172a' }}>
+                        {exp.title || exp.role}
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500 }}>
+                        {exp.duration || exp.period}
+                      </span>
+                    </div>
+
+                    {/* Row 2: Company + Location */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.3rem' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: accentTeal }}>
+                        {exp.company}
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500 }}>
+                        {exp.location || ''}
+                      </span>
+                    </div>
+
+                    {/* Description Bullets */}
+                    {exp.desc && (
+                      <div style={{ fontSize: '0.75rem', color: '#334155', lineHeight: 1.5 }}>
+                        {exp.desc.split('\n').map((line, i) => (
+                          <div key={i} style={{ marginBottom: '0.15rem', paddingLeft: '0.75rem', position: 'relative' }}>
+                            <span style={{ position: 'absolute', left: 0, top: 0, color: '#64748b' }}>•</span>
+                            {line.replace(/^•\s*/, '')}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* EDUCATION */}
+          {education && education.length > 0 && (
+            <div>
+              <h3 style={{
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: '#334155',
+                borderBottom: '1px solid #e2e8f0',
+                paddingBottom: '0.25rem',
+                margin: '0 0 0.55rem'
+              }}>
+                EDUCATION
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {education.map((edu, idx) => (
+                  <div key={idx}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>
+                        {edu.degree}
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500 }}>
+                        {edu.tenure || edu.year}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: accentTeal }}>
+                        {edu.institution || edu.school}
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500 }}>
+                        {edu.location || ''}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TRAINING / COURSES */}
+          {projects && projects.length > 0 && (
+            <div>
+              <h3 style={{
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: '#334155',
+                borderBottom: '1px solid #e2e8f0',
+                paddingBottom: '0.25rem',
+                margin: '0 0 0.55rem'
+              }}>
+                TRAINING / COURSES
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+                {projects.map((p, idx) => (
+                  <div key={idx}>
+                    <div style={{ fontSize: '0.76rem', fontWeight: 800, color: accentTeal }}>{p.title || p.name}</div>
+                    <div style={{ fontSize: '0.71rem', color: '#64748b' }}>{p.technology || p.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* FULL-WIDTH PERMANENT WATERMARK FOOTER */}
+      <div style={{ padding: '0 1.8rem 1rem', background: 'white' }}>
+        <ResumeFooter />
       </div>
     </div>
   );

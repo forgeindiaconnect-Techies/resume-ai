@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import PaymentModal from '../components/common/PaymentModal';
 import { PRESET_COLORS, PRESET_FONTS, loadSession, saveSession } from '../editors/editorUtils';
+import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
 
 const AiResumeView = () => {
   const { sessionId } = useParams();
@@ -25,12 +26,14 @@ const AiResumeView = () => {
   const [saveNote, setSaveNote] = useState('Click any text to edit directly on paper ✏️');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     const isPremium = localStorage.getItem('user_premium') === 'true';
     if (!isPremium) {
       setShowPaymentModal(true);
     } else {
-      window.print();
+      const sheet = printRef.current || document.getElementById('resume-preview-sheet');
+      const filename = generateProfessionalFilename(sessionData?.personalInfo?.name, `${activeLayout}_Resume`);
+      await exportResumeToPdf(sheet, filename, true);
     }
   };
 
@@ -249,6 +252,8 @@ const AiResumeView = () => {
         {/* Paper Document Sheet with contentEditable enabled directly on paper */}
         <div 
           ref={printRef}
+          id="resume-preview-sheet"
+          className="print-paper-sheet"
           contentEditable={true}
           suppressContentEditableWarning={true}
           onBlur={handlePaperBlur}
@@ -277,7 +282,12 @@ const AiResumeView = () => {
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        onSuccessDownload={() => window.print()}
+        onSuccessDownload={() => {
+          localStorage.setItem('user_premium', 'true');
+          const sheet = printRef.current || document.getElementById('resume-preview-sheet');
+          const filename = generateProfessionalFilename(sessionData?.personalInfo?.name, `${activeLayout}_Resume`);
+          exportResumeToPdf(sheet, filename, true);
+        }}
       />
     </div>
   );

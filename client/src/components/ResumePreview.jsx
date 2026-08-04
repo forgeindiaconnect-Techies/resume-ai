@@ -1,7 +1,33 @@
 import React from 'react';
-import ModernResumeTemplate from './builder/ModernResumeTemplate';
+import EnhancvLayout from './layouts/EnhancvLayout';
+import ModernLayout from './layouts/ModernLayout';
+import CreativeLayout from './layouts/CreativeLayout';
+import ProfessionalLayout from './layouts/ProfessionalLayout';
+import MinimalLayout from './layouts/MinimalLayout';
+import ExecutiveLayout from './layouts/ExecutiveLayout';
 
-const ResumePreview = ({ data, color, font }) => {
+const ResumePreview = ({ data, color, font, template }) => {
+  const renderTemplate = () => {
+    const t = (template || '').toLowerCase();
+    const props = { data, customColor: color, customFont: font };
+
+    switch (t) {
+      case 'enhancv':
+      case 'executive':
+        return <EnhancvLayout {...props} />;
+      case 'modern':
+        return <ModernLayout {...props} />;
+      case 'creative':
+        return <CreativeLayout {...props} />;
+      case 'professional':
+        return <ProfessionalLayout {...props} />;
+      case 'minimal':
+        return <MinimalLayout {...props} />;
+      default:
+        return <EnhancvLayout {...props} />;
+    }
+  };
+
   return (
     <div style={{
       background: 'white',
@@ -12,11 +38,7 @@ const ResumePreview = ({ data, color, font }) => {
       overflow: 'hidden',
       border: '1px solid #cbd5e1'
     }}>
-      <ModernResumeTemplate
-        data={data}
-        customColor={color}
-        customFont={font}
-      />
+      {renderTemplate()}
     </div>
   );
 };

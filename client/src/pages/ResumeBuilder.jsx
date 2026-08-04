@@ -30,6 +30,8 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { generateResumeAI } from '../services/aiService';
 
 import PaymentModal from '../components/common/PaymentModal';
+import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
+import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
 
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
   const { resumeId } = useParams();
@@ -39,6 +41,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [resumeSessionId, setResumeSessionId] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showFullPreviewModal, setShowFullPreviewModal] = useState(false);
+  const [showDownloadWorkflowModal, setShowDownloadWorkflowModal] = useState(false);
   
   // AI Assistant States
   const [showAiAssistantModal, setShowAiAssistantModal] = useState(false);
@@ -490,7 +494,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     if (!isPremium) {
       setShowPaymentModal(true);
     } else {
-      window.print();
+      setShowFullPreviewModal(false);
+      setShowDownloadWorkflowModal(true);
     }
   };
 
@@ -1386,20 +1391,46 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                     </div>
 
                     <button 
+                      onClick={() => setShowFullPreviewModal(true)}
+                      style={{ 
+                        width: '100%', 
+                        padding: '1rem', 
+                        borderRadius: '12px', 
+                        fontWeight: 800, 
+                        background: '#ffffff',
+                        color: '#0284c7',
+                        border: '2px solid #0284c7',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.9rem'
+                      }}
+                    >
+                      👁️ Full-Screen Read-Only Preview
+                    </button>
+
+                    <button 
                       onClick={handleDownload}
                       style={{ 
                         width: '100%', 
                         padding: '1.1rem', 
                         borderRadius: '12px', 
                         fontWeight: 900, 
-                        background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                        background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
                         color: 'white',
                         border: 'none',
                         cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                        boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.95rem'
                       }}
                     >
-                      Download PDF
+                      <Download size={18} /> Download PDF
                     </button>
                   </div>
                 )}
@@ -1487,6 +1518,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           }}>
             <div 
               id="resume-preview-sheet" 
+              className="print-paper-sheet"
               style={{ 
                 width: '210mm', 
                 minHeight: '297mm',
@@ -1728,11 +1760,132 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         )}
       </AnimatePresence>
 
+      {/* Full-Screen Read-Only Resume Lock & Confirmation Modal */}
+      <AnimatePresence>
+        {showFullPreviewModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.88)',
+              backdropFilter: 'blur(10px)',
+              zIndex: 10000,
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            {/* Top Confirmation Action Bar */}
+            <div style={{
+              background: '#ffffff',
+              borderBottom: '1px solid #e2e8f0',
+              padding: '0.9rem 2rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: '#0f172a' }}>
+                  Your resume is ready! 🎉
+                </h3>
+                <p style={{ margin: '0.15rem 0 0', fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
+                  Please review your clean read-only preview before downloading.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <button
+                  onClick={() => setShowFullPreviewModal(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.55rem 1.2rem',
+                    borderRadius: '10px',
+                    border: '1.5px solid #cbd5e1',
+                    background: 'white',
+                    color: '#334155',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  <ChevronLeft size={16} /> Back to Edit
+                </button>
+
+                <button
+                  onClick={handleDownload}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.55rem 1.4rem',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+                    color: 'white',
+                    fontWeight: 900,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)'
+                  }}
+                >
+                  <Download size={16} /> Download PDF
+                </button>
+              </div>
+            </div>
+
+            {/* Read-Only Resume Document Area */}
+            <div style={{
+              flex: 1,
+              overflowY: 'auto',
+              padding: '2.5rem 1rem',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-start'
+            }}>
+              <div
+                id="resume-preview-sheet"
+                className="print-paper-sheet"
+                style={{
+                  width: '210mm',
+                  minHeight: '297mm',
+                  background: 'white',
+                  boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  position: 'relative'
+                }}
+              >
+                {renderLayout()}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Steps 28-34: Resume Review & Professional Download Workflow Modal */}
+      <DownloadWorkflowModal
+        isOpen={showDownloadWorkflowModal}
+        onClose={() => setShowDownloadWorkflowModal(false)}
+        formData={formData}
+        atsScore={getAtsScore()}
+        onEdit={() => setShowDownloadWorkflowModal(false)}
+        onNavigateHome={() => navigate('/')}
+      />
+
       {/* Razorpay Payment Modal */}
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        onSuccessDownload={() => window.print()}
+        onSuccessDownload={() => {
+          localStorage.setItem('user_premium', 'true');
+          setShowDownloadWorkflowModal(true);
+        }}
       />
     </div>
   );

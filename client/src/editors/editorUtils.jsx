@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PaymentModal from '../components/common/PaymentModal';
+import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
+import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
 
 // ─── Preset Color Swatches ────────────────────────────────────────────────
 export const PRESET_COLORS = [
@@ -147,14 +149,14 @@ export const EditorShell = ({
 }) => {
   const navigate = useNavigate();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showDownloadWorkflowModal, setShowDownloadWorkflowModal] = useState(false);
 
   const handleDownloadAction = () => {
     const isPremium = localStorage.getItem('user_premium') === 'true';
     if (!isPremium) {
       setShowPaymentModal(true);
     } else {
-      if (onDownload) onDownload();
-      else window.print();
+      setShowDownloadWorkflowModal(true);
     }
   };
 
@@ -311,8 +313,11 @@ export const EditorShell = ({
         {/* Preview Scroll Area */}
         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', justifyContent: 'center', padding: '2rem 1.5rem', scrollbarWidth: 'thin', scrollbarColor: '#c8d0dd transparent' }}>
           {/* A4 Paper Sheet */}
-          <div style={{
-            width: 794,
+          <div 
+            id="resume-preview-sheet"
+            className="print-paper-sheet"
+            style={{
+              width: 794,
             minHeight: 1123,
             background: '#fff',
             boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
@@ -328,6 +333,16 @@ export const EditorShell = ({
         </div>
       </div>
 
+      {/* Download Review Workflow Modal */}
+      <DownloadWorkflowModal
+        isOpen={showDownloadWorkflowModal}
+        onClose={() => setShowDownloadWorkflowModal(false)}
+        formData={{ templateId: templateName }}
+        atsScore={92}
+        onEdit={() => setShowDownloadWorkflowModal(false)}
+        onNavigateHome={() => navigate('/')}
+      />
+
       {/* Payment & Upgrade Modal */}
       <PaymentModal
         isOpen={showPaymentModal}
@@ -335,8 +350,7 @@ export const EditorShell = ({
         onSuccessDownload={() => {
           localStorage.setItem('user_premium', 'true');
           setShowPaymentModal(false);
-          if (onDownload) onDownload();
-          else window.print();
+          setShowDownloadWorkflowModal(true);
         }}
       />
     </div>

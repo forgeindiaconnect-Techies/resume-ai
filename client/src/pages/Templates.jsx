@@ -4,6 +4,54 @@ import Navbar from '../components/common/Navbar';
 import { getTemplates, useTemplate } from '../services/templateService';
 import { Search, ShieldCheck, Sparkles, Filter, CheckCircle } from 'lucide-react';
 
+const fallbackTemplates = [
+  {
+    _id: 'modern_tpl',
+    name: 'Modern ATS Template',
+    category: 'Technology',
+    industry: 'Software Engineering & IT',
+    description: 'Clean single and multi-column layout with vibrant accents, highly recommended for technical roles.',
+    atsScore: 98,
+    layout: { layout: 'modern', color: '#0284c7', columns: 2 }
+  },
+  {
+    _id: 'executive_tpl',
+    name: 'Executive Leadership Template',
+    category: 'Business',
+    industry: 'Management & Corporate',
+    description: 'Authoritative, elegant serif-infused header structure for directors, VPs, and senior executives.',
+    atsScore: 96,
+    layout: { layout: 'executive', color: '#1e293b', columns: 1 }
+  },
+  {
+    _id: 'creative_tpl',
+    name: 'Creative Portfolio Template',
+    category: 'Marketing',
+    industry: 'Design, UX & Media',
+    description: 'Bold sidebar layout with skill progress bars and project highlight blocks.',
+    atsScore: 94,
+    layout: { layout: 'creative', color: '#7c3aed', columns: 2 }
+  },
+  {
+    _id: 'professional_tpl',
+    name: 'Professional Standard Template',
+    category: 'Finance',
+    industry: 'Accounting, Banking & Legal',
+    description: 'Classic horizontal dividers, clean typography, 100% compliant with enterprise ATS scanners.',
+    atsScore: 99,
+    layout: { layout: 'professional', color: '#0f172a', columns: 1 }
+  },
+  {
+    _id: 'minimal_tpl',
+    name: 'Minimalist Sleek Template',
+    category: 'Education',
+    industry: 'Research, Academia & General',
+    description: 'Ultra-clean, distraction-free layout focusing strictly on experience and measurable achievements.',
+    atsScore: 95,
+    layout: { layout: 'minimal', color: '#334155', columns: 1 }
+  }
+];
+
 const Templates = () => {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState([]);
@@ -24,11 +72,14 @@ const Templates = () => {
     const fetchTemplatesData = async () => {
       try {
         const res = await getTemplates();
-        if (res.data && res.data.data) {
+        if (res.data && res.data.data && res.data.data.length > 0) {
           setTemplates(res.data.data);
+        } else {
+          setTemplates(fallbackTemplates);
         }
       } catch (error) {
-        console.error('Error fetching templates:', error);
+        console.error('Error fetching templates, using fallback:', error);
+        setTemplates(fallbackTemplates);
       } finally {
         setLoading(false);
       }

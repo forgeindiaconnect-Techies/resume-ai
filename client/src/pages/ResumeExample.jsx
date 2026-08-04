@@ -75,7 +75,7 @@ const ResumeExample = () => {
       localStorage.setItem('selectedTemplateId', example.template || 'Modern');
       localStorage.setItem('prefilledJobTitle', example.jobTitle);
       localStorage.setItem('prefilledResumeJson', JSON.stringify(example.resumeJson));
-      navigate('/onboarding/start');
+      navigate('/builder');
     }
   };
 
@@ -250,6 +250,7 @@ const ResumeExample = () => {
             <ResumePreview
               data={example.resumeJson}
               color="#0056b8"
+              template={example.template}
             />
           </div>
 

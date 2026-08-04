@@ -52,7 +52,7 @@ const Navbar = () => {
           )
         ))}
         <Link
-          to="/onboarding/start"
+          to="/builder"
           style={{
             background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
             color: 'white',

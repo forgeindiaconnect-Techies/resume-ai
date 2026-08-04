@@ -1,177 +1,294 @@
 import React from 'react';
+import ResumeFooter from './ResumeFooter';
 
-const MinimalLayout = ({ data, customColor, customFont, sectionsOrder, theme }) => {
+const MinimalLayout = ({ data, customColor, customFont }) => {
   if (!data) return null;
 
-  const primaryColor = theme?.primaryColor || customColor || '#334155';
-  const secondaryColor = theme?.secondaryColor || '#0f172a';
-  const fontFamily = theme?.fontFamily || customFont || "'Inter', sans-serif";
-  const fontSize = theme?.fontSize || 13;
-  const lineHeight = theme?.lineHeight || 1.65;
-  const margin = theme?.margin !== undefined ? theme.margin : 45;
+  const sidebarBg = customColor || '#1e3a5f';
+  const fontFamily = customFont || "'Inter', sans-serif";
 
-  const { name, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], training = [], languagesList = [], references } = data;
+  const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data;
 
-  const SectionHeading = ({ label }) => (
-    <div style={{ marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.4rem' }}>
-      <h2 style={{
-        fontSize: `${fontSize * 0.88}px`,
-        fontWeight: 800,
-        letterSpacing: '0.15em',
-        textTransform: 'uppercase',
-        color: '#64748b',
-        margin: 0
-      }}>{label}</h2>
-    </div>
-  );
-
-  const renderSection = (sectionLabel) => {
-    switch (sectionLabel) {
-      case 'Summary':
-        return objective && (
-          <section key="Summary" style={{ marginBottom: '1.75rem' }}>
-            <SectionHeading label="About" />
-            <p style={{ margin: 0, color: '#334155', lineHeight: lineHeight, fontSize: `${fontSize}px`, fontWeight: 400 }}>{objective}</p>
-          </section>
-        );
-      case 'Experience':
-        return experience && experience.length > 0 && (
-          <section key="Experience" style={{ marginBottom: '1.75rem' }}>
-            <SectionHeading label="Experience" />
-            {experience.map((exp, i) => (
-              <div key={i} style={{ marginBottom: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.2rem' }}>
-                  <h3 style={{ margin: 0, fontSize: `${fontSize * 1.05}px`, fontWeight: 700, color: secondaryColor }}>{exp.title || exp.role}</h3>
-                  <span style={{ fontSize: `${fontSize * 0.88}px`, color: '#94a3b8' }}>{exp.duration || exp.period}</span>
-                </div>
-                <div style={{ fontSize: `${fontSize * 0.95}px`, color: primaryColor, fontWeight: 600, marginBottom: '0.35rem' }}>{exp.company}</div>
-                {exp.points && exp.points.length > 0 ? (
-                  <ul style={{ margin: '0.25rem 0 0', paddingLeft: '1rem', color: '#475569' }}>
-                    {exp.points.map((pt, j) => (
-                      <li key={j} style={{ marginBottom: '0.25rem', fontSize: `${fontSize}px`, lineHeight: lineHeight }}>{pt}</li>
-                    ))}
-                  </ul>
-                ) : exp.desc ? (
-                  <p style={{ margin: '0.25rem 0 0', color: '#475569', fontSize: `${fontSize}px`, lineHeight: lineHeight }}>{exp.desc}</p>
-                ) : null}
-              </div>
-            ))}
-          </section>
-        );
-      case 'Projects':
-        return projects && projects.length > 0 && (
-          <section key="Projects" style={{ marginBottom: '1.75rem' }}>
-            <SectionHeading label="Selected Work" />
-            {projects.map((p, i) => (
-              <div key={i} style={{ marginBottom: '1.1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <h3 style={{ margin: 0, fontSize: `${fontSize * 1.05}px`, fontWeight: 700, color: secondaryColor }}>{p.title || p.name}</h3>
-                  {p.period && <span style={{ fontSize: `${fontSize * 0.88}px`, color: '#94a3b8' }}>{p.period}</span>}
-                </div>
-                {p.technology && <div style={{ fontSize: `${fontSize * 0.9}px`, color: primaryColor, fontWeight: 500, margin: '0.15rem 0 0.3rem' }}>{p.technology}</div>}
-                {p.desc && <p style={{ margin: 0, color: '#475569', fontSize: `${fontSize}px`, lineHeight: lineHeight }}>{p.desc}</p>}
-              </div>
-            ))}
-          </section>
-        );
-      case 'Education':
-        return education && education.length > 0 && (
-          <section key="Education" style={{ marginBottom: '1.75rem' }}>
-            <SectionHeading label="Education" />
-            {education.map((e, i) => (
-              <div key={i} style={{ marginBottom: '0.85rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontWeight: 700, fontSize: `${fontSize * 1.02}px`, color: secondaryColor }}>{e.degree}</span>
-                  <span style={{ fontSize: `${fontSize * 0.88}px`, color: '#94a3b8' }}>{e.tenure || e.year}</span>
-                </div>
-                <div style={{ fontSize: `${fontSize * 0.95}px`, color: '#64748b' }}>{e.institution || e.school}</div>
-              </div>
-            ))}
-          </section>
-        );
-      case 'Skills':
-        return skills && (skills.languages || skills.frameworks || skills.tools) && (
-          <section key="Skills" style={{ marginBottom: '1.75rem' }}>
-            <SectionHeading label="Skills" />
-            <div style={{ fontSize: `${fontSize}px`, color: '#475569', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              {skills.languages && <div><span style={{ color: secondaryColor, fontWeight: 600 }}>Languages:</span> {skills.languages}</div>}
-              {skills.frameworks && <div><span style={{ color: secondaryColor, fontWeight: 600 }}>Frameworks:</span> {skills.frameworks}</div>}
-              {skills.tools && <div><span style={{ color: secondaryColor, fontWeight: 600 }}>Tools:</span> {skills.tools}</div>}
-            </div>
-          </section>
-        );
-      case 'Certificates':
-        return training && training.length > 0 && (
-          <section key="Certificates" style={{ marginBottom: '1.75rem' }}>
-            <SectionHeading label="Certifications" />
-            <div style={{ fontSize: `${fontSize}px`, color: '#475569', lineHeight: lineHeight }}>
-              {training.join(' • ')}
-            </div>
-          </section>
-        );
-      case 'Languages':
-        return languagesList && languagesList.length > 0 && (
-          <section key="Languages" style={{ marginBottom: '1.75rem' }}>
-            <SectionHeading label="Languages" />
-            <div style={{ fontSize: `${fontSize}px`, color: '#475569' }}>
-              {languagesList.join(', ')}
-            </div>
-          </section>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const orderToUse = sectionsOrder && sectionsOrder.length > 0 
-    ? sectionsOrder.filter(s => s !== 'Personal' && s !== 'Preview')
-    : ['Summary', 'Experience', 'Projects', 'Education', 'Skills', 'Certificates', 'Languages'];
+  const skillsList = typeof skills === 'object' 
+    ? [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' • ')
+    : (Array.isArray(skills) ? skills.join(' • ') : (skills || ''));
 
   return (
-    <div
-      id="printable-resume"
-      className="resume-print-wrapper"
-      style={{
-        width: '100%',
-        minHeight: '100%',
-        background: 'white',
-        fontFamily: fontFamily,
-        color: secondaryColor,
-        padding: `${margin}px`,
-        boxSizing: 'border-box',
-        fontSize: `${fontSize}px`,
-        lineHeight: lineHeight
-      }}
-    >
-      {/* MINIMALIST HEADER */}
-      <header style={{ textAlign: theme?.profilePosition === 'right' ? 'right' : theme?.profilePosition === 'center' ? 'center' : 'left', marginBottom: '2.25rem' }}>
-        <h1 style={{ fontSize: `${fontSize * 2.5}px`, fontWeight: 300, letterSpacing: '-0.03em', margin: 0, color: secondaryColor }}>
-          {name || 'Your Name'}
-        </h1>
-        {data.role && (
-          <p style={{ fontSize: `${fontSize * 1.05}px`, fontWeight: 500, color: primaryColor, margin: '0.2rem 0 0.75rem', letterSpacing: '0.05em' }}>
-            {data.role}
-          </p>
-        )}
-        <div style={{ display: 'flex', justifyContent: theme?.profilePosition === 'right' ? 'flex-end' : theme?.profilePosition === 'center' ? 'center' : 'flex-start', flexWrap: 'wrap', gap: '0.5rem 1.25rem', fontSize: `${fontSize * 0.9}px`, color: '#64748b', marginTop: '0.5rem' }}>
-          {contact.email && <span>{contact.email}</span>}
-          {contact.phone && <span>{contact.phone}</span>}
-          {contact.location && <span>{contact.location}</span>}
-          {contact.linkedin && <span>{contact.linkedin}</span>}
-          {contact.github && <span>{contact.github}</span>}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '297mm',
+      width: '210mm',
+      fontFamily: fontFamily,
+      background: 'white',
+      color: '#1e293b',
+      boxSizing: 'border-box',
+      lineHeight: 1.5,
+      textAlign: 'left'
+    }}>
+      <div style={{ display: 'flex', flex: 1 }}>
+        {/* LEFT SIDEBAR */}
+        <div style={{
+          width: '34%',
+          background: sidebarBg,
+          color: '#ffffff',
+          padding: '2.2rem 1.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.75rem',
+          boxSizing: 'border-box'
+        }}>
+          {/* Name */}
+          <div>
+            <h1 style={{
+              fontSize: '1.65rem',
+              fontWeight: 900,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              color: '#ffffff',
+              margin: '0 0 0.35rem',
+              lineHeight: 1.2
+            }}>
+              {name || 'AMELIA JOHNSON'}
+            </h1>
+          </div>
+
+          {/* Languages */}
+          <div>
+            <h3 style={{
+              fontSize: '0.78rem',
+              fontWeight: 900,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#93c5fd',
+              borderBottom: '1px solid rgba(255,255,255,0.2)',
+              paddingBottom: '0.35rem',
+              margin: '0 0 0.65rem'
+            }}>
+              LANGUAGES
+            </h3>
+            <div style={{ fontSize: '0.78rem', color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>English</span>
+                <span style={{ fontSize: '0.7rem', color: '#93c5fd' }}>Native •••••</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>German</span>
+                <span style={{ fontSize: '0.7rem', color: '#93c5fd' }}>Proficient ••••</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Key Achievements */}
+          <div>
+            <h3 style={{
+              fontSize: '0.78rem',
+              fontWeight: 900,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#93c5fd',
+              borderBottom: '1px solid rgba(255,255,255,0.2)',
+              paddingBottom: '0.35rem',
+              margin: '0 0 0.65rem'
+            }}>
+              KEY ACHIEVEMENTS
+            </h3>
+            <div style={{ fontSize: '0.75rem', color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {(achievements.length > 0 ? achievements : [
+                { title: '94% State Test Pass Rate', desc: 'Achieved high state exam pass rates.' },
+                { title: 'STEM Teacher of the Year', desc: 'Awarded regional STEM teaching honor.' }
+              ]).map((ach, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#93c5fd', marginTop: '1px' }}>✓</span>
+                  <div>
+                    <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: 1.25, marginBottom: '0.15rem' }}>
+                      {ach.title}
+                    </div>
+                    <div style={{ color: '#cbd5e1', fontSize: '0.7rem', lineHeight: 1.35 }}>
+                      {ach.desc}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Core Skills */}
+          <div>
+            <h3 style={{
+              fontSize: '0.78rem',
+              fontWeight: 900,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#93c5fd',
+              borderBottom: '1px solid rgba(255,255,255,0.2)',
+              paddingBottom: '0.35rem',
+              margin: '0 0 0.65rem'
+            }}>
+              SKILLS
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#f8fafc', lineHeight: 1.6, fontWeight: 500 }}>
+              {skillsList || 'Biology · Chemistry · Physics · STEM Curriculum · Differentiated Instruction'}
+            </p>
+          </div>
         </div>
-      </header>
 
-      {/* DYNAMIC SECTIONS */}
-      {orderToUse.map(s => renderSection(s))}
+        {/* RIGHT MAIN COLUMN */}
+        <div style={{
+          flex: 1,
+          padding: '2.2rem 1.8rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          boxSizing: 'border-box'
+        }}>
+          {/* Role Header */}
+          <div>
+            <h2 style={{
+              fontSize: '1.05rem',
+              fontWeight: 800,
+              color: '#1e3a5f',
+              margin: '0 0 0.4rem'
+            }}>
+              {role || 'High School Science Teacher | STEM Developer'}
+            </h2>
 
-      {/* REFERENCES */}
-      {references && (
-        <section style={{ marginTop: '1.5rem' }}>
-          <SectionHeading label="References" />
-          <p style={{ margin: 0, color: '#94a3b8', fontSize: `${fontSize * 0.9}px`, fontStyle: 'italic' }}>{references}</p>
-        </section>
-      )}
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.85rem',
+              fontSize: '0.75rem',
+              color: '#64748b',
+              borderBottom: '2px solid #1e3a5f',
+              paddingBottom: '0.75rem'
+            }}>
+              {contact.phone && <span>📞 {contact.phone}</span>}
+              {contact.email && <span>✉ {contact.email}</span>}
+              {contact.linkedin && <span>🔗 {contact.linkedin}</span>}
+              {contact.location && <span>📍 {contact.location}</span>}
+            </div>
+          </div>
+
+          {/* Objective */}
+          {objective && (
+            <div>
+              <h3 style={{
+                fontSize: '0.8rem',
+                fontWeight: 900,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#334155',
+                margin: '0 0 0.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                SUMMARY
+                <span style={{ flex: 1, height: '1px', background: '#cbd5e1' }} />
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#334155', lineHeight: 1.55 }}>
+                {objective}
+              </p>
+            </div>
+          )}
+
+          {/* Experience */}
+          {experience && experience.length > 0 && (
+            <div>
+              <h3 style={{
+                fontSize: '0.8rem',
+                fontWeight: 900,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#334155',
+                margin: '0 0 0.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                EXPERIENCE
+                <span style={{ flex: 1, height: '1px', background: '#cbd5e1' }} />
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                {experience.map((exp, idx) => (
+                  <div key={idx}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>
+                        {exp.title || exp.role}
+                      </h4>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                        {exp.duration || exp.period}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#1e3a5f' }}>
+                        {exp.company}
+                      </span>
+                      <span style={{ fontSize: '0.73rem', color: '#64748b', fontWeight: 500 }}>
+                        {exp.location || ''}
+                      </span>
+                    </div>
+                    {exp.desc && (
+                      <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
+                        {exp.desc.split('\n').map((line, i) => (
+                          <div key={i} style={{ marginBottom: '0.15rem', paddingLeft: '0.75rem', position: 'relative' }}>
+                            <span style={{ position: 'absolute', left: 0, top: 0, color: '#64748b' }}>•</span>
+                            {line.replace(/^•\s*/, '')}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Education */}
+          {education && education.length > 0 && (
+            <div>
+              <h3 style={{
+                fontSize: '0.8rem',
+                fontWeight: 900,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#334155',
+                margin: '0 0 0.65rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                EDUCATION
+                <span style={{ flex: 1, height: '1px', background: '#cbd5e1' }} />
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {education.map((edu, idx) => (
+                  <div key={idx}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <h4 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#0f172a' }}>
+                        {edu.degree}
+                      </h4>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                        {edu.tenure || edu.year}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                      {edu.institution || edu.school}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* FULL-WIDTH FOOTER WATERMARK ACROSS ENTIRE BOTTOM */}
+      <div style={{ padding: '0 1.8rem 1rem', background: 'white' }}>
+        <ResumeFooter />
+      </div>
     </div>
   );
 };

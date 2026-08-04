@@ -12,13 +12,8 @@ import { generateResumeAI } from '../services/aiService';
 const LandingPage = () => {
   const navigate = useNavigate();
   const onEnterApp = (action) => {
-    if (action === 'create' || action === 'upload') {
-      localStorage.setItem('builder_mode', 'manual');
-      navigate('/onboarding/start');
-    } else {
-      localStorage.setItem('builder_mode', 'manual');
-      navigate('/onboarding/start');
-    }
+    localStorage.setItem('builder_mode', 'manual');
+    navigate('/builder');
   };
   const isLoggedIn = false;
   const [showContactModal, setShowContactModal] = useState(false);
@@ -321,32 +316,30 @@ const LandingPage = () => {
           </p>
 
           {/* Hero Action Buttons */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
             <button 
               onClick={() => onEnterApp('create')}
               style={{
                 background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
                 color: 'white',
                 border: 'none',
-                padding: '1.25rem 2.8rem',
+                padding: '1.1rem 2.2rem',
                 borderRadius: '16px',
-                minWidth: '240px',
-                textAlign: 'left',
+                fontSize: '1.1rem',
+                fontWeight: 800,
                 display: 'inline-flex',
-                flexDirection: 'column',
+                alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 12px 30px rgba(2,132,199,0.3)',
+                gap: '0.6rem',
+                boxShadow: '0 10px 25px rgba(2,132,199,0.35)',
                 cursor: 'pointer',
-                transition: 'transform 0.2s',
-                gap: '0.25rem'
+                transition: 'all 0.2s ease',
               }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 30px rgba(2,132,199,0.45)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(2,132,199,0.35)'; }}
             >
-              <span style={{ fontSize: '1.25rem', fontWeight: 950, letterSpacing: '-0.02em' }}>Create Resume</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                Start Building <ArrowRight size={14} />
-              </span>
+              <span>Create Resume</span>
+              <ArrowRight size={18} />
             </button>
 
             <button 
@@ -355,24 +348,23 @@ const LandingPage = () => {
                 background: '#ffffff',
                 color: '#0284c7',
                 border: '2px solid #0284c7',
-                padding: '1.25rem 2.8rem',
+                padding: '1.1rem 2.2rem',
                 borderRadius: '16px',
-                minWidth: '240px',
-                textAlign: 'left',
+                fontSize: '1.1rem',
+                fontWeight: 800,
                 display: 'inline-flex',
-                flexDirection: 'column',
+                alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 12px 30px rgba(2,132,199,0.1)',
+                gap: '0.6rem',
+                boxShadow: '0 6px 20px rgba(2,132,199,0.12)',
                 cursor: 'pointer',
-                transition: 'transform 0.2s',
-                gap: '0.25rem'
+                transition: 'all 0.2s ease',
               }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(2,132,199,0.2)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(2,132,199,0.12)'; }}
             >
-              <span style={{ fontSize: '1.25rem', fontWeight: 950, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Sparkles size={20} color="#0284c7" /> ✨ Generate with AI
-              </span>
+              <Sparkles size={18} color="#0284c7" />
+              <span>Generate with AI</span>
             </button>
 
             <button 
@@ -382,25 +374,23 @@ const LandingPage = () => {
                 backdropFilter: 'blur(8px)',
                 color: '#0f172a',
                 border: '2px solid #cbd5e1',
-                padding: '1.25rem 2.8rem',
+                padding: '1.1rem 2.2rem',
                 borderRadius: '16px',
-                minWidth: '240px',
-                textAlign: 'left',
+                fontSize: '1.1rem',
+                fontWeight: 800,
                 display: 'inline-flex',
-                flexDirection: 'column',
+                alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 12px 30px rgba(0,0,0,0.04)',
+                gap: '0.6rem',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.04)',
                 cursor: 'pointer',
-                transition: 'transform 0.2s',
-                gap: '0.25rem'
+                transition: 'all 0.2s ease',
               }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#0284c7'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
             >
-              <span style={{ fontSize: '1.25rem', fontWeight: 950, letterSpacing: '-0.02em' }}>Resume Examples</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                Browse 100+ Examples <ArrowRight size={14} />
-              </span>
+              <span>Resume Examples</span>
+              <ArrowRight size={18} />
             </button>
           </div>
 

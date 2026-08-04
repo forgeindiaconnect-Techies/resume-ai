@@ -93,10 +93,10 @@ const IndustryCategory = () => {
                 example={ex}
                 onPreview={() => navigate(`/resume-examples/${ex._id}`)}
                 onUse={() => {
-                  // Preselect template metadata for onboarding / builder wizard setup
+                  // Preselect template metadata for builder setup
                   localStorage.setItem('selectedTemplateId', ex.template || 'Modern');
                   localStorage.setItem('prefilledJobTitle', ex.jobTitle);
-                  navigate('/onboarding/start');
+                  navigate('/builder');
                 }}
               />
             ))}
