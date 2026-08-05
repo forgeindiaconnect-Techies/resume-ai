@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw, Sparkles, Lock, Eye, ZoomIn, ZoomOut, Maximize2, ShieldCheck, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PaymentModal from '../components/common/PaymentModal';
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
 import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
+
+import ModernLayout from '../components/layouts/ModernLayout';
+import ExecutiveLayout from '../components/layouts/ExecutiveLayout';
+import CreativeLayout from '../components/layouts/CreativeLayout';
+import MinimalLayout from '../components/layouts/MinimalLayout';
+import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
+import EnhancvLayout from '../components/layouts/EnhancvLayout';
+import DragDropSections from '../components/DragDropSections';
 
 // ─── Preset Color Swatches ────────────────────────────────────────────────
 export const PRESET_COLORS = [
@@ -18,10 +26,11 @@ export const PRESET_COLORS = [
 
 export const PRESET_FONTS = [
   { id: 'inter', name: 'Inter (Modern)', value: "'Inter', sans-serif" },
-  { id: 'outfit', name: 'Outfit (Clean)', value: "'Outfit', sans-serif" },
-  { id: 'playfair', name: 'Playfair (Serif)', value: "'Playfair Display', serif" },
   { id: 'poppins', name: 'Poppins (Geometric)', value: "'Poppins', sans-serif" },
-  { id: 'roboto', name: 'Roboto (Standard)', value: "'Roboto', sans-serif" }
+  { id: 'roboto', name: 'Roboto (Standard)', value: "'Roboto', sans-serif" },
+  { id: 'lato', name: 'Lato (Clean)', value: "'Lato', sans-serif" },
+  { id: 'open-sans', name: 'Open Sans (Neutral)', value: "'Open Sans', sans-serif" },
+  { id: 'playfair', name: 'Playfair (Serif)', value: "'Playfair Display', serif" }
 ];
 
 // ─── Input Field ──────────────────────────────────────────────────────────
@@ -59,12 +68,69 @@ export const TextArea = ({ label, name, value, onChange, placeholder = '', rows 
 );
 
 // ─── Section Header ───────────────────────────────────────────────────────
-export const SectionHeader = ({ icon, title, accent }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '1.5rem 0 0.75rem', paddingBottom: '0.5rem', borderBottom: `2px solid ${accent}20` }}>
-    {icon && <span style={{ fontSize: '1rem' }}>{icon}</span>}
-    <h3 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 900, color: accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{title}</h3>
+export const SectionHeader = ({ icon, title, accent, isCollapsed = false, onToggle }) => (
+  <div 
+    onClick={onToggle}
+    style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'space-between', 
+      margin: '1.25rem 0 0.6rem', 
+      padding: '0.45rem 0.65rem', 
+      borderRadius: '8px',
+      background: '#f8fafc',
+      border: `1px solid ${accent}25`,
+      cursor: onToggle ? 'pointer' : 'default',
+      userSelect: 'none'
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      {icon && <span style={{ fontSize: '1rem' }}>{icon}</span>}
+      <h3 style={{ margin: 0, fontSize: '0.78rem', fontWeight: 900, color: accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{title}</h3>
+    </div>
+    {onToggle && (
+      <span style={{ fontSize: '0.75rem', fontWeight: 900, color: accent }}>
+        {isCollapsed ? '▶' : '▼'}
+      </span>
+    )}
   </div>
 );
+
+// ─── Form Accordion Section ──────────────────────────────────────────────
+export const FormAccordionSection = ({ icon, title, accent = '#0284c7', children, defaultExpanded = true }) => {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+
+  return (
+    <div style={{ marginBottom: '0.85rem', border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+      <div 
+        onClick={() => setIsExpanded(!isExpanded)}
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          padding: '0.55rem 0.75rem', 
+          background: isExpanded ? `${accent}0d` : '#f8fafc',
+          borderBottom: isExpanded ? `1px solid ${accent}20` : 'none',
+          cursor: 'pointer',
+          userSelect: 'none'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {icon && <span style={{ fontSize: '1rem' }}>{icon}</span>}
+          <h3 style={{ margin: 0, fontSize: '0.76rem', fontWeight: 900, color: accent, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{title}</h3>
+        </div>
+        <span style={{ fontSize: '0.75rem', fontWeight: 900, color: accent }}>
+          {isExpanded ? '▼' : '▶'}
+        </span>
+      </div>
+      {isExpanded && (
+        <div style={{ padding: '0.75rem 0.85rem 0.85rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ─── Add Button ───────────────────────────────────────────────────────────
 export const AddButton = ({ label, onClick, accent }) => (
@@ -143,13 +209,36 @@ export const EditorShell = ({
   templateName = 'Modern', 
   templateEmoji = '💻', 
   onDownload, 
-  saveStatus, 
+  saveStatus = 'All changes saved ✔', 
   children, 
   preview 
 }) => {
   const navigate = useNavigate();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showDownloadWorkflowModal, setShowDownloadWorkflowModal] = useState(false);
+  const [showPrintPreviewModal, setShowPrintPreviewModal] = useState(false);
+
+  // Premium Editor Customization States
+  const [activeTab, setActiveTab] = useState('content'); // 'content' | 'style' | 'layout' | 'scores'
+  const [activeTemplate, setActiveTemplate] = useState(templateName.toLowerCase()); // 'modern' | 'executive' | 'creative' | 'minimal' | 'professional' | 'enhancv'
+  const [primaryColor, setPrimaryColor] = useState(accentColor || '#0284c7');
+  const [secondaryColor, setSecondaryColor] = useState('#2563eb');
+  const [selectedFont, setSelectedFont] = useState(fontFamily || "'Inter', sans-serif");
+  const [headingSize, setHeadingSize] = useState(24);
+  const [bodySize, setBodySize] = useState(14);
+  const [layoutMode, setLayoutMode] = useState('left-sidebar'); // 'left-sidebar' | 'right-sidebar' | 'single' | 'two-column'
+  const [spacingDensity, setSpacingDensity] = useState('normal'); // 'compact' | 'normal' | 'comfortable'
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(0.82); // 0.50, 0.75, 0.82, 1.00, 1.25, 1.50
+
+  const TEMPLATES = [
+    { id: 'modern', name: 'Modern', emoji: '💻', isPremium: false, component: ModernLayout },
+    { id: 'executive', name: 'Executive', emoji: '🏛', isPremium: false, component: ExecutiveLayout },
+    { id: 'creative', name: 'Creative', emoji: '🎨', isPremium: true, component: CreativeLayout },
+    { id: 'minimal', name: 'Minimal', emoji: '🪶', isPremium: false, component: MinimalLayout },
+    { id: 'professional', name: 'Professional', emoji: '📋', isPremium: true, component: ProfessionalLayout },
+    { id: 'enhancv', name: 'Enhancv', emoji: '⚡', isPremium: true, component: EnhancvLayout },
+  ];
 
   const handleDownloadAction = () => {
     const isPremium = localStorage.getItem('user_premium') === 'true';
@@ -160,6 +249,57 @@ export const EditorShell = ({
     }
   };
 
+  const handleTemplateSwitch = (tpl) => {
+    const isUserPremium = localStorage.getItem('user_premium') === 'true';
+    if (tpl.isPremium && !isUserPremium) {
+      setShowPaymentModal(true);
+      return;
+    }
+    setActiveTemplate(tpl.id);
+  };
+
+  const handlePrimaryColorChange = (hex) => {
+    setPrimaryColor(hex);
+    if (onColorChange) onColorChange(hex);
+  };
+
+  const handleFontChange = (font) => {
+    setSelectedFont(font);
+    if (onFontChange) onFontChange(font);
+  };
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Determine current active preview layout component
+  const currentTplObj = TEMPLATES.find(t => t.id === activeTemplate) || TEMPLATES[0];
+  const ActiveLayoutComponent = currentTplObj.component;
+
+  // Build cloned layout preview
+  const renderedPreview = preview && preview.props && preview.props.data ? (
+    <ActiveLayoutComponent 
+      data={preview.props.data} 
+      role={preview.props.role}
+      sections={preview.props.sections}
+      customColor={primaryColor}
+      secondaryColor={secondaryColor}
+      customFont={selectedFont}
+      headingSize={headingSize}
+      fontSize={bodySize}
+      spacing={spacingDensity}
+      layoutMode={layoutMode}
+      profilePhoto={profilePhoto}
+    />
+  ) : preview;
+
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden' }}>
 
@@ -167,94 +307,184 @@ export const EditorShell = ({
       <div className="no-print" style={{ width: 440, minWidth: 400, maxWidth: 440, background: '#ffffff', borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column', height: '100vh', boxShadow: '2px 0 12px rgba(0,0,0,0.04)' }}>
 
         {/* Header Bar */}
-        <div style={{ padding: '1rem 1.25rem 0.85rem', borderBottom: '1px solid #e2e8f0', background: `linear-gradient(135deg, ${accentColor}0d, #ffffff)`, flexShrink: 0 }}>
+        <div style={{ padding: '0.75rem 1.15rem 0.55rem', borderBottom: '1px solid #e2e8f0', background: `linear-gradient(135deg, ${primaryColor}0d, #ffffff)`, flexShrink: 0 }}>
           
           {/* Top Row: Back link & Title */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.55rem' }}>
             <button 
               onClick={() => navigate('/industry-examples')}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.7rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
             >
               <ArrowLeft size={13} /> Examples
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ width: 28, height: 28, borderRadius: '8px', background: `${accentColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>{templateEmoji}</div>
-              <span style={{ fontSize: '0.9rem', fontWeight: 900, color: accentColor }}>{templateName} Editor</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <div style={{ width: 26, height: 26, borderRadius: '8px', background: `${primaryColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>{currentTplObj.emoji}</div>
+              <span style={{ fontSize: '0.85rem', fontWeight: 900, color: primaryColor }}>{currentTplObj.name} Editor</span>
             </div>
 
             <button onClick={handleDownloadAction}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: accentColor, color: '#fff', border: 'none', padding: '0.45rem 0.85rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.78rem', cursor: 'pointer', boxShadow: `0 4px 12px ${accentColor}40` }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: primaryColor, color: '#fff', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.78rem', cursor: 'pointer', boxShadow: `0 4px 12px ${primaryColor}40` }}>
               <Download size={13} /> PDF
             </button>
           </div>
 
-          {/* User-Friendly Color Palette & Font Controls Bar */}
-          <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '0.6rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
-            
-            {/* Color Swatches */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Palette size={12} color={accentColor} /> Color Theme:
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                {PRESET_COLORS.map(c => {
-                  const isSel = accentColor.toLowerCase() === c.hex.toLowerCase();
-                  return (
+          {/* Dynamic Template Switcher Row */}
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '0.4rem', scrollbarWidth: 'none', marginBottom: '0.4rem' }}>
+            {TEMPLATES.map(t => (
+              <button
+                key={t.id}
+                onClick={() => handleTemplateSwitch(t)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                  padding: '0.25rem 0.5rem',
+                  borderRadius: '6px',
+                  border: activeTemplate === t.id ? `1.5px solid ${primaryColor}` : '1px solid #e2e8f0',
+                  background: activeTemplate === t.id ? `${primaryColor}12` : '#ffffff',
+                  color: activeTemplate === t.id ? primaryColor : '#64748b',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <span>{t.emoji}</span>
+                <span>{t.name}</span>
+                {t.isPremium && <Lock size={9} color="#eab308" />}
+              </button>
+            ))}
+          </div>
+
+          {/* Customization Tab Switcher */}
+          <div style={{ display: 'flex', background: '#f1f5f9', borderRadius: '8px', padding: '2px', gap: '2px', border: '1px solid #cbd5e1' }}>
+            {[
+              { id: 'content', label: '📝 Content' },
+              { id: 'style', label: '🎨 Theme & Font' },
+              { id: 'layout', label: '📐 Layout & Photo' },
+              { id: 'scores', label: '📊 ATS Score' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  flex: 1,
+                  padding: '0.3rem 0.2rem',
+                  borderRadius: '5px',
+                  border: 'none',
+                  background: activeTab === tab.id ? '#ffffff' : 'transparent',
+                  color: activeTab === tab.id ? primaryColor : '#64748b',
+                  fontWeight: 900,
+                  fontSize: '0.68rem',
+                  cursor: 'pointer',
+                  boxShadow: activeTab === tab.id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s'
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Auto Save Status Banner */}
+          <div style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 800, marginTop: '0.35rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
+            {saveStatus} • Live real-time preview
+          </div>
+        </div>
+
+        {/* Scrollable Panel Body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem 1.15rem 2rem', scrollbarWidth: 'thin', scrollbarColor: '#e2e8f0 transparent' }}>
+          
+          {/* TAB 1: FORM CONTENT */}
+          {activeTab === 'content' && children}
+
+          {/* TAB 2: STYLE, COLORS & FONTS */}
+          {activeTab === 'style' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', padding: '0.4rem 0' }}>
+              
+              {/* Primary Color Swatches */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
+                  🎨 Primary Theme Color:
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  {PRESET_COLORS.map(c => (
                     <button
                       key={c.id}
                       title={c.name}
-                      onClick={() => onColorChange && onColorChange(c.hex)}
+                      onClick={() => handlePrimaryColorChange(c.hex)}
                       style={{
-                        width: 20,
-                        height: 20,
+                        width: 24,
+                        height: 24,
                         borderRadius: '50%',
                         background: c.hex,
-                        border: isSel ? '2px solid #0f172a' : '1px solid rgba(0,0,0,0.15)',
+                        border: primaryColor.toLowerCase() === c.hex.toLowerCase() ? '2.5px solid #0f172a' : '1px solid rgba(0,0,0,0.15)',
                         cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: 0,
-                        transform: isSel ? 'scale(1.15)' : 'scale(1)',
-                        transition: 'transform 0.15s'
+                        transform: primaryColor.toLowerCase() === c.hex.toLowerCase() ? 'scale(1.15)' : 'scale(1)'
                       }}
-                    >
-                      {isSel && <Check size={11} color="white" strokeWidth={3} />}
-                    </button>
-                  );
-                })}
-
-                {/* Custom Color Input */}
-                <input
-                  type="color"
-                  value={accentColor}
-                  onChange={e => onColorChange && onColorChange(e.target.value)}
-                  title="Pick Custom Color"
-                  style={{ width: 22, height: 22, padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
-                />
+                    />
+                  ))}
+                  <input
+                    type="color"
+                    value={primaryColor}
+                    onChange={e => handlePrimaryColorChange(e.target.value)}
+                    title="Pick Custom Primary Color"
+                    style={{ width: 26, height: 26, padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Font Family Selector */}
-            {onFontChange && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.4rem', borderTop: '1px solid #f1f5f9' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Type size={12} color={accentColor} /> Font Style:
-                </span>
+              {/* Accent / Secondary Color */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
+                  🟢 Secondary / Accent Color:
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  {['#059669', '#2563eb', '#7c3aed', '#dc2626', '#f59e0b', '#0f172a'].map((hex, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSecondaryColor(hex)}
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        background: hex,
+                        border: secondaryColor.toLowerCase() === hex.toLowerCase() ? '2.5px solid #0f172a' : '1px solid rgba(0,0,0,0.15)',
+                        cursor: 'pointer',
+                        transform: secondaryColor.toLowerCase() === hex.toLowerCase() ? 'scale(1.15)' : 'scale(1)'
+                      }}
+                    />
+                  ))}
+                  <input
+                    type="color"
+                    value={secondaryColor}
+                    onChange={e => setSecondaryColor(e.target.value)}
+                    title="Pick Custom Accent Color"
+                    style={{ width: 26, height: 26, padding: 0, border: 'none', background: 'none', cursor: 'pointer', borderRadius: '50%' }}
+                  />
+                </div>
+              </div>
+
+              {/* Font Family Selector */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
+                  🔤 Font Family:
+                </label>
                 <select
-                  value={fontFamily}
-                  onChange={e => onFontChange(e.target.value)}
+                  value={selectedFont}
+                  onChange={e => handleFontChange(e.target.value)}
                   style={{
-                    fontSize: '0.75rem',
+                    width: '100%',
+                    fontSize: '0.82rem',
                     fontWeight: 700,
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '6px',
+                    padding: '0.45rem',
+                    borderRadius: '8px',
                     border: '1px solid #cbd5e1',
-                    outline: 'none',
-                    background: '#f8fafc',
-                    cursor: 'pointer',
-                    color: '#0f172a'
+                    background: 'white',
+                    color: '#0f172a',
+                    cursor: 'pointer'
                   }}
                 >
                   {PRESET_FONTS.map(f => (
@@ -262,52 +492,285 @@ export const EditorShell = ({
                   ))}
                 </select>
               </div>
-            )}
-          </div>
 
-          <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 700, marginTop: '0.4rem', textAlign: 'center' }}>
-            ✨ {saveStatus} • Real-time live preview on right pane
-          </div>
-        </div>
+              {/* Font Size Sliders */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 900, color: '#334155', marginBottom: '0.35rem' }}>
+                    <span>Heading Size</span>
+                    <span>{headingSize}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="18"
+                    max="32"
+                    value={headingSize}
+                    onChange={e => setHeadingSize(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: primaryColor }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#94a3b8' }}>
+                    <span>18px</span>
+                    <span>32px</span>
+                  </div>
+                </div>
 
-        {/* Scrollable Form Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0.25rem 1.25rem 2rem', scrollbarWidth: 'thin', scrollbarColor: '#e2e8f0 transparent' }}>
-          {children}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 900, color: '#334155', marginBottom: '0.35rem' }}>
+                    <span>Body Text Size</span>
+                    <span>{bodySize}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="12"
+                    max="18"
+                    value={bodySize}
+                    onChange={e => setBodySize(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: primaryColor }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#94a3b8' }}>
+                    <span>12px</span>
+                    <span>18px</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB 3: LAYOUT, SPACING & PHOTO */}
+          {activeTab === 'layout' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', padding: '0.4rem 0' }}>
+              
+              {/* Layout Switcher */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
+                  📐 Layout Options:
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  {[
+                    { id: 'left-sidebar', label: 'Left Sidebar' },
+                    { id: 'right-sidebar', label: 'Right Sidebar' },
+                    { id: 'single', label: 'Single Column' },
+                    { id: 'two-column', label: 'Two Column' }
+                  ].map(l => (
+                    <button
+                      key={l.id}
+                      onClick={() => setLayoutMode(l.id)}
+                      style={{
+                        padding: '0.45rem 0.5rem',
+                        borderRadius: '6px',
+                        border: layoutMode === l.id ? `2px solid ${primaryColor}` : '1px solid #cbd5e1',
+                        background: layoutMode === l.id ? `${primaryColor}10` : 'white',
+                        color: layoutMode === l.id ? primaryColor : '#475569',
+                        fontWeight: 800,
+                        fontSize: '0.72rem',
+                        cursor: 'pointer',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Spacing & Margins */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
+                  📏 Spacing & White Space:
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {[
+                    { id: 'compact', label: 'Compact' },
+                    { id: 'normal', label: 'Normal' },
+                    { id: 'comfortable', label: 'Comfortable' }
+                  ].map(s => (
+                    <button
+                      key={s.id}
+                      onClick={() => setSpacingDensity(s.id)}
+                      style={{
+                        flex: 1,
+                        padding: '0.45rem 0.4rem',
+                        borderRadius: '6px',
+                        border: spacingDensity === s.id ? `2px solid ${primaryColor}` : '1px solid #cbd5e1',
+                        background: spacingDensity === s.id ? `${primaryColor}10` : 'white',
+                        color: spacingDensity === s.id ? primaryColor : '#475569',
+                        fontWeight: 800,
+                        fontSize: '0.72rem',
+                        cursor: 'pointer',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Profile Photo Control */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
+                  🖼️ Profile Photo:
+                </label>
+                
+                {profilePhoto ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <img 
+                      src={profilePhoto} 
+                      alt="Profile" 
+                      style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover', border: '2px solid #cbd5e1' }}
+                    />
+                    <button
+                      onClick={() => setProfilePhoto(null)}
+                      style={{ background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca', padding: '0.4rem 0.75rem', borderRadius: '6px', fontWeight: 800, fontSize: '0.72rem', cursor: 'pointer' }}
+                    >
+                      Remove Photo
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      style={{ fontSize: '0.75rem' }}
+                    />
+                  </div>
+                )}
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB 4: ATS & RESUME SCORE WIDGET */}
+          {activeTab === 'scores' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '0.4rem 0' }}>
+              
+              {/* Scores Card */}
+              <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e293b)', color: 'white', padding: '1rem', borderRadius: '12px', boxShadow: '0 4px 14px rgba(0,0,0,0.15)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>Resume Quality Score</div>
+                    <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#34d399' }}>95%</div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#a7f3d0' }}>Excellent Quality</div>
+                  </div>
+                  <div style={{ width: 45, height: 45, borderRadius: '50%', border: '3.5px solid #34d399', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', fontWeight: 900 }}>
+                    95
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid #334155', paddingTop: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.35rem' }}>
+                    <span style={{ color: '#cbd5e1' }}>ATS Compatibility Score:</span>
+                    <span style={{ fontWeight: 900, color: '#38bdf8' }}>92%</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', fontSize: '0.68rem', color: '#94a3b8' }}>
+                    <span style={{ background: '#334155', padding: '2px 6px', borderRadius: '4px' }}>Keywords: Good</span>
+                    <span style={{ background: '#334155', padding: '2px 6px', borderRadius: '4px' }}>Format: Excellent</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Suggestions List */}
+              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
+                  💡 Actionable Improvement Suggestions:
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669' }}>
+                    <Check size={14} /> Add 1 more project / case study
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669' }}>
+                    <Check size={14} /> Include metrics in work experience
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669' }}>
+                    <Check size={14} /> Add certifications or licenses
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
         </div>
       </div>
 
       {/* ── RIGHT PREVIEW PANEL ── */}
       <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
-        {/* Preview Header Bar */}
-        <div className="no-print" style={{ padding: '0.65rem 1.5rem', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        
+        {/* Preview Header Bar with Zoom Controls & Full Print Preview */}
+        <div className="no-print" style={{ padding: '0.55rem 1.25rem', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Preview · {templateName} Template</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Live Preview · {currentTplObj.name} Template
+            </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>A4 · PDF-ready</span>
+          {/* Zoom Controls Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '2px 6px' }}>
+            <button onClick={() => setZoomLevel(prev => Math.max(0.5, Number((prev - 0.1).toFixed(2))))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#475569' }} title="Zoom Out">
+              <ZoomOut size={13} />
+            </button>
+            
+            {[0.5, 0.75, 0.82, 1.0, 1.25, 1.5].map(z => (
+              <button
+                key={z}
+                onClick={() => setZoomLevel(z)}
+                style={{
+                  background: zoomLevel === z ? '#ffffff' : 'transparent',
+                  color: zoomLevel === z ? primaryColor : '#64748b',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '0.65rem',
+                  fontWeight: 900,
+                  padding: '2px 4px',
+                  cursor: 'pointer'
+                }}
+              >
+                {Math.round(z * 100)}%
+              </button>
+            ))}
+
+            <button onClick={() => setZoomLevel(prev => Math.min(1.5, Number((prev + 0.1).toFixed(2))))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#475569' }} title="Zoom In">
+              <ZoomIn size={13} />
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button 
+              onClick={() => setShowPrintPreviewModal(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#ffffff', border: '1px solid #cbd5e1', color: '#334155', padding: '0.4rem 0.75rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
+            >
+              <Eye size={13} /> Print Preview
+            </button>
+
             <button 
               onClick={handleDownloadAction}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
+                background: `linear-gradient(135deg, ${primaryColor}, #4f46e5)`,
                 color: 'white',
                 border: 'none',
-                padding: '0.45rem 1rem',
+                padding: '0.4rem 0.9rem',
                 borderRadius: '8px',
                 fontWeight: 900,
                 fontSize: '0.78rem',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-                transition: 'all 0.15s'
+                boxShadow: `0 4px 12px ${primaryColor}35`
               }}
             >
-              <Download size={14} /> Download PDF
+              <Download size={13} /> Download PDF
             </button>
           </div>
+        </div>
+
+        {/* Page Count Indicator */}
+        <div style={{ background: '#e2e8f0', padding: '0.25rem 1rem', fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textAlign: 'center', borderBottom: '1px solid #cbd5e1' }}>
+          📄 Page 1 of 1 · A4 Sheet (210mm x 297mm) · Exact PDF Replica
         </div>
 
         {/* Preview Scroll Area */}
@@ -318,26 +781,66 @@ export const EditorShell = ({
             className="print-paper-sheet"
             style={{
               width: 794,
-            minHeight: 1123,
-            background: '#fff',
-            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-            borderRadius: '3px',
-            transformOrigin: 'top center',
-            transform: 'scale(0.82)',
-            marginBottom: '-190px',
-            flexShrink: 0,
-            overflow: 'visible'
-          }}>
-            {preview}
+              minHeight: 1123,
+              background: '#fff',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+              borderRadius: '3px',
+              transformOrigin: 'top center',
+              transform: `scale(${zoomLevel})`,
+              marginBottom: '-190px',
+              flexShrink: 0,
+              overflow: 'visible'
+            }}>
+            {renderedPreview}
           </div>
         </div>
       </div>
+
+      {/* Full-Screen Print Preview Read-Only Modal */}
+      {showPrintPreviewModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+          <div style={{ width: '100%', maxWidth: 880, background: '#ffffff', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '90vh', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+            
+            {/* Modal Header */}
+            <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Eye size={18} color={primaryColor} />
+                <span style={{ fontSize: '1rem', fontWeight: 900, color: '#0f172a' }}>Print & PDF High-Resolution Preview</span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={handleDownloadAction}
+                  style={{ background: primaryColor, color: 'white', border: 'none', padding: '0.45rem 1rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <Download size={14} /> Download PDF Now
+                </button>
+                
+                <button 
+                  onClick={() => setShowPrintPreviewModal(false)}
+                  style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '0.45rem 0.85rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}
+                >
+                  Close Preview
+                </button>
+              </div>
+            </div>
+
+            {/* Printable Container */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '2rem', background: '#e2e8f0', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ width: 794, minHeight: 1123, background: 'white', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+                {renderedPreview}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Download Review Workflow Modal */}
       <DownloadWorkflowModal
         isOpen={showDownloadWorkflowModal}
         onClose={() => setShowDownloadWorkflowModal(false)}
-        formData={{ templateId: templateName }}
+        formData={{ templateId: currentTplObj.name }}
         atsScore={92}
         onEdit={() => setShowDownloadWorkflowModal(false)}
         onNavigateHome={() => navigate('/')}
@@ -376,4 +879,34 @@ export const saveSession = (sessionId, data) => {
     if (sessionId) localStorage.setItem(`resume_draft_${sessionId}`, JSON.stringify(data));
     localStorage.setItem('localResumeDraft', JSON.stringify(data));
   } catch (e) {}
+};
+
+// ─── Section Reorder & Visibility Control ───────────────────────────────────────
+export const SectionReorderControl = ({ sections = [], onReorder, onToggle, accent = '#0284c7' }) => {
+  const hiddenSections = sections.filter(s => s.enabled === false).map(s => s.id || s.title || s);
+
+  const handleSetHiddenSections = (updater) => {
+    if (!onToggle) return;
+    if (typeof updater === 'function') {
+      const nextHidden = updater(hiddenSections);
+      sections.forEach(s => {
+        const id = s.id || s.title || s;
+        const isHidden = nextHidden.includes(id);
+        if (s.enabled === isHidden) {
+          onToggle(id);
+        }
+      });
+    }
+  };
+
+  return (
+    <div style={{ background: '#f8fafc', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '0.75rem 0.85rem', margin: '1rem 0' }}>
+      <DragDropSections
+        sections={sections}
+        setSections={onReorder}
+        hiddenSections={hiddenSections}
+        setHiddenSections={handleSetHiddenSections}
+      />
+    </div>
+  );
 };

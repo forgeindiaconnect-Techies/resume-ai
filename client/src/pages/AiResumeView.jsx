@@ -6,6 +6,7 @@ import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
 import MinimalLayout from '../components/layouts/MinimalLayout';
 import ExecutiveLayout from '../components/layouts/ExecutiveLayout';
 import CreativeLayout from '../components/layouts/CreativeLayout';
+import EnhancvLayout from '../components/layouts/EnhancvLayout';
 import { 
   Sparkles, Download, ArrowLeft, Palette, Type, ShieldCheck, 
   Check, Edit2, Info
@@ -117,6 +118,7 @@ const AiResumeView = () => {
       case 'professional': return <ProfessionalLayout {...props} />;
       case 'executive': return <ExecutiveLayout {...props} />;
       case 'creative': return <CreativeLayout {...props} />;
+      case 'enhancv': return <EnhancvLayout {...props} />;
       case 'minimal': return <MinimalLayout {...props} />;
       case 'modern':
       default: return <ModernLayout {...props} />;

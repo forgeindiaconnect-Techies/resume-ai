@@ -15,6 +15,7 @@ import { Toaster } from 'react-hot-toast';
 
 // Dynamic Template Editors (lazy-loaded for performance)
 const ExecutiveEditor    = lazy(() => import('./editors/ExecutiveEditor'));
+const EnhancvEditor      = lazy(() => import('./editors/EnhancvEditor'));
 const CreativeEditor     = lazy(() => import('./editors/CreativeEditor'));
 const ModernEditor       = lazy(() => import('./editors/ModernEditor'));
 const ProfessionalEditor = lazy(() => import('./editors/ProfessionalEditor'));
@@ -51,6 +52,7 @@ function App() {
 
         {/* ── Dynamic Template-Specific Editors ── */}
         <Route path="/editor/executive/:sessionId" element={<Suspense fallback={<EditorLoader />}><ExecutiveEditor /></Suspense>} />
+        <Route path="/editor/enhancv/:sessionId"   element={<Suspense fallback={<EditorLoader />}><EnhancvEditor /></Suspense>} />
         <Route path="/editor/creative/:sessionId"  element={<Suspense fallback={<EditorLoader />}><CreativeEditor /></Suspense>} />
         <Route path="/editor/modern/:sessionId"    element={<Suspense fallback={<EditorLoader />}><ModernEditor /></Suspense>} />
         <Route path="/editor/professional/:sessionId" element={<Suspense fallback={<EditorLoader />}><ProfessionalEditor /></Suspense>} />

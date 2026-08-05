@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import ExecutiveLayout from '../components/layouts/ExecutiveLayout';
 import {
   Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
-  SkillTagInput, EditorShell, loadSession, saveSession
+  SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
 
 const buildFromSession = (session) => ({
@@ -70,6 +70,13 @@ const ExecutiveEditor = () => {
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
   const [accentColor, setAccentColor] = useState('#0f172a');
   const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [sections, setSections] = useState([
+    { id: 'summary', title: 'Executive Summary', enabled: true },
+    { id: 'experience', title: 'Work Experience', enabled: true },
+    { id: 'competencies', title: 'Core Competencies', enabled: true },
+    { id: 'education', title: 'Education', enabled: true },
+    { id: 'certifications', title: 'Certifications', enabled: true },
+  ]);
   
   const [data, setData] = useState(() => {
     const session = loadSession(sessionId);
@@ -124,8 +131,14 @@ const ExecutiveEditor = () => {
       templateEmoji="🏛" 
       onDownload={() => window.print()} 
       saveStatus={saveStatus}
-      preview={<ExecutiveLayout data={previewData} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
+      preview={<ExecutiveLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
     >
+      <SectionReorderControl
+        sections={sections}
+        onReorder={setSections}
+        onToggle={(id) => setSections(s => s.map(x => x.id === id ? { ...x, enabled: !x.enabled } : x))}
+        accent={accentColor}
+      />
 
       <SectionHeader icon="👤" title="Personal Details" accent={accentColor} />
       <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={accentColor} placeholder="e.g. Alexander Wright" />

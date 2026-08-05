@@ -3,34 +3,45 @@ import { useParams } from 'react-router-dom';
 import MinimalLayout from '../components/layouts/MinimalLayout';
 import {
   Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
-  SkillTagInput, EditorShell, loadSession, saveSession
+  SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
-
-const ACCENT = '#374151';
 
 const defaultData = () => ({
   title: 'Minimal Resume',
   templateId: 'minimal',
   personalInfo: {
-    name: 'Your Full Name',
-    role: 'Business Analyst',
-    email: 'name@email.com',
-    phone: '+1 (555) 000-0000',
+    name: 'Emily Chen',
+    role: 'Senior Product Designer',
+    email: 'emily@example.com',
+    phone: '+1 (555) 123-4567',
     location: 'Austin, TX',
   },
-  summary: 'Detail-oriented Business Analyst with 5+ years translating complex business requirements into actionable insights and technical specifications.',
-  skills: ['Requirements Analysis', 'SQL', 'Data Visualisation', 'Stakeholder Management', 'BPMN', 'Excel'],
+  summary: 'Detail-oriented Product Designer with 6+ years of experience crafting intuitive interfaces and improving user journeys for enterprise software.',
+  skills: ['UI/UX Design', 'Wireframing', 'Prototyping', 'Figma', 'User Research', 'Design Systems'],
   experience: [
-    { id: 1, role: 'Business Analyst', company: 'Strategic Advisors LLC', duration: '2019 – Present', desc: 'Streamlined reporting processes reducing analysis time by 35%.' }
+    { id: 1, role: 'Senior Product Designer', company: 'TechNova Solutions', duration: '2020 – Present', desc: 'Led redesign of the core SaaS platform, increasing user retention by 25%.' }
   ],
   education: [
-    { id: 1, degree: 'B.Sc. in Business Information Systems', institution: 'University of Texas', tenure: '2014 – 2018' }
+    { id: 1, degree: 'B.S. in Human-Computer Interaction', institution: 'Carnegie Mellon University', tenure: '2014 – 2018' }
   ],
+  achievements: [],
+  certificates: [],
+  languagesList: [],
 });
 
 const MinimalEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
+  const [accentColor, setAccentColor] = useState('#374151');
+  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [sections, setSections] = useState([
+    { id: 'summary', title: 'Summary', enabled: true },
+    { id: 'experience', title: 'Experience', enabled: true },
+    { id: 'education', title: 'Education', enabled: true },
+    { id: 'skills', title: 'Skills', enabled: true },
+    { id: 'achievements', title: 'Achievements', enabled: true },
+  ]);
+
   const [data, setData] = useState(() => {
     const session = loadSession(sessionId);
     if (session) {
@@ -102,92 +113,107 @@ const MinimalEditor = () => {
   };
 
   return (
-    <EditorShell accentColor={ACCENT} templateName="Minimal" templateEmoji="🪶" onDownload={() => window.print()} saveStatus={saveStatus}
-      preview={<MinimalLayout data={previewData} role={data.personalInfo.role} customColor={ACCENT} />}>
+    <EditorShell
+      accentColor={accentColor}
+      onColorChange={setAccentColor}
+      fontFamily={fontFamily}
+      onFontChange={setFontFamily}
+      templateName="Minimal"
+      templateEmoji="🪶"
+      onDownload={() => window.print()}
+      saveStatus={saveStatus}
+      preview={<MinimalLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
+    >
+      <SectionReorderControl
+        sections={sections}
+        onReorder={setSections}
+        onToggle={(id) => setSections(s => s.map(x => x.id === id ? { ...x, enabled: !x.enabled } : x))}
+        accent={accentColor}
+      />
 
-      <SectionHeader icon="👤" title="Personal Details" accent={ACCENT} />
-      <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={ACCENT} />
-      <Field label="Job Title" name="role" value={data.personalInfo.role} onChange={setPersonal} accent={ACCENT} placeholder="e.g. Business Analyst" />
+      <SectionHeader icon="👤" title="Personal Details" accent={accentColor} />
+      <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={accentColor} />
+      <Field label="Job Title" name="role" value={data.personalInfo.role} onChange={setPersonal} accent={accentColor} placeholder="e.g. Business Analyst" />
       <Grid2>
-        <Field label="Email" name="email" value={data.personalInfo.email} onChange={setPersonal} accent={ACCENT} />
-        <Field label="Phone" name="phone" value={data.personalInfo.phone} onChange={setPersonal} accent={ACCENT} />
+        <Field label="Email" name="email" value={data.personalInfo.email} onChange={setPersonal} accent={accentColor} />
+        <Field label="Phone" name="phone" value={data.personalInfo.phone} onChange={setPersonal} accent={accentColor} />
       </Grid2>
-      <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={ACCENT} placeholder="City, State" />
+      <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={accentColor} placeholder="City, State" />
 
-      <SectionHeader icon="📝" title="Summary" accent={ACCENT} />
+      <SectionHeader icon="📝" title="Summary" accent={accentColor} />
       <TextArea label="Professional Summary" value={data.summary} rows={5}
-        onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={ACCENT}
+        onChange={e => setData(d => ({ ...d, summary: e.target.value }))} accent={accentColor}
         placeholder="Brief, focused description of your professional value..." />
 
-      <SectionHeader icon="⚡" title="Skills" accent={ACCENT} />
-      <SkillTagInput label="Add skills (press Enter)" skills={data.skills} onAdd={addSkill} onRemove={removeSkill} accent={ACCENT} placeholder="e.g. SQL, Requirements Analysis" />
+      <SectionHeader icon="⚡" title="Skills" accent={accentColor} />
+      <SkillTagInput label="Add skills (press Enter)" skills={data.skills} onAdd={addSkill} onRemove={removeSkill} accent={accentColor} placeholder="e.g. SQL, Requirements Analysis" />
 
-      <SectionHeader icon="💼" title="Experience" accent={ACCENT} />
+      <SectionHeader icon="💼" title="Experience" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {data.experience.map(exp => (
-          <ItemCard key={exp.id} onDelete={() => delExp(exp.id)} accent={ACCENT}>
+          <ItemCard key={exp.id} onDelete={() => delExp(exp.id)} accent={accentColor}>
             <Grid2>
-              <Field label="Job Title" value={exp.role} onChange={e => updExp(exp.id, 'role', e.target.value)} accent={ACCENT} />
-              <Field label="Company" value={exp.company} onChange={e => updExp(exp.id, 'company', e.target.value)} accent={ACCENT} />
+              <Field label="Job Title" value={exp.role} onChange={e => updExp(exp.id, 'role', e.target.value)} accent={accentColor} />
+              <Field label="Company" value={exp.company} onChange={e => updExp(exp.id, 'company', e.target.value)} accent={accentColor} />
             </Grid2>
-            <Field label="Duration" value={exp.duration} onChange={e => updExp(exp.id, 'duration', e.target.value)} accent={ACCENT} placeholder="2020 – Present" />
-            <TextArea label="Key Contributions" value={exp.desc} onChange={e => updExp(exp.id, 'desc', e.target.value)} accent={ACCENT} rows={3} />
+            <Field label="Duration" value={exp.duration} onChange={e => updExp(exp.id, 'duration', e.target.value)} accent={accentColor} placeholder="2020 – Present" />
+            <TextArea label="Key Contributions" value={exp.desc} onChange={e => updExp(exp.id, 'desc', e.target.value)} accent={accentColor} rows={3} />
           </ItemCard>
         ))}
       </div>
-      <AddButton label="Add Experience" onClick={addExp} accent={ACCENT} />
+      <AddButton label="Add Experience" onClick={addExp} accent={accentColor} />
 
-      <SectionHeader icon="🎓" title="Education" accent={ACCENT} />
+      <SectionHeader icon="🎓" title="Education" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {data.education.map(edu => (
-          <ItemCard key={edu.id} onDelete={() => delEdu(edu.id)} accent={ACCENT}>
-            <Field label="Degree" value={edu.degree} onChange={e => updEdu(edu.id, 'degree', e.target.value)} accent={ACCENT} />
+          <ItemCard key={edu.id} onDelete={() => delEdu(edu.id)} accent={accentColor}>
+            <Field label="Degree" value={edu.degree} onChange={e => updEdu(edu.id, 'degree', e.target.value)} accent={accentColor} />
             <Grid2>
-              <Field label="Institution" value={edu.institution} onChange={e => updEdu(edu.id, 'institution', e.target.value)} accent={ACCENT} />
-              <Field label="Years" value={edu.tenure} onChange={e => updEdu(edu.id, 'tenure', e.target.value)} accent={ACCENT} />
+              <Field label="Institution" value={edu.institution} onChange={e => updEdu(edu.id, 'institution', e.target.value)} accent={accentColor} />
+              <Field label="Years" value={edu.tenure} onChange={e => updEdu(edu.id, 'tenure', e.target.value)} accent={accentColor} />
             </Grid2>
           </ItemCard>
         ))}
       </div>
-      <AddButton label="Add Education" onClick={addEdu} accent={ACCENT} />
+      <AddButton label="Add Education" onClick={addEdu} accent={accentColor} />
 
-      <SectionHeader icon="🏆" title="Key Achievements" accent={ACCENT} />
+      <SectionHeader icon="🏆" title="Key Achievements" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {(data.achievements || []).map((ach, idx) => (
-          <ItemCard key={ach.id} onDelete={() => setData(d => ({ ...d, achievements: d.achievements.filter(a => a.id !== ach.id) }))} accent={ACCENT} index={idx}>
-            <Field label="Achievement" value={ach.title} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, title: e.target.value } : a) }))} accent={ACCENT} placeholder="e.g. Reduced costs by 35%" />
-            <TextArea label="Details" value={ach.desc} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, desc: e.target.value } : a) }))} accent={ACCENT} rows={2} />
+          <ItemCard key={ach.id} onDelete={() => setData(d => ({ ...d, achievements: d.achievements.filter(a => a.id !== ach.id) }))} accent={accentColor} index={idx}>
+            <Field label="Achievement" value={ach.title} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, title: e.target.value } : a) }))} accent={accentColor} placeholder="e.g. Reduced costs by 35%" />
+            <TextArea label="Details" value={ach.desc} onChange={e => setData(d => ({ ...d, achievements: d.achievements.map(a => a.id === ach.id ? { ...a, desc: e.target.value } : a) }))} accent={accentColor} rows={2} />
           </ItemCard>
         ))}
       </div>
-      <AddButton label="+ Add Achievement" onClick={() => setData(d => ({ ...d, achievements: [...(d.achievements || []), { id: Date.now(), title: '', desc: '' }] }))} accent={ACCENT} />
+      <AddButton label="+ Add Achievement" onClick={() => setData(d => ({ ...d, achievements: [...(d.achievements || []), { id: Date.now(), title: '', desc: '' }] }))} accent={accentColor} />
 
-      <SectionHeader icon="📜" title="Certifications" accent={ACCENT} />
+      <SectionHeader icon="📜" title="Certifications" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {(data.certificates || []).map((cert, idx) => (
-          <ItemCard key={cert.id} onDelete={() => setData(d => ({ ...d, certificates: d.certificates.filter(c => c.id !== cert.id) }))} accent={ACCENT} index={idx}>
-            <Field label="Certificate" value={cert.name} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, name: e.target.value } : c) }))} accent={ACCENT} placeholder="e.g. CPA" />
+          <ItemCard key={cert.id} onDelete={() => setData(d => ({ ...d, certificates: d.certificates.filter(c => c.id !== cert.id) }))} accent={accentColor} index={idx}>
+            <Field label="Certificate" value={cert.name} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, name: e.target.value } : c) }))} accent={accentColor} placeholder="e.g. CPA" />
             <Grid2>
-              <Field label="Issuer" value={cert.organization} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, organization: e.target.value } : c) }))} accent={ACCENT} />
-              <Field label="Year" value={cert.year} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, year: e.target.value } : c) }))} accent={ACCENT} placeholder="2023" />
+              <Field label="Issuer" value={cert.organization} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, organization: e.target.value } : c) }))} accent={accentColor} />
+              <Field label="Year" value={cert.year} onChange={e => setData(d => ({ ...d, certificates: d.certificates.map(c => c.id === cert.id ? { ...c, year: e.target.value } : c) }))} accent={accentColor} placeholder="2023" />
             </Grid2>
           </ItemCard>
         ))}
       </div>
-      <AddButton label="+ Add Certification" onClick={() => setData(d => ({ ...d, certificates: [...(d.certificates || []), { id: Date.now(), name: '', organization: '', year: '' }] }))} accent={ACCENT} />
+      <AddButton label="+ Add Certification" onClick={() => setData(d => ({ ...d, certificates: [...(d.certificates || []), { id: Date.now(), name: '', organization: '', year: '' }] }))} accent={accentColor} />
 
-      <SectionHeader icon="🌐" title="Languages" accent={ACCENT} />
+      <SectionHeader icon="🌐" title="Languages" accent={accentColor} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {(data.languagesList || []).map((lang, idx) => (
-          <ItemCard key={lang.id} onDelete={() => setData(d => ({ ...d, languagesList: d.languagesList.filter(l => l.id !== lang.id) }))} accent={ACCENT} index={idx}>
+          <ItemCard key={lang.id} onDelete={() => setData(d => ({ ...d, languagesList: d.languagesList.filter(l => l.id !== lang.id) }))} accent={accentColor} index={idx}>
             <Grid2>
-              <Field label="Language" value={lang.name} onChange={e => setData(d => ({ ...d, languagesList: d.languagesList.map(l => l.id === lang.id ? { ...l, name: e.target.value } : l) }))} accent={ACCENT} placeholder="e.g. English" />
-              <Field label="Level" value={lang.level} onChange={e => setData(d => ({ ...d, languagesList: d.languagesList.map(l => l.id === lang.id ? { ...l, level: e.target.value } : l) }))} accent={ACCENT} placeholder="e.g. Native" />
+              <Field label="Language" value={lang.name} onChange={e => setData(d => ({ ...d, languagesList: d.languagesList.map(l => l.id === lang.id ? { ...l, name: e.target.value } : l) }))} accent={accentColor} placeholder="e.g. English" />
+              <Field label="Level" value={lang.level} onChange={e => setData(d => ({ ...d, languagesList: d.languagesList.map(l => l.id === lang.id ? { ...l, level: e.target.value } : l) }))} accent={accentColor} placeholder="e.g. Native" />
             </Grid2>
           </ItemCard>
         ))}
       </div>
-      <AddButton label="+ Add Language" onClick={() => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }))} accent={ACCENT} />
+      <AddButton label="+ Add Language" onClick={() => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }))} accent={accentColor} />
 
       <div style={{ height: '2rem' }} />
     </EditorShell>

@@ -12,6 +12,7 @@ import ModernLayout from '../components/layouts/ModernLayout';
 import MinimalLayout from '../components/layouts/MinimalLayout';
 import ExecutiveLayout from '../components/layouts/ExecutiveLayout';
 import CreativeLayout from '../components/layouts/CreativeLayout';
+import EnhancvLayout from '../components/layouts/EnhancvLayout';
 import ForgeLogo from '../components/common/ForgeLogo';
 
 // Import modular form components
@@ -26,6 +27,7 @@ import LanguagesForm from '../components/resume/LanguagesForm';
 import AchievementsForm from '../components/resume/AchievementsForm';
 import AIAssistant from '../components/resume/AIAssistant';
 import ResumeToolbar from '../components/resume/ResumeToolbar';
+import DragDropSections from '../components/DragDropSections';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { generateResumeAI } from '../services/aiService';
 
@@ -862,8 +864,15 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       data: templatePreviewData,
       role: formData.department,
       customColor: selectedColor,
+      secondaryColor: theme.primaryColor,
       customFont: selectedFont,
+      sections: sections,
       sectionsOrder: enabledSections,
+      headingSize: theme.fontSize ? theme.fontSize + 8 : 22,
+      fontSize: theme.fontSize,
+      lineHeight: theme.lineHeight,
+      spacing: theme.margin > 40 ? 'comfortable' : theme.margin < 25 ? 'compact' : 'normal',
+      profilePosition: theme.profilePosition,
       theme: theme
     };
 
@@ -879,6 +888,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         return <ExecutiveLayout {...props} />;
       case 'creative':
         return <CreativeLayout {...props} />;
+      case 'enhancv':
+        return <EnhancvLayout {...props} />;
       default:
         return <ProfessionalLayout {...props} />;
     }
@@ -1049,21 +1060,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           gap: '1.5rem',
           overflowY: 'auto'
         }}>
-          {/* Resume Score Card */}
-          <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Resume Score</span>
-            <div style={{ fontSize: '2.2rem', fontWeight: 950, color: '#7c3aed', margin: '0.4rem 0' }}>{getProgressPercent()}%</div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', background: '#e6fcf5', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>
-              {getProgressPercent() > 80 ? 'Excellent' : getProgressPercent() > 50 ? 'Good' : 'Needs Work'}
-            </span>
-          </div>
 
-          {/* ATS Score Card */}
-          <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>ATS Score</span>
-            <div style={{ fontSize: '2.2rem', fontWeight: 950, color: '#10b981', margin: '0.4rem 0' }}>{getAtsScore()}%</div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563eb', background: '#eff6ff', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>Compliant</span>
-          </div>
 
           {/* AI Suggestions */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -1082,51 +1079,28 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
           {/* Section Reordering Widget */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a' }}>Arrange Sections</span>
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="sections-sidebar">
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}
-                  >
-                    {sections.map((sec, idx) => (
-                      <Draggable key={sec.id} draggableId={sec.id} index={idx}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              padding: '0.4rem 0.65rem',
-                              background: snapshot.isDragging ? '#f5f3ff' : '#f8fafc',
-                              border: `1px solid ${snapshot.isDragging ? '#7c3aed' : '#cbd5e1'}`,
-                              borderRadius: '6px',
-                              cursor: 'grab',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              color: '#334155',
-                              userSelect: 'none',
-                              boxShadow: snapshot.isDragging ? '0 4px 12px rgba(124,58,237,0.15)' : 'none',
-                              transition: 'background 0.15s, border-color 0.15s',
-                              ...provided.draggableProps.style
-                            }}
-                          >
-                            <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>⋮⋮</span>
-                            {sec.title}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            <DragDropSections
+              sections={sections}
+              setSections={(newSections) => {
+                setSections(newSections);
+                const reorderedIds = newSections.map(s => typeof s === 'string' ? s : (s.id || s.title));
+                setEnabledSections(['Personal', ...reorderedIds, 'Preview']);
+              }}
+              hiddenSections={sections.filter(s => s.enabled === false).map(s => s.id || s.title || s)}
+              setHiddenSections={(updater) => {
+                if (typeof updater === 'function') {
+                  const currentHidden = sections.filter(s => s.enabled === false).map(s => s.id || s.title || s);
+                  const nextHidden = updater(currentHidden);
+                  setSections(prev => prev.map(s => {
+                    const id = s.id || s.title || s;
+                    return typeof s === 'object' ? { ...s, enabled: !nextHidden.includes(id) } : { id: s, title: s, enabled: !nextHidden.includes(s) };
+                  }));
+                }
+              }}
+              onAiGenerated={() => {
+                setShowAiGeneratorModal(true);
+              }}
+            />
           </div>
 
           <div style={{ height: '1px', background: '#cbd5e1' }} />
@@ -1538,7 +1512,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                 minHeight: '297mm',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                 borderRadius: '2px',
-                overflow: 'hidden',
+                overflow: 'visible',
                 transform: `scale(${zoomLevel})`,
                 transformOrigin: 'top center',
                 transition: 'transform 0.15s ease-out',

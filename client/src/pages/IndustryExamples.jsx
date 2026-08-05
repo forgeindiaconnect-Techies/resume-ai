@@ -6,7 +6,7 @@ import ModernLayout from '../components/layouts/ModernLayout';
 import CreativeLayout from '../components/layouts/CreativeLayout';
 import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
 import MinimalLayout from '../components/layouts/MinimalLayout';
-import { Search, Edit3 } from 'lucide-react';
+import { Search, Edit3, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 const categorySlugMap = {
   'most-popular': 'Most Popular Resume Examples',
@@ -154,6 +154,286 @@ const initialRoles = [
 ];
 
 const resumeDataByRole = {
+  'Executive': {
+    name: 'Jonathan Ross',
+    role: 'Executive Director | Operations & Strategic Expansion',
+    contact: { email: 'j.ross@forgeindiaconnect.com', phone: '+1-(212)-998-1122', location: 'New York, NY', linkedin: 'linkedin.com/in/jonathan-ross-exec' },
+    objective: 'Senior Executive with 18+ years driving P&L management, strategic mergers & acquisitions, and global operational expansion across Fortune 500 tech and enterprise companies.',
+    skills: { languages: 'Executive Leadership · P&L Management · Strategic M&A · Corporate Governance · Capital Allocation · Organizational Transformation · Global Expansion' },
+    experience: [
+      { company: 'Global Vanguard Enterprises', location: 'New York, NY', title: 'Executive Vice President of Operations', duration: '03/2018 - Present', desc: '• Managed $350M annual P&L portfolio, driving 28% net profit margin growth across North American operations.\n• Led strategic acquisition of 3 regional logistics providers, integrating 1,200+ employees with 0 business disruption.\n• Spearheaded digital transformation initiative reducing annual operational overhead by $14.5M.' },
+      { company: 'Apex Corporate Group', location: 'Boston, MA', title: 'Director of Strategic Growth', duration: '05/2012 - 02/2018', desc: '• Oversaw expansion into EMEA markets, opening 4 new regional hubs and generating $85M in net-new revenue within 3 years.' }
+    ],
+    education: [{ degree: 'Master of Business Administration (MBA)', institution: 'Harvard Business School', location: 'Boston, MA', tenure: '2008 - 2010' }],
+    achievements: [
+      { title: '$14.5M Annual Savings', desc: 'Led enterprise transformation reducing operational costs across 12 divisions.' },
+      { title: '28% Profit Margin Gain', desc: 'Optimized capital allocation and P&L efficiency across North American operations.' }
+    ]
+  },
+
+  'Chief Technology Officer': {
+    name: 'Dr. Alexander Wright',
+    role: 'Chief Technology Officer (CTO) | Cloud Architecture & Engineering Leadership',
+    contact: { email: 'a.wright@forgeindiaconnect.com', phone: '+1-(415)-555-8833', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/alexwright-cto' },
+    objective: 'CTO with 16+ years building enterprise SaaS platforms, scaling 150+ person engineering organizations, and leading cloud modernizations.',
+    skills: { languages: 'Cloud Architecture · Engineering Leadership · AI Strategy · System Design · Enterprise SaaS · DevOps · Cybersecurity Governance' },
+    experience: [
+      { company: 'OmniCloud Platform', location: 'San Francisco, CA', title: 'Chief Technology Officer', duration: '05/2017 - Present', desc: '• Led 150-person engineering & product team building multi-tenant SaaS platform supporting 10M+ daily active users.\n• Architected zero-trust cloud infrastructure reducing security incident response time by 80%.' },
+      { company: 'Nexus Software Systems', location: 'Palo Alto, CA', title: 'VP of Engineering', duration: '01/2012 - 04/2017', desc: '• Scaled engineering organization from 20 to 90 engineers while maintaining high release velocity.' }
+    ],
+    education: [{ degree: 'Ph.D. in Computer Science', institution: 'MIT', location: 'Cambridge, MA', tenure: '2003 - 2008' }],
+    achievements: [
+      { title: '150-Person Engineering Org', desc: 'Scaled engineering department while maintaining high velocity.' },
+      { title: '10M+ Daily Active Users', desc: 'Architected SaaS platform with 99.999% uptime availability.' }
+    ]
+  },
+
+  'Chief Executive Officer': {
+    name: 'Victoria Vance',
+    role: 'Chief Executive Officer (CEO) | Enterprise Scaling & Corporate Strategy',
+    contact: { email: 'v.vance@forgeindiaconnect.com', phone: '+1-(212)-555-0011', location: 'New York, NY', linkedin: 'linkedin.com/in/victoriavance-ceo' },
+    objective: 'Visionary CEO with 15+ years leading high-growth tech enterprises from Series B through successful IPO and market expansion.',
+    skills: { languages: 'Corporate Strategy · Capital Allocation · M&A · Board Governance · Global Expansion · Investor Relations · Executive Leadership' },
+    experience: [
+      { company: 'Apex Tech Holdings', location: 'New York, NY', title: 'Chief Executive Officer', duration: '06/2018 - Present', desc: '• Scaled enterprise ARR from $25M to $180M, leading successful NASDAQ IPO in 2022.\n• Navigated 2 strategic M&A acquisitions expanding market share across Europe and Asia.' }
+    ],
+    education: [{ degree: 'MBA in Finance & Strategy', institution: 'Wharton School, UPenn', location: 'Philadelphia, PA', tenure: '2006 - 2008' }],
+    achievements: [
+      { title: 'Successful NASDAQ IPO', desc: 'Led company through initial public offering valued at $1.2B.' },
+      { title: '7x Revenue Scaling', desc: 'Expanded annual recurring revenue from $25M to $180M in 5 years.' }
+    ]
+  },
+
+  'VP of Sales': {
+    name: 'Marcus Sterling',
+    role: 'VP of Global Sales | Enterprise SaaS & B2B Expansion',
+    contact: { email: 'm.sterling@forgeindiaconnect.com', phone: '+1-(312)-555-7788', location: 'Chicago, IL', linkedin: 'linkedin.com/in/marcussterling-sales' },
+    objective: 'Data-driven VP of Sales delivering $80M+ ARR growth across enterprise software markets.',
+    skills: { languages: 'Enterprise B2B Sales · Sales Strategy · Pipeline Management · Revenue Operations · Contract Negotiation · Sales Leadership' },
+    experience: [
+      { company: 'CloudScale Global', location: 'Chicago, IL', title: 'VP of Global Sales', duration: '02/2019 - Present', desc: '• Managed 45-person global sales team delivering $80M in net-new ARR across Fortune 500 accounts.\n• Re-engineered sales compensation models, increasing quota attainment from 62% to 89%.' }
+    ],
+    education: [{ degree: 'B.S. in Marketing & Business', institution: 'Northwestern University', location: 'Evanston, IL', tenure: '2008 - 2012' }],
+    achievements: [
+      { title: '$80M Net-New ARR', desc: 'Built enterprise sales motion closing multi-million dollar annual contracts.' }
+    ]
+  },
+
+  'Software Engineer': {
+    name: 'Ethan Hunt',
+    role: 'Senior Software Engineer | Full-Stack & Cloud Architecture',
+    contact: { email: 'e.hunt@forgeindiaconnect.com', phone: '+1-(415)-555-4422', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/ethanhunt-dev', github: 'github.com/ethanhunt-dev' },
+    objective: 'Software Engineer with 7+ years architecting microservices, high-throughput backend systems, and responsive React applications.',
+    skills: { languages: 'React · TypeScript · Node.js · Python · AWS · Docker · PostgreSQL · Microservices · GraphQL · CI/CD · Distributed Systems' },
+    experience: [
+      { company: 'Stripe', location: 'San Francisco, CA', title: 'Senior Software Engineer', duration: '03/2021 - Present', desc: '• Architected payment processing microservices handling 50M+ API requests daily with 99.99% reliability.\n• Reduced frontend bundle load times by 45% through code splitting and tree-shaking optimizations.' },
+      { company: 'Uber', location: 'San Francisco, CA', title: 'Software Engineer', duration: '06/2017 - 02/2021', desc: '• Developed real-time location tracking services using Node.js and Redis pub/sub streams.' }
+    ],
+    education: [{ degree: 'B.S. in Computer Science', institution: 'UC Berkeley', location: 'Berkeley, CA', tenure: '2013 - 2017' }],
+    achievements: [
+      { title: '50M+ Daily API Requests', desc: 'Architected distributed backend service with 99.99% uptime SLA.' }
+    ]
+  },
+
+  'Data Scientist': {
+    name: 'Dr. Maya Patel',
+    role: 'Lead Data Scientist | Machine Learning & Predictive Analytics',
+    contact: { email: 'm.patel@forgeindiaconnect.com', phone: '+1-(650)-555-9988', location: 'Palo Alto, CA', linkedin: 'linkedin.com/in/mayapatel-ds' },
+    objective: 'Data Scientist specializing in deep learning, LLM fine-tuning, and scalable predictive modeling for enterprise applications.',
+    skills: { languages: 'Python · PyTorch · TensorFlow · Scikit-Learn · SQL · Spark · NLP · LLM Fine-Tuning · Feature Engineering · A/B Testing' },
+    experience: [
+      { company: 'Meta AI Labs', location: 'Menlo Park, CA', title: 'Lead Data Scientist', duration: '01/2020 - Present', desc: '• Built recommendation models boosting user engagement by 22% across 100M+ active profiles.\n• Trained custom transformer LLM pipelines for automated customer sentiment extraction.' }
+    ],
+    education: [{ degree: 'Ph.D. in Data Science & Machine Learning', institution: 'Stanford University', location: 'Stanford, CA', tenure: '2015 - 2019' }],
+    achievements: [
+      { title: '22% Engagement Lift', desc: 'Engineered high-throughput ML recommendation algorithm.' }
+    ]
+  },
+
+  'Product Manager': {
+    name: 'Jessica Martinez',
+    role: 'Senior Product Manager | Enterprise SaaS & Mobile Platforms',
+    contact: { email: 'j.martinez@forgeindiaconnect.com', phone: '+1-(212)-555-3344', location: 'New York, NY', linkedin: 'linkedin.com/in/jessicamartinez-pm' },
+    objective: 'Product Leader with 8+ years shipping customer-facing features, scaling user retention, and managing product roadmaps.',
+    skills: { languages: 'Product Strategy · User Research · Agile/Scrum · A/B Testing · Roadmap Design · Wireframing · Data Analytics · SQL' },
+    experience: [
+      { company: 'Salesforce', location: 'New York, NY', title: 'Senior Product Manager', duration: '04/2020 - Present', desc: '• Led cross-functional team of 14 engineers and designers launching new workflow automation product used by 250K+ businesses.\n• Increased 30-day user retention by 35% through streamlined onboarding UX redesign.' }
+    ],
+    education: [{ degree: 'B.S. in Management Information Systems', institution: 'NYU Stern', location: 'New York, NY', tenure: '2012 - 2016' }],
+    achievements: [
+      { title: '250K+ Business Users', desc: 'Launched enterprise automation tool generating $18M in ARR.' }
+    ]
+  },
+
+  'Digital Marketing': {
+    name: 'Liam Hemsworth',
+    role: 'Digital Marketing Director | Growth & Performance Marketing',
+    contact: { email: 'l.hemsworth@forgeindiaconnect.com', phone: '+1-(310)-555-6677', location: 'Los Angeles, CA', linkedin: 'linkedin.com/in/liamhemsworth-mktg' },
+    objective: 'Growth Marketer with 7+ years scaling CAC/ROAS across Google Ads, Meta Ads, and SEO channels.',
+    skills: { languages: 'Performance Marketing · SEO · Google Analytics 4 · Meta Ads · Email Marketing · Growth Hacking · Conversion Rate Optimization' },
+    experience: [
+      { company: 'Shopify Merchant Network', location: 'Los Angeles, CA', title: 'Growth Marketing Director', duration: '02/2021 - Present', desc: '• Managed $5M annual ad spend achieving average 4.2x ROAS across paid search and social channels.' }
+    ],
+    education: [{ degree: 'B.A. in Communications & Marketing', institution: 'USC', location: 'Los Angeles, CA', tenure: '2013 - 2017' }],
+    achievements: [
+      { title: '4.2x Average ROAS', desc: 'Scaled paid user acquisition channels while lowering overall CAC by 28%.' }
+    ]
+  },
+
+  'Teacher': {
+    name: 'Rachel Adams',
+    role: 'Lead High School Educator | STEM & Curriculum Development',
+    contact: { email: 'r.adams@forgeindiaconnect.com', phone: '+1-(617)-555-2233', location: 'Boston, MA', linkedin: 'linkedin.com/in/racheladams-edu' },
+    objective: 'Passionate Educator with 9+ years creating engaging STEM curricula and fostering inclusive classroom environments.',
+    skills: { languages: 'Curriculum Development · STEM Education · Classroom Management · Student Assessment · Educational Technology · Parent Communication' },
+    experience: [
+      { company: 'Boston Public Schools', location: 'Boston, MA', title: 'Lead Physics & Mathematics Teacher', duration: '08/2016 - Present', desc: '• Designed interactive STEM curriculum improving standardized test pass rates by 24% over 3 years.' }
+    ],
+    education: [{ degree: 'Master of Education (M.Ed.)', institution: 'Boston University', location: 'Boston, MA', tenure: '2014 - 2016' }],
+    achievements: [
+      { title: '24% Test Pass Rate Gain', desc: 'Recognized with District Teacher of the Year award in 2022.' }
+    ]
+  },
+
+  'Mechanical Engineer': {
+    name: 'Carlos Mendoza',
+    role: 'Senior Mechanical Engineer | Automotive & Manufacturing',
+    contact: { email: 'c.mendoza@forgeindiaconnect.com', phone: '+1-(313)-555-9900', location: 'Detroit, MI', linkedin: 'linkedin.com/in/carlosmendoza-eng' },
+    objective: 'Mechanical Engineer with 8+ years specializing in automotive chassis design, CAD modeling, and FEA simulation.',
+    skills: { languages: 'SolidWorks · CATIA · ANSYS FEA · Six Sigma · Lean Manufacturing · GD&T · Rapid Prototyping · Material Selection' },
+    experience: [
+      { company: 'Ford Motor Company', location: 'Dearborn, MI', title: 'Senior Mechanical Engineer', duration: '05/2018 - Present', desc: '• Led redesign of EV battery enclosure assembly, cutting structural component weight by 18% while meeting crash safety standards.' }
+    ],
+    education: [{ degree: 'B.S. in Mechanical Engineering', institution: 'University of Michigan', location: 'Ann Arbor, MI', tenure: '2014 - 2018' }],
+    achievements: [
+      { title: '18% Weight Reduction', desc: 'Engineered lightweight aluminum EV battery housing assembly.' }
+    ]
+  },
+
+  'Actor': {
+    name: 'Ava Johnson',
+    role: 'Actor | Stage, Film & Voice Over',
+    contact: { email: 'a.johnson@forgeindiaconnect.com', phone: '+1-(310)-555-0199', location: 'Los Angeles, CA', linkedin: 'linkedin.com/in/avajohnson-actor' },
+    objective: 'Classically trained actor with 8+ years performing in feature films, regional theater productions, and commercial voice-overs.',
+    skills: { languages: 'Character Development · Script Analysis · Stage Combat · Voice Over · Improv · Classical Theater · Dialects' },
+    experience: [
+      { company: 'Sundance Film Festival Feature', location: 'Los Angeles, CA', title: 'Lead Actor (Feature Film)', duration: '2023', desc: '• Performed lead dramatic role in indie feature film selected for official competition at Sundance.' },
+      { company: 'Geffen Playhouse', location: 'Los Angeles, CA', title: 'Resident Stage Actor', duration: '2019 - 2022', desc: '• Starred in 6 mainstage theatrical productions receiving critical acclaim.' }
+    ],
+    education: [{ degree: 'B.F.A. in Drama & Theater Arts', institution: 'Juilliard School', location: 'New York, NY', tenure: '2015 - 2019' }],
+    achievements: [
+      { title: 'Sundance Official Selection', desc: 'Recognized for standout dramatic performance in independent feature film.' }
+    ]
+  },
+
+  'Head Chef': {
+    name: 'Chef Mateo Rossi',
+    role: 'Executive Head Chef | Fine Dining & Culinary Operations',
+    contact: { email: 'm.rossi@forgeindiaconnect.com', phone: '+1-(212)-555-4400', location: 'New York, NY', linkedin: 'linkedin.com/in/mateorossi-chef' },
+    objective: 'Michelin-trained Executive Chef with 12+ years managing fine dining kitchen operations, menu engineering, and food safety.',
+    skills: { languages: 'Menu Engineering · Fine Dining · Kitchen Leadership · Inventory Management · Food Safety (ServSafe) · Farm-to-Table Sourcing' },
+    experience: [
+      { company: 'Le Ciel Fine Dining', location: 'New York, NY', title: 'Executive Head Chef', duration: '03/2019 - Present', desc: '• Awarded 1 Michelin Star in 2021; maintained 38% gross profit margin on seasonal tasting menus.' }
+    ],
+    education: [{ degree: 'Culinary Arts Degree', institution: 'Culinary Institute of America (CIA)', location: 'Hyde Park, NY', tenure: '2008 - 2010' }],
+    achievements: [
+      { title: '1 Michelin Star Awarded', desc: 'Earned Michelin star recognition within 2 years of restaurant launch.' }
+    ]
+  },
+
+  'Steve Jobs': {
+    name: 'Steve Jobs',
+    role: 'Visionary Founder & CEO | Apple Inc. & Pixar',
+    contact: { email: 's.jobs@apple.com', phone: '+1-(408)-996-1010', location: 'Cupertino, CA', linkedin: 'linkedin.com/in/stevejobs' },
+    objective: 'Co-founder of Apple Inc. Driven by relentless focus on design excellence, product simplification, and revolutionary user experience.',
+    skills: { languages: 'Product Vision · Design Excellence · Keynote Presentation · Brand Storytelling · Ecosystem Design · Consumer Tech Leadership' },
+    experience: [
+      { company: 'Apple Inc.', location: 'Cupertino, CA', title: 'Co-Founder & CEO', duration: '1997 - 2011', desc: '• Led creation of iconic products including iPhone, iPad, iPod, and MacBook, transforming personal technology worldwide.' },
+      { company: 'Pixar Animation Studios', location: 'Emeryville, CA', title: 'CEO & Majority Shareholder', duration: '1986 - 2006', desc: '• Produced Toy Story, revolutionizing computer graphics animation in cinema.' }
+    ],
+    education: [{ degree: 'Honorary Doctorate & Reed College Studies', institution: 'Reed College', location: 'Portland, OR', tenure: '1972 - 1974' }],
+    achievements: [
+      { title: 'Revolutionized 6 Industries', desc: 'Transformed personal computing, animated movies, music, phones, tablet computing, and digital publishing.' }
+    ]
+  },
+
+  'Elon Musk': {
+    name: 'Elon Musk',
+    role: 'Chief Engineer & CEO | SpaceX & Tesla',
+    contact: { email: 'e.musk@tesla.com', phone: '+1-(650)-681-5000', location: 'Austin, TX', linkedin: 'linkedin.com/in/elonmusk' },
+    objective: 'Chief Engineer and CEO leading aerospace transportation, sustainable electric mobility, and neurotechnology manufacturing.',
+    skills: { languages: 'Rocket Engineering · Electric Vehicle Architecture · First-Principles Thinking · High-Volume Manufacturing · Artificial Intelligence' },
+    experience: [
+      { company: 'SpaceX', location: 'Hawthorne, CA', title: 'Chief Engineer & CEO', duration: '2002 - Present', desc: '• Architected Falcon 9 reusable orbital rockets, reducing space launch costs by over 70%.' },
+      { company: 'Tesla Inc.', location: 'Austin, TX', title: 'CEO & Product Architect', duration: '2004 - Present', desc: '• Scaled EV production to millions of vehicles annually with Model 3 and Model Y platforms.' }
+    ],
+    education: [{ degree: 'B.S. in Physics & Economics', institution: 'University of Pennsylvania', location: 'Philadelphia, PA', tenure: '1992 - 1997' }],
+    achievements: [
+      { title: 'First Reusable Orbital Rocket', desc: 'Successfully landed and re-flew Falcon 9 boosters, pioneering commercial space access.' }
+    ]
+  },
+
+  'Albert Einstein': {
+    name: 'Albert Einstein',
+    role: 'Theoretical Physicist | Nobel Laureate in Physics',
+    contact: { email: 'a.einstein@ias.edu', phone: '+1-(609)-734-8000', location: 'Princeton, NJ', linkedin: 'linkedin.com/in/alberteinstein' },
+    objective: 'Theoretical Physicist who developed the general theory of relativity and made foundational contributions to quantum theory.',
+    skills: { languages: 'Theoretical Physics · General Relativity · Quantum Mechanics · Mathematical Physics · Thought Experiments · Statistical Mechanics' },
+    experience: [
+      { company: 'Institute for Advanced Study', location: 'Princeton, NJ', title: 'Professor of Theoretical Physics', duration: '1933 - 1955', desc: '• Conducted research on Unified Field Theory and quantum foundation paradoxes (EPR paradox).' },
+      { company: 'Prussian Academy of Sciences', location: 'Berlin, Germany', title: 'Director of Kaiser Wilhelm Institute', duration: '1914 - 1933', desc: '• Formulated the General Theory of Relativity (E=mc²), predicting gravitational lensing.' }
+    ],
+    education: [{ degree: 'Ph.D. in Physics', institution: 'University of Zurich', location: 'Zurich, Switzerland', tenure: '1905' }],
+    achievements: [
+      { title: 'Nobel Prize in Physics (1921)', desc: 'Awarded for discovery of the law of the photoelectric effect.' }
+    ]
+  },
+
+  'DevOps Engineer': {
+    name: 'Lucas Vance',
+    role: 'Senior DevOps Engineer | Kubernetes · AWS · Terraform · CI/CD',
+    contact: { email: 'l.vance@forgeindiaconnect.com', phone: '+1-(206)-555-8877', location: 'Seattle, WA', linkedin: 'linkedin.com/in/lucasvance-devops', github: 'github.com/lucasvance-ops' },
+    objective: 'DevOps Engineer with 6+ years automating multi-cloud infrastructure and zero-downtime deployment pipelines.',
+    skills: { languages: 'Kubernetes · Docker · AWS · Terraform · Ansible · Jenkins · GitHub Actions · Prometheus · Grafana · Python' },
+    experience: [
+      { company: 'Amazon Web Services', location: 'Seattle, WA', title: 'Senior DevOps Engineer', duration: '04/2020 - Present', desc: '• Automated EKS Kubernetes deployment pipelines, scaling cluster capacity for 200+ microservices.' }
+    ],
+    education: [{ degree: 'B.S. in Computer Engineering', institution: 'University of Washington', location: 'Seattle, WA', tenure: '2014 - 2018' }],
+    achievements: [
+      { title: '99.999% Pipeline Reliability', desc: 'Eliminated deployment failures through automated canary deployment testing.' }
+    ]
+  },
+
+  'UI/UX Designer': {
+    name: 'Chloe Miller',
+    role: 'Senior UI/UX Designer | Product Design & Design Systems',
+    contact: { email: 'c.miller@forgeindiaconnect.com', phone: '+1-(415)-555-3311', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/chloemiller-ux' },
+    objective: 'UI/UX Designer with 6+ years creating intuitive user journeys, wireframes, interactive prototypes, and design systems.',
+    skills: { languages: 'Figma · User Research · Wireframing · Interactive Prototyping · Design Systems · Usability Testing · HTML/CSS' },
+    experience: [
+      { company: 'Airbnb', location: 'San Francisco, CA', title: 'Senior Product Designer', duration: '03/2021 - Present', desc: '• Redesigned search and checkout UX flow, boosting booking conversion rate by 18% across mobile apps.' }
+    ],
+    education: [{ degree: 'B.F.A. in Interaction Design', institution: 'Rhode Island School of Design (RISD)', location: 'Providence, RI', tenure: '2015 - 2019' }],
+    achievements: [
+      { title: '18% Conversion Lift', desc: 'Redesigned mobile checkout flow used by tens of millions of guests.' }
+    ]
+  },
+
+  'Cybersecurity Analyst': {
+    name: 'Alex Rivera',
+    role: 'Cybersecurity Analyst | Information Security · SOC · CISSP',
+    contact: { email: 'a.rivera@forgeindiaconnect.com', phone: '+1-(703)-555-4433', location: 'Arlington, VA', linkedin: 'linkedin.com/in/alexrivera-sec' },
+    objective: 'Cybersecurity Specialist with 6+ years conducting threat monitoring, incident response, vulnerability scans, and SIEM management.',
+    skills: { languages: 'SIEM (Splunk) · Threat Hunting · Incident Response · Penetration Testing · CISSP · Wireshark · Firewalls · SOC' },
+    experience: [
+      { company: 'General Dynamics IT', location: 'Arlington, VA', title: 'Senior Cybersecurity Analyst', duration: '01/2020 - Present', desc: '• Monitored SOC security alerts for enterprise network with 10,000+ endpoints, detecting and mitigating 50+ critical zero-day threats.' }
+    ],
+    education: [{ degree: 'B.S. in Cybersecurity & Networking', institution: 'George Mason University', location: 'Fairfax, VA', tenure: '2014 - 2018' }],
+    achievements: [
+      { title: '0 Data Breaches', desc: 'Maintained 100% clean security incident containment record over 4 consecutive years.' }
+    ]
+  },
+
   'Project Manager': {
     name: 'Joshua Nelson',
     role: 'Project Manager | Renewable Energy | Agile | PMP',
@@ -1709,7 +1989,15 @@ const resumeDataByRole = {
 };
 
 const getDefaultData = (roleTitle) => {
+  if (!roleTitle) return resumeDataByRole['Project Manager'];
   if (resumeDataByRole[roleTitle]) return resumeDataByRole[roleTitle];
+
+  // Case-insensitive & partial match fallback lookup
+  const lowerTitle = roleTitle.toLowerCase().trim();
+  const matchedKey = Object.keys(resumeDataByRole).find(key => key.toLowerCase().trim() === lowerTitle || lowerTitle.includes(key.toLowerCase().trim()));
+  if (matchedKey && resumeDataByRole[matchedKey]) {
+    return resumeDataByRole[matchedKey];
+  }
 
   const cleanTitle = roleTitle || 'Professional';
   return {
@@ -1738,8 +2026,9 @@ const IndustryExamples = () => {
 
   const [selectedCategory, setSelectedCategory] = useState('Most Popular Resume Examples');
   const [selectedRoleTitle, setSelectedRoleTitle] = useState('Project Manager');
-  const [previewContainerWidth, setPreviewContainerWidth] = useState(600);
+  const [previewContainerWidth, setPreviewContainerWidth] = useState(720);
   const [previewContentHeight, setPreviewContentHeight] = useState(1122);
+  const [userZoom, setUserZoom] = useState(1);
   const resumeSheetRef = React.useRef(null);
   const previewRef = React.useRef(null);
 
@@ -1758,8 +2047,8 @@ const IndustryExamples = () => {
   useEffect(() => {
     const updateWidth = () => {
       if (previewRef.current) {
-        const availableWidth = previewRef.current.offsetWidth - 48;
-        setPreviewContainerWidth(Math.max(500, Math.min(availableWidth, 720)));
+        const availableWidth = previewRef.current.offsetWidth - 32;
+        setPreviewContainerWidth(Math.max(580, Math.min(availableWidth, 794)));
       }
     };
     updateWidth();
@@ -1812,7 +2101,7 @@ const IndustryExamples = () => {
   };
 
   const handleUseTemplate = () => {
-    const routeMap = { enhancv: '/editor/executive', modern: '/editor/modern', creative: '/editor/creative', professional: '/editor/professional', minimal: '/editor/minimal' };
+    const routeMap = { enhancv: '/editor/enhancv', modern: '/editor/modern', creative: '/editor/creative', professional: '/editor/professional', minimal: '/editor/minimal' };
     const editorRoute = routeMap[activeRole.layout] || '/editor/executive';
 
     // Convert skills.languages string (dot-separated) to an array
@@ -1920,8 +2209,8 @@ const IndustryExamples = () => {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
 
         {/* COL 1: Sidebar Categories */}
-        <div className="ie-col-scroll" style={{ width: '220px', flexShrink: 0, background: '#eaf4fe', padding: '1.5rem 1.1rem', overflowY: 'auto', boxSizing: 'border-box' }}>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#3b82f6', margin: '0 0 1rem', paddingBottom: '0.2rem', borderBottom: '2px solid #60a5fa', display: 'inline-block' }}>
+        <div className="ie-col-scroll" style={{ width: '190px', flexShrink: 0, background: '#eaf4fe', padding: '1.5rem 0.9rem', overflowY: 'auto', boxSizing: 'border-box' }}>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#3b82f6', margin: '0 0 1rem', paddingBottom: '0.2rem', borderBottom: '2px solid #60a5fa', display: 'inline-block' }}>
             Categories
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
@@ -1937,7 +2226,7 @@ const IndustryExamples = () => {
                     textAlign: 'left',
                     padding: '0.2rem 0',
                     color: isActive ? '#6d28d9' : '#334155',
-                    fontSize: '0.86rem',
+                    fontSize: '0.84rem',
                     fontWeight: isActive ? 800 : 500,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
@@ -1953,26 +2242,26 @@ const IndustryExamples = () => {
         </div>
 
         {/* COL 2: Search + Role Grid Cards */}
-        <div className="ie-col-scroll" style={{ width: '320px', flexShrink: 0, background: '#f8fafc', borderRight: '1px solid #e2e8f0', padding: '1.5rem 1.1rem', overflowY: 'auto', boxSizing: 'border-box' }}>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#1e293b', margin: '0 0 1.2rem', letterSpacing: '-0.01em' }}>
+        <div className="ie-col-scroll" style={{ width: '260px', flexShrink: 0, background: '#f8fafc', borderRight: '1px solid #e2e8f0', padding: '1.5rem 1rem', overflowY: 'auto', boxSizing: 'border-box' }}>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1e293b', margin: '0 0 1rem', letterSpacing: '-0.01em' }}>
             Search Resume Examples
           </h1>
-          <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-            <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+          <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
+            <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               placeholder="Search by role..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.6rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.88rem', outline: 'none', background: '#f9fafb', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '0.7rem 0.85rem 0.7rem 2.4rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.85rem', outline: 'none', background: '#f9fafb', boxSizing: 'border-box' }}
             />
           </div>
 
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1e293b', margin: '0 0 1rem' }}>
+          <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1e293b', margin: '0 0 0.85rem' }}>
             {searchQuery ? `Results for "${searchQuery}"` : selectedCategory}
           </h2>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
             {filteredRoles.map(r => {
               const isSelected = activeRole.id === r.id;
               return (
@@ -1980,12 +2269,12 @@ const IndustryExamples = () => {
                   key={r.id}
                   onClick={() => setSelectedRoleTitle(r.title)}
                   style={{
-                    padding: '0.85rem 0.5rem',
+                    padding: '0.75rem 0.4rem',
                     borderRadius: '8px',
                     border: isSelected ? '2px solid #10b981' : '1px solid #d1d5db',
                     background: 'white',
                     color: isSelected ? '#059669' : '#374151',
-                    fontSize: '0.88rem',
+                    fontSize: '0.84rem',
                     fontWeight: isSelected ? 700 : 500,
                     textAlign: 'center',
                     cursor: 'pointer',
@@ -2003,51 +2292,74 @@ const IndustryExamples = () => {
         </div>
 
         {/* COL 3: Live Preview Header Bar & Centered Scaled Resume */}
-        <div ref={previewRef} className="ie-col-scroll" style={{ flex: 1, background: '#f1f5f9', padding: '1.25rem 1.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto', overflowX: 'hidden', boxSizing: 'border-box', position: 'relative' }}>
+        <div ref={previewRef} className="ie-col-scroll" style={{ flex: 1, background: '#f1f5f9', padding: '1.5rem 1.75rem 3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto', overflowX: 'auto', boxSizing: 'border-box', position: 'relative' }}>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-            {/* HEADER BAR: Title on left, Green Button on right */}
-            <div style={{ width: '100%', maxWidth: '720px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0.25rem 0 1.25rem' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>
+            {/* HEADER BAR: Title on left, Zoom controls + Green Button on right */}
+            <div style={{ width: '100%', maxWidth: `${Math.max(previewContainerWidth, 794)}px`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 0 1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>
                 {activeRole.title} Resume Example
               </h2>
-              <button
-                onClick={handleUseTemplate}
-                style={{
-                  padding: '0.65rem 1.25rem',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: '#10b981',
-                  color: 'white',
-                  fontSize: '0.86rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  boxShadow: '0 4px 14px rgba(16,185,129,0.35)',
-                  transition: 'transform 0.15s ease',
-                  whiteSpace: 'nowrap'
-                }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-              >
-                <Edit3 size={15} /> Use This Template
-              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {/* Zoom Controls */}
+                <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '0.25rem 0.5rem', gap: '0.35rem' }}>
+                  <button onClick={() => setUserZoom(z => Math.max(0.7, z - 0.1))} title="Zoom Out" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', display: 'flex', alignItems: 'center' }}>
+                    <ZoomOut size={16} />
+                  </button>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', minWidth: '40px', textAlign: 'center' }}>
+                    {Math.round(userZoom * 100)}%
+                  </span>
+                  <button onClick={() => setUserZoom(z => Math.min(1.4, z + 0.1))} title="Zoom In" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', display: 'flex', alignItems: 'center' }}>
+                    <ZoomIn size={16} />
+                  </button>
+                  {userZoom !== 1 && (
+                    <button onClick={() => setUserZoom(1)} title="Reset Zoom" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', marginLeft: '0.2rem' }}>
+                      <RotateCcw size={14} />
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  onClick={handleUseTemplate}
+                  style={{
+                    padding: '0.65rem 1.25rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#10b981',
+                    color: 'white',
+                    fontSize: '0.86rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    boxShadow: '0 4px 14px rgba(16,185,129,0.35)',
+                    transition: 'transform 0.15s ease',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <Edit3 size={15} /> Use This Template
+                </button>
+              </div>
             </div>
 
             {/* SCALED LIVE RESUME PREVIEW CONTAINER */}
             {(() => {
-              const scale = previewContainerWidth / RESUME_FULL_WIDTH;
-              const scaledH = Math.round(previewContentHeight * scale);
+              const baseScale = previewContainerWidth / RESUME_FULL_WIDTH;
+              const finalScale = baseScale * userZoom;
+              const containerW = Math.round(previewContainerWidth * userZoom);
+              const scaledH = Math.round(previewContentHeight * finalScale);
               return (
                 <div style={{
-                  width: `${previewContainerWidth}px`,
+                  width: `${containerW}px`,
                   height: `${scaledH}px`,
                   position: 'relative',
                   overflow: 'hidden',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                  borderRadius: '2px',
+                  boxShadow: '0 12px 36px rgba(0,0,0,0.12)',
+                  borderRadius: '4px',
                   marginBottom: '2rem',
                   background: 'white'
                 }}>
@@ -2060,7 +2372,7 @@ const IndustryExamples = () => {
                       minHeight: '1122px',
                       background: 'white',
                       transformOrigin: 'top left',
-                      transform: `scale(${scale})`,
+                      transform: `scale(${finalScale})`,
                       position: 'absolute',
                       top: 0,
                       left: 0

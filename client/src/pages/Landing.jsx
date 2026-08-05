@@ -5,7 +5,7 @@ import ForgeLogo from '../components/common/ForgeLogo';
 import ContactModal from '../components/common/ContactModal';
 import {
   Sparkles, Compass, FileSearch, FileText, MessageCircle, Briefcase, 
-  ArrowRight, ChevronRight, Layers, Shield, HelpCircle, X, Upload
+  ArrowRight, ChevronRight, Layers, HelpCircle, X, Upload
 } from 'lucide-react';
 import { generateResumeAI } from '../services/aiService';
 
@@ -17,7 +17,6 @@ const LandingPage = () => {
   };
   const isLoggedIn = false;
   const [showContactModal, setShowContactModal] = useState(false);
-  const [showCookieConsent, setShowCookieConsent] = useState(true);
 
   // AI Generator Modal States
   const [showAiModal, setShowAiModal] = useState(false);
@@ -836,33 +835,6 @@ const LandingPage = () => {
         </div>
       </footer>
 
-      {/* Cookie Consent */}
-      <AnimatePresence>
-        {showCookieConsent && (
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            style={{ position: 'fixed', bottom: '16px', left: '16px', right: '16px', maxWidth: '640px', margin: '0 auto', background: '#1e293b', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', zIndex: 9999, padding: '20px 24px', pointerEvents: 'all' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
-              <div style={{ color: '#38bdf8', marginTop: '2px' }}><Shield size={20} /></div>
-              <div style={{ flex: 1 }}>
-                <p style={{ color: '#f1f5f9', fontSize: '14px', fontWeight: 600, margin: '0 0 4px' }}>We use cookies</p>
-                <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
-                  We use cookies to improve your experience, analyse site traffic, and show relevant content.
-                </p>
-              </div>
-            </div>
-            <button 
-              onClick={() => setShowCookieConsent(false)}
-              style={{ background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', border: 'none', borderRadius: '8px', padding: '9px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-            >
-              Accept All
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* AI Resume Generator Modal */}
       {showAiModal && (
@@ -875,7 +847,6 @@ const LandingPage = () => {
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#0f172a' }}>Generate Resume with AI</h3>
-                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Powered by OpenAI Engine</span>
                 </div>
               </div>
               <button onClick={() => setShowAiModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>

@@ -90,6 +90,7 @@ const Templates = () => {
   const handleUseTemplate = (template) => {
     const layoutName = (template.layout?.layout || template.name || 'modern').toLowerCase();
     const editorRouteMap = {
+      enhancv:      '/editor/enhancv',
       executive:    '/editor/executive',
       creative:     '/editor/creative',
       modern:       '/editor/modern',

@@ -6,51 +6,25 @@ import ResumeFooter from './ResumeFooter';
  * Typography: Rubik (Headers) & Source Sans 3 (Body)
  * Features: Sentence Case Name, Contact SVG Icons, Accent Underlines, Skill Pill Tags, 3-Column Grid Achievements
  */
-const EnhancvLayout = ({ data, customColor }) => {
+const EnhancvLayout = ({data, customColor,
+  fontSize,
+  lineHeight,
+  theme,
+  customFont
+}) => {
   if (!data) return null;
 
+  const fontFamily = customFont || "'Inter', sans-serif";
+
+  const fScale = (fontSize || 13) / 13;
+  const lineH = lineHeight || 1.6;
+
   const primaryAccent = customColor || '#2563eb'; // Enhancv Signature Blue
-
-  const {
-    name = 'Joshua Nelson',
-    role = 'Project Manager | Renewable Energy | Agile | PMP',
-    contact = {},
-    objective,
-    education = [],
-    skills = {},
-    projects = [],
-    experience = [],
-    achievements = []
-  } = data;
-
-  // Convert name to Sentence Case if all caps
-  const formatName = (str) => {
-    if (!str) return 'Joshua Nelson';
-    if (str === str.toUpperCase()) {
-      return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-    }
-    return str;
-  };
-
-  const formattedName = formatName(name);
-
-  // Extract skills into array of strings for pill tags
-  const getSkillsArray = () => {
-    if (typeof skills === 'object') {
-      const combined = [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' · ');
-      return combined ? combined.split(/·|•|-/).map(s => s.trim()).filter(Boolean) : [];
-    }
-    if (Array.isArray(skills)) return skills;
-    if (typeof skills === 'string') return skills.split(/·|•|-/).map(s => s.trim()).filter(Boolean);
-    return [];
-  };
-
-  const skillsArr = getSkillsArray();
 
   const SectionHeader = ({ title }) => (
     <div style={{ marginBottom: '0.9rem', marginTop: '1.25rem' }}>
       <h3 style={{
-        fontSize: '0.92rem',
+        fontSize: `${0.92 * fScale}rem`,
         fontWeight: 700,
         fontFamily: "'Rubik', sans-serif",
         letterSpacing: '0.04em',
@@ -64,6 +38,43 @@ const EnhancvLayout = ({ data, customColor }) => {
       </h3>
     </div>
   );
+  
+  const {
+    name = 'Joshua Nelson',
+    role = 'Project Manager | Renewable Energy | Agile | PMP',
+    contact = {},
+    objective,
+    education = [],
+    skills = {},
+    projects = [],
+    experience = [],
+    achievements = []
+  } = data || {};
+
+  // Convert name to Sentence Case if all caps
+  const formatName = (str) => {
+    if (!str) return 'Joshua Nelson';
+    if (str === str.toUpperCase()) {
+      return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    }
+    return str;
+  };
+
+  const formattedName = formatName(name);
+
+  const getSkillsArray = () => {
+    if (typeof skills === 'object') {
+      const combined = [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' · ');
+      return combined ? combined.split(/·|•|-/).map(s => s.trim()).filter(Boolean) : [];
+    }
+    if (Array.isArray(skills)) return skills;
+    if (typeof skills === 'string') return skills.split(/·|•|-/).map(s => s.trim()).filter(Boolean);
+    return [];
+  };
+
+  const skillsArr = getSkillsArray();
+
+  
 
   return (
     <div style={{
@@ -74,7 +85,7 @@ const EnhancvLayout = ({ data, customColor }) => {
       color: '#374151',
       padding: '3rem 3.25rem 2rem',
       boxSizing: 'border-box',
-      lineHeight: 1.5,
+      lineHeight: lineH,
       textAlign: 'left',
       display: 'flex',
       flexDirection: 'column',
@@ -84,19 +95,19 @@ const EnhancvLayout = ({ data, customColor }) => {
         {/* === HEADER: Sentence Case Name + Subtitle + Contact SVG Icons Row === */}
         <div style={{ marginBottom: '1.4rem' }}>
           <h1 style={{
-            fontSize: '1.9rem',
+            fontSize: `${1.9 * fScale}rem`,
             fontWeight: 700,
             fontFamily: "'Rubik', sans-serif",
             color: '#111827',
             margin: '0 0 0.25rem',
-            lineHeight: 1.15,
+            lineHeight: lineH,
             letterSpacing: '-0.02em'
           }}>
             {formattedName}
           </h1>
 
           <div style={{
-            fontSize: '0.92rem',
+            fontSize: `${0.92 * fScale}rem`,
             fontWeight: 500,
             color: '#4b5563',
             marginBottom: '0.65rem',
@@ -111,7 +122,7 @@ const EnhancvLayout = ({ data, customColor }) => {
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '1.25rem',
-            fontSize: '0.78rem',
+            fontSize: `${0.78 * fScale}rem`,
             color: '#4b5563',
             fontWeight: 500
           }}>
@@ -146,7 +157,7 @@ const EnhancvLayout = ({ data, customColor }) => {
         {objective && (
           <div>
             <SectionHeader title="Summary" />
-            <p style={{ margin: 0, fontSize: '0.82rem', color: '#374151', lineHeight: 1.55 }}>
+            <p style={{ margin: 0, fontSize: `${0.82 * fScale}rem`, color: '#374151', lineHeight: lineH }}>
               {objective}
             </p>
           </div>
@@ -161,7 +172,7 @@ const EnhancvLayout = ({ data, customColor }) => {
                 <span key={idx} style={{
                   background: '#f3f4f6',
                   color: '#374151',
-                  fontSize: '0.76rem',
+                  fontSize: `${0.76 * fScale}rem`,
                   fontWeight: 500,
                   padding: '0.25rem 0.65rem',
                   borderRadius: '4px',
@@ -183,27 +194,27 @@ const EnhancvLayout = ({ data, customColor }) => {
                 <div key={idx}>
                   {/* Line 1: Job Title (Bold) + Dates (Right) */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827' }}>
+                    <span style={{ fontSize: `${0.88 * fScale}rem`, fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827' }}>
                       {exp.title || exp.role}
                     </span>
-                    <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: 500 }}>
+                    <span style={{ fontSize: `${0.76 * fScale}rem`, color: '#6b7280', fontWeight: 500 }}>
                       {exp.duration || exp.period}
                     </span>
                   </div>
 
                   {/* Line 2: Company + Location */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#4b5563' }}>
+                    <span style={{ fontSize: `${0.82 * fScale}rem`, fontWeight: 600, color: '#4b5563' }}>
                       {exp.company}
                     </span>
-                    <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: 500 }}>
+                    <span style={{ fontSize: `${0.76 * fScale}rem`, color: '#6b7280', fontWeight: 500 }}>
                       {exp.location || ''}
                     </span>
                   </div>
 
                   {/* Bullets */}
                   {exp.desc && (
-                    <div style={{ fontSize: '0.79rem', color: '#374151', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: `${0.79 * fScale}rem`, color: '#374151', lineHeight: lineH }}>
                       {exp.desc.split('\n').map((line, i) => (
                         <div key={i} style={{ marginBottom: '0.2rem', paddingLeft: '0.85rem', position: 'relative' }}>
                           <span style={{ position: 'absolute', left: 0, top: 0, color: '#6b7280' }}>•</span>
@@ -226,18 +237,18 @@ const EnhancvLayout = ({ data, customColor }) => {
               {education.map((edu, idx) => (
                 <div key={idx}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827' }}>
+                    <span style={{ fontSize: `${0.88 * fScale}rem`, fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827' }}>
                       {edu.degree}
                     </span>
-                    <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: 500 }}>
+                    <span style={{ fontSize: `${0.76 * fScale}rem`, color: '#6b7280', fontWeight: 500 }}>
                       {edu.tenure || edu.year}
                     </span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#4b5563' }}>
+                    <span style={{ fontSize: `${0.82 * fScale}rem`, fontWeight: 600, color: '#4b5563' }}>
                       {edu.institution || edu.school}
                     </span>
-                    <span style={{ fontSize: '0.76rem', color: '#6b7280', fontWeight: 500 }}>
+                    <span style={{ fontSize: `${0.76 * fScale}rem`, color: '#6b7280', fontWeight: 500 }}>
                       {edu.location || ''}
                     </span>
                   </div>
@@ -265,10 +276,10 @@ const EnhancvLayout = ({ data, customColor }) => {
                   <div key={idx} style={{ display: 'flex', gap: '0.55rem', alignItems: 'flex-start' }}>
                     <span style={{ marginTop: '2px', flexShrink: 0 }}>{icons[idx % 3]}</span>
                     <div>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827', lineHeight: 1.3, marginBottom: '0.2rem' }}>
+                      <div style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827', lineHeight: lineH, marginBottom: '0.2rem' }}>
                         {ach.title}
                       </div>
-                      <p style={{ margin: 0, fontSize: '0.72rem', color: '#4b5563', lineHeight: 1.45 }}>
+                      <p style={{ margin: 0, fontSize: `${0.72 * fScale}rem`, color: '#4b5563', lineHeight: lineH }}>
                         {ach.desc}
                       </p>
                     </div>

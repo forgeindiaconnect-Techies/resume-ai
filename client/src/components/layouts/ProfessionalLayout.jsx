@@ -1,13 +1,21 @@
 import React from 'react';
 import ResumeFooter from './ResumeFooter';
 
-const ProfessionalLayout = ({ data, customColor, customFont }) => {
+const ProfessionalLayout = ({data, customColor, customFont,
+  fontSize,
+  lineHeight,
+  theme
+}) => {
   if (!data) return null;
+
+  const fScale = (fontSize || 13) / 13;
+  const lineH = lineHeight || 1.6;
+  const spacingPadding = theme?.margin ? `${theme.margin}px` : '2rem';
 
   const sidebarBg = customColor || '#14532d';
   const fontFamily = customFont || "'Inter', sans-serif";
 
-  const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data;
+  const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data || {};
 
   const skillsList = typeof skills === 'object' 
     ? [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' • ')
@@ -23,7 +31,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
       background: 'white',
       color: '#1e293b',
       boxSizing: 'border-box',
-      lineHeight: 1.5,
+      lineHeight: lineH,
       textAlign: 'left'
     }}>
       <div style={{ display: 'flex', flex: 1 }}>
@@ -32,7 +40,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           width: '34%',
           background: sidebarBg,
           color: '#ffffff',
-          padding: '2.2rem 1.5rem',
+          padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
           gap: '1.75rem',
@@ -41,13 +49,13 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {/* Name */}
           <div>
             <h1 style={{
-              fontSize: '1.65rem',
+              fontSize: `${1.65 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
               color: '#ffffff',
               margin: '0 0 0.35rem',
-              lineHeight: 1.2
+              lineHeight: lineH
             }}>
               {name || 'CARLOS MENDOZA'}
             </h1>
@@ -56,7 +64,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {/* Languages */}
           <div>
             <h3 style={{
-              fontSize: '0.78rem',
+              fontSize: `${0.78 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -67,14 +75,14 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
             }}>
               LANGUAGES
             </h3>
-            <div style={{ fontSize: '0.78rem', color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>English</span>
-                <span style={{ fontSize: '0.7rem', color: '#86efac' }}>Native •••••</span>
+                <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#86efac' }}>Native •••••</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Spanish</span>
-                <span style={{ fontSize: '0.7rem', color: '#86efac' }}>Bilingual •••••</span>
+                <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#86efac' }}>Bilingual •••••</span>
               </div>
             </div>
           </div>
@@ -82,7 +90,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {/* Key Highlights */}
           <div>
             <h3 style={{
-              fontSize: '0.78rem',
+              fontSize: `${0.78 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -93,19 +101,19 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
             }}>
               KEY ACHIEVEMENTS
             </h3>
-            <div style={{ fontSize: '0.75rem', color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {(achievements.length > 0 ? achievements : [
                 { title: '35% Defect Reduction', desc: 'Led redesign of EV battery housing assembly.' },
                 { title: '$4M Capital Project', desc: 'Delivered new stamping line 6 weeks ahead of schedule.' },
                 { title: '18% Material Waste Cut', desc: 'Implemented lean manufacturing process improvements.' }
               ]).map((ach, idx) => (
                 <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#86efac', marginTop: '1px' }}>✓</span>
+                  <span style={{ fontSize: `${0.8 * fScale}rem`, color: '#86efac', marginTop: '1px' }}>✓</span>
                   <div>
-                    <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: 1.25, marginBottom: '0.15rem' }}>
+                    <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: lineH, marginBottom: '0.15rem' }}>
                       {ach.title}
                     </div>
-                    <div style={{ color: '#cbd5e1', fontSize: '0.7rem', lineHeight: 1.35 }}>
+                    <div style={{ color: '#cbd5e1', fontSize: `${0.7 * fScale}rem`, lineHeight: lineH }}>
                       {ach.desc}
                     </div>
                   </div>
@@ -117,7 +125,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {/* Engineering Skills */}
           <div>
             <h3 style={{
-              fontSize: '0.78rem',
+              fontSize: `${0.78 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -128,7 +136,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
             }}>
               ENGINEERING SKILLS
             </h3>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#f8fafc', lineHeight: 1.6, fontWeight: 500 }}>
+            <p style={{ margin: 0, fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
               {skillsList || 'AutoCAD · SolidWorks · CATIA · ANSYS · Six Sigma · Lean Manufacturing · Root Cause Analysis'}
             </p>
           </div>
@@ -137,7 +145,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
         {/* RIGHT MAIN COLUMN */}
         <div style={{
           flex: 1,
-          padding: '2.2rem 1.8rem',
+          padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
           gap: '1.5rem',
@@ -146,7 +154,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {/* Role Header */}
           <div>
             <h2 style={{
-              fontSize: '1.05rem',
+              fontSize: `${1.05 * fScale}rem`,
               fontWeight: 800,
               color: '#047857',
               margin: '0 0 0.4rem'
@@ -158,7 +166,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
               display: 'flex',
               flexWrap: 'wrap',
               gap: '0.85rem',
-              fontSize: '0.75rem',
+              fontSize: `${0.75 * fScale}rem`,
               color: '#64748b',
               borderBottom: '2px solid #047857',
               paddingBottom: '0.75rem'
@@ -174,7 +182,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {objective && (
             <div>
               <h3 style={{
-                fontSize: '0.8rem',
+                fontSize: `${0.8 * fScale}rem`,
                 fontWeight: 900,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -187,7 +195,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
                 SUMMARY
                 <span style={{ flex: 1, height: '1px', background: '#d1fae5' }} />
               </h3>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#334155', lineHeight: 1.55 }}>
+              <p style={{ margin: 0, fontSize: `${0.82 * fScale}rem`, color: '#334155', lineHeight: lineH }}>
                 {objective}
               </p>
             </div>
@@ -197,7 +205,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {experience && experience.length > 0 && (
             <div>
               <h3 style={{
-                fontSize: '0.8rem',
+                fontSize: `${0.8 * fScale}rem`,
                 fontWeight: 900,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -215,23 +223,23 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
                 {experience.map((exp, idx) => (
                   <div key={idx}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>
+                      <h4 style={{ margin: 0, fontSize: `${0.9 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
                         {exp.title || exp.role}
                       </h4>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                      <span style={{ fontSize: `${0.75 * fScale}rem`, fontWeight: 700, color: '#64748b' }}>
                         {exp.duration || exp.period}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#047857' }}>
+                      <span style={{ fontSize: `${0.8 * fScale}rem`, fontWeight: 700, color: '#047857' }}>
                         {exp.company}
                       </span>
-                      <span style={{ fontSize: '0.73rem', color: '#64748b', fontWeight: 500 }}>
+                      <span style={{ fontSize: `${0.73 * fScale}rem`, color: '#64748b', fontWeight: 500 }}>
                         {exp.location || ''}
                       </span>
                     </div>
                     {exp.desc && (
-                      <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
+                      <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
                         {exp.desc.split('\n').map((line, i) => (
                           <div key={i} style={{ marginBottom: '0.15rem', paddingLeft: '0.75rem', position: 'relative' }}>
                             <span style={{ position: 'absolute', left: 0, top: 0, color: '#64748b' }}>•</span>
@@ -250,7 +258,7 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
           {education && education.length > 0 && (
             <div>
               <h3 style={{
-                fontSize: '0.8rem',
+                fontSize: `${0.8 * fScale}rem`,
                 fontWeight: 900,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -268,14 +276,14 @@ const ProfessionalLayout = ({ data, customColor, customFont }) => {
                 {education.map((edu, idx) => (
                   <div key={idx}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <h4 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#0f172a' }}>
+                      <h4 style={{ margin: 0, fontSize: `${0.85 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
                         {edu.degree}
                       </h4>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                      <span style={{ fontSize: `${0.75 * fScale}rem`, fontWeight: 700, color: '#64748b' }}>
                         {edu.tenure || edu.year}
                       </span>
                     </div>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#047857' }}>
+                    <div style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, color: '#047857' }}>
                       {edu.institution || edu.school}
                     </div>
                   </div>

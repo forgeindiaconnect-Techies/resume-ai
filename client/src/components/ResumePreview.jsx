@@ -13,8 +13,9 @@ const ResumePreview = ({ data, color, font, template }) => {
 
     switch (t) {
       case 'enhancv':
-      case 'executive':
         return <EnhancvLayout {...props} />;
+      case 'executive':
+        return <ExecutiveLayout {...props} />;
       case 'modern':
         return <ModernLayout {...props} />;
       case 'creative':

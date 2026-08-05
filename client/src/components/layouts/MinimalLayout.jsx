@@ -1,8 +1,16 @@
 import React from 'react';
 import ResumeFooter from './ResumeFooter';
 
-const MinimalLayout = ({ data, customColor, customFont }) => {
+const MinimalLayout = ({data, customColor, customFont,
+  fontSize,
+  lineHeight,
+  theme
+}) => {
   if (!data) return null;
+
+  const fScale = (fontSize || 13) / 13;
+  const lineH = lineHeight || 1.6;
+  const spacingPadding = theme?.margin ? `${theme.margin}px` : '2rem';
 
   const sidebarBg = customColor || '#1e3a5f';
   const fontFamily = customFont || "'Inter', sans-serif";
@@ -23,7 +31,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
       background: 'white',
       color: '#1e293b',
       boxSizing: 'border-box',
-      lineHeight: 1.5,
+      lineHeight: lineH,
       textAlign: 'left'
     }}>
       <div style={{ display: 'flex', flex: 1 }}>
@@ -32,7 +40,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           width: '34%',
           background: sidebarBg,
           color: '#ffffff',
-          padding: '2.2rem 1.5rem',
+          padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
           gap: '1.75rem',
@@ -41,13 +49,13 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {/* Name */}
           <div>
             <h1 style={{
-              fontSize: '1.65rem',
+              fontSize: `${1.65 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
               color: '#ffffff',
               margin: '0 0 0.35rem',
-              lineHeight: 1.2
+              lineHeight: lineH
             }}>
               {name || 'AMELIA JOHNSON'}
             </h1>
@@ -56,7 +64,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {/* Languages */}
           <div>
             <h3 style={{
-              fontSize: '0.78rem',
+              fontSize: `${0.78 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -67,14 +75,14 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
             }}>
               LANGUAGES
             </h3>
-            <div style={{ fontSize: '0.78rem', color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>English</span>
-                <span style={{ fontSize: '0.7rem', color: '#93c5fd' }}>Native •••••</span>
+                <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#93c5fd' }}>Native •••••</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>German</span>
-                <span style={{ fontSize: '0.7rem', color: '#93c5fd' }}>Proficient ••••</span>
+                <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#93c5fd' }}>Proficient ••••</span>
               </div>
             </div>
           </div>
@@ -82,7 +90,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {/* Key Achievements */}
           <div>
             <h3 style={{
-              fontSize: '0.78rem',
+              fontSize: `${0.78 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -93,18 +101,18 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
             }}>
               KEY ACHIEVEMENTS
             </h3>
-            <div style={{ fontSize: '0.75rem', color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {(achievements.length > 0 ? achievements : [
                 { title: '94% State Test Pass Rate', desc: 'Achieved high state exam pass rates.' },
                 { title: 'STEM Teacher of the Year', desc: 'Awarded regional STEM teaching honor.' }
               ]).map((ach, idx) => (
                 <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#93c5fd', marginTop: '1px' }}>✓</span>
+                  <span style={{ fontSize: `${0.8 * fScale}rem`, color: '#93c5fd', marginTop: '1px' }}>✓</span>
                   <div>
-                    <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: 1.25, marginBottom: '0.15rem' }}>
+                    <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: lineH, marginBottom: '0.15rem' }}>
                       {ach.title}
                     </div>
-                    <div style={{ color: '#cbd5e1', fontSize: '0.7rem', lineHeight: 1.35 }}>
+                    <div style={{ color: '#cbd5e1', fontSize: `${0.7 * fScale}rem`, lineHeight: lineH }}>
                       {ach.desc}
                     </div>
                   </div>
@@ -116,7 +124,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {/* Core Skills */}
           <div>
             <h3 style={{
-              fontSize: '0.78rem',
+              fontSize: `${0.78 * fScale}rem`,
               fontWeight: 900,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
@@ -127,7 +135,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
             }}>
               SKILLS
             </h3>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#f8fafc', lineHeight: 1.6, fontWeight: 500 }}>
+            <p style={{ margin: 0, fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
               {skillsList || 'Biology · Chemistry · Physics · STEM Curriculum · Differentiated Instruction'}
             </p>
           </div>
@@ -136,7 +144,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
         {/* RIGHT MAIN COLUMN */}
         <div style={{
           flex: 1,
-          padding: '2.2rem 1.8rem',
+          padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
           gap: '1.5rem',
@@ -145,7 +153,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {/* Role Header */}
           <div>
             <h2 style={{
-              fontSize: '1.05rem',
+              fontSize: `${1.05 * fScale}rem`,
               fontWeight: 800,
               color: '#1e3a5f',
               margin: '0 0 0.4rem'
@@ -157,7 +165,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
               display: 'flex',
               flexWrap: 'wrap',
               gap: '0.85rem',
-              fontSize: '0.75rem',
+              fontSize: `${0.75 * fScale}rem`,
               color: '#64748b',
               borderBottom: '2px solid #1e3a5f',
               paddingBottom: '0.75rem'
@@ -173,7 +181,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {objective && (
             <div>
               <h3 style={{
-                fontSize: '0.8rem',
+                fontSize: `${0.8 * fScale}rem`,
                 fontWeight: 900,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -186,7 +194,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
                 SUMMARY
                 <span style={{ flex: 1, height: '1px', background: '#cbd5e1' }} />
               </h3>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#334155', lineHeight: 1.55 }}>
+              <p style={{ margin: 0, fontSize: `${0.82 * fScale}rem`, color: '#334155', lineHeight: lineH }}>
                 {objective}
               </p>
             </div>
@@ -196,7 +204,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {experience && experience.length > 0 && (
             <div>
               <h3 style={{
-                fontSize: '0.8rem',
+                fontSize: `${0.8 * fScale}rem`,
                 fontWeight: 900,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -214,23 +222,23 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
                 {experience.map((exp, idx) => (
                   <div key={idx}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>
+                      <h4 style={{ margin: 0, fontSize: `${0.9 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
                         {exp.title || exp.role}
                       </h4>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                      <span style={{ fontSize: `${0.75 * fScale}rem`, fontWeight: 700, color: '#64748b' }}>
                         {exp.duration || exp.period}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#1e3a5f' }}>
+                      <span style={{ fontSize: `${0.8 * fScale}rem`, fontWeight: 700, color: '#1e3a5f' }}>
                         {exp.company}
                       </span>
-                      <span style={{ fontSize: '0.73rem', color: '#64748b', fontWeight: 500 }}>
+                      <span style={{ fontSize: `${0.73 * fScale}rem`, color: '#64748b', fontWeight: 500 }}>
                         {exp.location || ''}
                       </span>
                     </div>
                     {exp.desc && (
-                      <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
+                      <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
                         {exp.desc.split('\n').map((line, i) => (
                           <div key={i} style={{ marginBottom: '0.15rem', paddingLeft: '0.75rem', position: 'relative' }}>
                             <span style={{ position: 'absolute', left: 0, top: 0, color: '#64748b' }}>•</span>
@@ -249,7 +257,7 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
           {education && education.length > 0 && (
             <div>
               <h3 style={{
-                fontSize: '0.8rem',
+                fontSize: `${0.8 * fScale}rem`,
                 fontWeight: 900,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
@@ -267,14 +275,14 @@ const MinimalLayout = ({ data, customColor, customFont }) => {
                 {education.map((edu, idx) => (
                   <div key={idx}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <h4 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#0f172a' }}>
+                      <h4 style={{ margin: 0, fontSize: `${0.85 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
                         {edu.degree}
                       </h4>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                      <span style={{ fontSize: `${0.75 * fScale}rem`, fontWeight: 700, color: '#64748b' }}>
                         {edu.tenure || edu.year}
                       </span>
                     </div>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                    <div style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, color: '#334155' }}>
                       {edu.institution || edu.school}
                     </div>
                   </div>

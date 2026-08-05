@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
 import {
   Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
-  SkillTagInput, EditorShell, loadSession, saveSession
+  SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
 
 const defaultData = () => ({
@@ -36,6 +36,13 @@ const ProfessionalEditor = () => {
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
   const [accentColor, setAccentColor] = useState('#059669');
   const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [sections, setSections] = useState([
+    { id: 'summary', title: 'Summary', enabled: true },
+    { id: 'experience', title: 'Experience', enabled: true },
+    { id: 'education', title: 'Education', enabled: true },
+    { id: 'skills', title: 'Skills', enabled: true },
+    { id: 'certifications', title: 'Certifications', enabled: true },
+  ]);
   
   const [data, setData] = useState(() => {
     const session = loadSession(sessionId);
@@ -123,8 +130,14 @@ const ProfessionalEditor = () => {
       templateEmoji="📋" 
       onDownload={() => window.print()} 
       saveStatus={saveStatus}
-      preview={<ProfessionalLayout data={previewData} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
+      preview={<ProfessionalLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
     >
+      <SectionReorderControl
+        sections={sections}
+        onReorder={setSections}
+        onToggle={(id) => setSections(s => s.map(x => x.id === id ? { ...x, enabled: !x.enabled } : x))}
+        accent={accentColor}
+      />
 
       <SectionHeader icon="👤" title="Personal Details" accent={accentColor} />
       <Field label="Full Name" name="name" value={data.personalInfo.name} onChange={setPersonal} accent={accentColor} placeholder="e.g. Alexander Wright" />

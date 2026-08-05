@@ -1,8 +1,16 @@
 import React from 'react';
 import ResumeFooter from './ResumeFooter';
 
-const ExecutiveLayout = ({ data, customColor, customFont }) => {
+const ExecutiveLayout = ({data, customColor, customFont,
+  fontSize,
+  lineHeight,
+  theme
+}) => {
   if (!data) return null;
+
+  const fScale = (fontSize || 13) / 13;
+  const lineH = lineHeight || 1.6;
+  const spacingPadding = theme?.margin ? `${theme.margin}px` : '2rem';
 
   const fontFamily = customFont || "'Inter', sans-serif";
   const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [] } = data;
@@ -19,15 +27,15 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
       fontFamily: fontFamily,
       background: '#ffffff',
       color: '#1e293b',
-      padding: '2.5rem 2.25rem',
+      padding: spacingPadding,
       boxSizing: 'border-box',
-      lineHeight: 1.5,
+      lineHeight: lineH,
       textAlign: 'center',
       margin: '0 auto'
     }}>
       {/* Centered Name Header */}
       <h1 style={{
-        fontSize: '1.5rem',
+        fontSize: `${1.5 * fScale}rem`,
         fontWeight: 800,
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
@@ -39,7 +47,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
 
       {/* Subheader Role Title */}
       <h2 style={{
-        fontSize: '0.85rem',
+        fontSize: `${0.85 * fScale}rem`,
         fontWeight: 700,
         color: '#334155',
         margin: '0 0 0.5rem',
@@ -55,7 +63,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: '0.75rem',
-        fontSize: '0.73rem',
+        fontSize: `${0.73 * fScale}rem`,
         color: '#64748b',
         marginBottom: '1.25rem',
         borderBottom: '1px solid #e2e8f0',
@@ -71,7 +79,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
       {objective && (
         <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
           <h3 style={{
-            fontSize: '0.82rem',
+            fontSize: `${0.82 * fScale}rem`,
             fontWeight: 800,
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
@@ -82,7 +90,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
           }}>
             Summary
           </h3>
-          <p style={{ margin: 0, fontSize: '0.78rem', color: '#334155', lineHeight: 1.5, textAlign: 'left' }}>
+          <p style={{ margin: 0, fontSize: `${0.78 * fScale}rem`, color: '#334155', lineHeight: lineH, textAlign: 'left' }}>
             {objective}
           </p>
         </div>
@@ -91,7 +99,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
       {/* Skills Section */}
       <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
         <h3 style={{
-          fontSize: '0.82rem',
+          fontSize: `${0.82 * fScale}rem`,
           fontWeight: 800,
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
@@ -102,7 +110,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
         }}>
           Skills
         </h3>
-        <p style={{ margin: 0, fontSize: '0.78rem', color: '#334155', fontWeight: 600, textAlign: 'center' }}>
+        <p style={{ margin: 0, fontSize: `${0.78 * fScale}rem`, color: '#334155', fontWeight: 600, textAlign: 'center' }}>
           {skillsList || 'Project Management · Agile Methodologies · Waterfall · Microsoft Project · JIRA · Risk Management'}
         </p>
       </div>
@@ -111,7 +119,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
       {experience && experience.length > 0 && (
         <div style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
           <h3 style={{
-            fontSize: '0.82rem',
+            fontSize: `${0.82 * fScale}rem`,
             fontWeight: 800,
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
@@ -128,25 +136,25 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
             {experience.map((exp, idx) => (
               <div key={idx}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <h4 style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#0f172a' }}>
+                  <h4 style={{ margin: 0, fontSize: `${0.85 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
                     {exp.company}
                   </h4>
-                  <span style={{ fontSize: '0.73rem', color: '#64748b', fontWeight: 600 }}>
+                  <span style={{ fontSize: `${0.73 * fScale}rem`, color: '#64748b', fontWeight: 600 }}>
                     {exp.companyLocation || 'Los Angeles, CA'}
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.3rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', italic: 'true' }}>
+                  <span style={{ fontSize: `${0.8 * fScale}rem`, fontWeight: 700, color: '#334155', italic: 'true' }}>
                     {exp.title || exp.role}
                   </span>
-                  <span style={{ fontSize: '0.73rem', color: '#64748b', fontWeight: 600 }}>
+                  <span style={{ fontSize: `${0.73 * fScale}rem`, color: '#64748b', fontWeight: 600 }}>
                     {exp.duration || exp.period}
                   </span>
                 </div>
 
                 {exp.desc && (
-                  <p style={{ margin: 0, fontSize: '0.76rem', color: '#475569', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
+                  <p style={{ margin: 0, fontSize: `${0.76 * fScale}rem`, color: '#475569', lineHeight: lineH, whiteSpace: 'pre-line' }}>
                     {exp.desc}
                   </p>
                 )}
@@ -160,7 +168,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
       {education && education.length > 0 && (
         <div style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
           <h3 style={{
-            fontSize: '0.82rem',
+            fontSize: `${0.82 * fScale}rem`,
             fontWeight: 800,
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
@@ -177,18 +185,18 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
             {education.map((edu, idx) => (
               <div key={idx}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <h4 style={{ margin: 0, fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>
+                  <h4 style={{ margin: 0, fontSize: `${0.82 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
                     {edu.institution || edu.school}
                   </h4>
-                  <span style={{ fontSize: '0.73rem', color: '#64748b', fontWeight: 600 }}>
+                  <span style={{ fontSize: `${0.73 * fScale}rem`, color: '#64748b', fontWeight: 600 }}>
                     {edu.location || 'Los Angeles, CA'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <span style={{ fontSize: '0.78rem', color: '#334155' }}>
+                  <span style={{ fontSize: `${0.78 * fScale}rem`, color: '#334155' }}>
                     {edu.degree}
                   </span>
-                  <span style={{ fontSize: '0.73rem', color: '#64748b' }}>
+                  <span style={{ fontSize: `${0.73 * fScale}rem`, color: '#64748b' }}>
                     {edu.tenure || edu.year}
                   </span>
                 </div>
@@ -201,7 +209,7 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
       {/* Key Achievements (3 Horizontal Boxes at Bottom - Enhancv Exact) */}
       <div style={{ textAlign: 'left' }}>
         <h3 style={{
-          fontSize: '0.82rem',
+          fontSize: `${0.82 * fScale}rem`,
           fontWeight: 800,
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
@@ -216,28 +224,28 @@ const ExecutiveLayout = ({ data, customColor, customFont }) => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.65rem' }}>
           <div style={{ background: '#f8fafc', padding: '0.55rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem' }}>
+            <div style={{ fontSize: `${0.73 * fScale}rem`, fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem' }}>
               ✓ Successful Renewable Energy Execution
             </div>
-            <p style={{ margin: 0, fontSize: '0.68rem', color: '#64748b', lineHeight: 1.35 }}>
+            <p style={{ margin: 0, fontSize: `${0.68 * fScale}rem`, color: '#64748b', lineHeight: lineH }}>
               Led $5M project deploying solar panels across state ahead of schedule.
             </p>
           </div>
 
           <div style={{ background: '#f8fafc', padding: '0.55rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem' }}>
+            <div style={{ fontSize: `${0.73 * fScale}rem`, fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem' }}>
               ✓ Excellence in Team Leadership
             </div>
-            <p style={{ margin: 0, fontSize: '0.68rem', color: '#64748b', lineHeight: 1.35 }}>
+            <p style={{ margin: 0, fontSize: `${0.68 * fScale}rem`, color: '#64748b', lineHeight: lineH }}>
               Recognized for outstanding leadership managing 10 project coordinators.
             </p>
           </div>
 
           <div style={{ background: '#f8fafc', padding: '0.55rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem' }}>
+            <div style={{ fontSize: `${0.73 * fScale}rem`, fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem' }}>
               ✓ Implemented Cost-Reduction Strategy
             </div>
-            <p style={{ margin: 0, fontSize: '0.68rem', color: '#64748b', lineHeight: 1.35 }}>
+            <p style={{ margin: 0, fontSize: `${0.68 * fScale}rem`, color: '#64748b', lineHeight: lineH }}>
               Executed new supplier contract negotiations resulting in 15% cost reduction.
             </p>
           </div>

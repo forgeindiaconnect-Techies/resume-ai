@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import ModernLayout from '../components/layouts/ModernLayout';
+import EnhancvLayout from '../components/layouts/EnhancvLayout';
 import {
   Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
 
 const buildFromSession = (session) => ({
-  title: session.title || 'Modern Resume',
-  templateId: 'modern',
+  title: session.title || 'Project Manager Resume',
+  templateId: 'enhancv',
   personalInfo: {
     name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Alexander Wright',
     role: session.personalInfo?.role || session.role || 'Business Professional',
@@ -70,8 +70,8 @@ const buildFromSession = (session) => ({
 });
 
 const defaultData = () => ({
-  title: 'Modern Resume',
-  templateId: 'modern',
+  title: 'Project Manager Resume',
+  templateId: 'enhancv',
   personalInfo: {
     name: 'Alexander Wright',
     role: 'Software Engineer',
@@ -101,7 +101,7 @@ const defaultData = () => ({
   languagesList: [],
 });
 
-const ModernEditor = () => {
+const EnhancvEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
   const [accentColor, setAccentColor] = useState('#0284c7');
@@ -185,11 +185,11 @@ const ModernEditor = () => {
       onColorChange={setAccentColor}
       fontFamily={fontFamily}
       onFontChange={setFontFamily}
-      templateName="Modern" 
+      templateName="enhancv" 
       templateEmoji="💻" 
       onDownload={() => window.print()} 
       saveStatus={saveStatus}
-      preview={<ModernLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
+      preview={<EnhancvLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
     >
       <SectionReorderControl
         sections={sections}
@@ -308,4 +308,4 @@ const ModernEditor = () => {
   );
 };
 
-export default ModernEditor;
+export default EnhancvEditor;
