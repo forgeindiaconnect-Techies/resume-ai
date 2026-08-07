@@ -13,6 +13,8 @@ const EnhancvLayout = ({data, customColor,
   lineHeight,
   theme,
   customFont,
+  spacing = 'normal',
+  layoutMode = 'left-sidebar',
   sections: customSections,
   profilePosition = 'left',
   headingSize
@@ -23,6 +25,11 @@ const EnhancvLayout = ({data, customColor,
 
   const fScale = (fontSize || 13) / 13;
   const lineH = lineHeight || 1.6;
+  const spacingPadding = theme?.margin ? `${theme.margin}px`
+    : spacing === 'compact' ? '1.5rem 1.75rem 1rem'
+    : spacing === 'comfortable' ? '4rem 4.25rem 3rem'
+    : '3rem 3.25rem 2rem';
+  const sectionGap = spacing === 'compact' ? '1rem' : spacing === 'comfortable' ? '2.2rem' : '1.5rem';
 
   const primaryAccent = customColor || '#2563eb'; // Enhancv Signature Blue
 
@@ -103,7 +110,7 @@ const EnhancvLayout = ({data, customColor,
       fontFamily: fontFamily,
       background: '#ffffff',
       color: '#374151',
-      padding: '3rem 3.25rem 2rem',
+      padding: spacingPadding,
       boxSizing: 'border-box',
       lineHeight: lineH,
       textAlign: 'left',

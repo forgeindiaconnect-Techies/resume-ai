@@ -7,14 +7,19 @@ const ExecutiveLayout = ({data, customColor, customFont,
   fontSize,
   lineHeight,
   theme,
+  spacing = 'normal',
+  layoutMode = 'left-sidebar',
   sections: customSections
 }) => {
   if (!data) return null;
 
   const fScale = (fontSize || 13) / 13;
   const lineH = lineHeight || 1.6;
-  const spacingPadding = theme?.margin ? `${theme.margin}px` : '2rem';
-
+  const spacingPadding = theme?.margin ? `${theme.margin}px`
+    : spacing === 'compact' ? '1.1rem'
+    : spacing === 'comfortable' ? '2.8rem'
+    : '2rem';
+  const sectionGap = spacing === 'compact' ? '1rem' : spacing === 'comfortable' ? '2.2rem' : '1.5rem';
   const fontFamily = customFont || "'Inter', sans-serif";
   const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], profilePhoto, photoData } = data;
 
@@ -128,7 +133,7 @@ const ExecutiveLayout = ({data, customColor, customFont,
         switch (secId) {
           case 'summary':
             return objective ? (
-              <div key="summary" style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+              <div key="summary" style={{ textAlign: 'center', marginBottom: sectionGap }}>
                 <h3 style={{
                   fontSize: `${0.82 * fScale}rem`,
                   fontWeight: 800,
@@ -150,7 +155,7 @@ const ExecutiveLayout = ({data, customColor, customFont,
           case 'skills':
           case 'competencies':
             return (
-              <div key="skills" style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+              <div key="skills" style={{ textAlign: 'center', marginBottom: sectionGap }}>
                 <h3 style={{
                   fontSize: `${0.82 * fScale}rem`,
                   fontWeight: 800,
