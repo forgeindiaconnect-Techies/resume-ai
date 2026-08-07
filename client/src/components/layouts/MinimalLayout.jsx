@@ -42,7 +42,7 @@ const MinimalLayout = ({data, customColor, customFont,
     return photoObj?.shadow ? '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' : 'none';
   };
 
-  const skillsList = typeof skills === 'object' 
+  const skillsList = (skills && typeof skills === 'object' && !Array.isArray(skills))
     ? [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' • ')
     : (Array.isArray(skills) ? skills.join(' • ') : (skills || ''));
 

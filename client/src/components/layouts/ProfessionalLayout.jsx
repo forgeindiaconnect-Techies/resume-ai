@@ -30,7 +30,7 @@ const ProfessionalLayout = ({data, customColor, customFont,
 
   const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data || {};
 
-  const skillsList = typeof skills === 'object' 
+  const skillsList = (skills && typeof skills === 'object' && !Array.isArray(skills))
     ? [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' • ')
     : (Array.isArray(skills) ? skills.join(' • ') : (skills || ''));
 
