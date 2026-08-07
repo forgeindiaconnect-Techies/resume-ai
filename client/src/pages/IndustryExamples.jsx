@@ -2264,18 +2264,17 @@ const IndustryExamples = () => {
             {filteredRoles.map(r => {
               const isSelected = activeRole.id === r.id;
               return (
-                <button
+                <div
                   key={r.id}
                   onClick={() => setSelectedRoleTitle(r.title)}
                   style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
                     padding: '0.75rem 0.4rem',
                     borderRadius: '8px',
                     border: isSelected ? '2px solid #10b981' : '1px solid #d1d5db',
                     background: 'white',
-                    color: isSelected ? '#059669' : '#374151',
-                    fontSize: '0.84rem',
-                    fontWeight: isSelected ? 700 : 500,
-                    textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                     boxShadow: isSelected ? '0 0 0 2px rgba(16,185,129,0.2)' : 'none'
@@ -2283,8 +2282,34 @@ const IndustryExamples = () => {
                   onMouseEnter={e => { if (!isSelected) e.currentTarget.style.borderColor = '#9ca3af'; }}
                   onMouseLeave={e => { if (!isSelected) e.currentTarget.style.borderColor = '#d1d5db'; }}
                 >
-                  {r.title}
-                </button>
+                  <span style={{ color: isSelected ? '#059669' : '#374151', fontSize: '0.84rem', fontWeight: isSelected ? 700 : 500, textAlign: 'center' }}>
+                    {r.title}
+                  </span>
+                  {isSelected && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleUseTemplate(); }}
+                      style={{
+                        marginTop: '0.4rem',
+                        padding: '0.35rem 0',
+                        background: '#10b981',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        width: '90%',
+                        alignSelf: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.25rem'
+                      }}
+                    >
+                      <Edit3 size={12} /> Use Template
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>
