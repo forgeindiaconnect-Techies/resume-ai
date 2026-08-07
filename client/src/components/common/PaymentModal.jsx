@@ -96,54 +96,10 @@ const PaymentModal = ({ isOpen, onClose, onSuccessDownload, reason = 'download' 
         return;
       }
 
-      // 2. Try loading Razorpay Checkout on Live Deployed Domain
-      const scriptLoaded = await loadRazorpayScript();
-
-      if (scriptLoaded && window.Razorpay) {
-        const options = {
-          key: dataOrder.razorpayKey || 'rzp_live_SlbQBi57McKtUc',
-          amount: orderInfo.amount * 100, // Amount in paise
-          currency: 'INR',
-          name: 'Forge India Connect',
-          description: `Unlock ${planObj.title}`,
-          image: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
-          order_id: orderInfo.orderId,
-          handler: async function (response) {
-            // Verify payment on backend
-            await fetch(`${API_BASE_URL}/payment/verify`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                paymentId: orderInfo.paymentId,
-                status: 'Completed',
-                razorpay_payment_id: response.razorpay_payment_id
-              })
-            });
-
-            // Unlock premium locally
-            localStorage.setItem('user_premium', 'true');
-            setLoadingPayment(false);
-            onClose();
-            if (onSuccessDownload) onSuccessDownload();
-          },
-          prefill: {
-            name: 'Pooja V',
-            email: 'pooja@forgeindiaconnect.app',
-            contact: '9876543210'
-          },
-          theme: {
-            color: '#7c3aed'
-          }
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', function () {
-          completeInstantTestPayment(orderInfo.paymentId);
-        });
-        rzp.open();
-      } else {
+      // 2. Simulate Secure Payment Processing
+      setTimeout(() => {
         completeInstantTestPayment(orderInfo.paymentId);
-      }
+      }, 1500);
 
     } catch (err) {
       console.error('Payment Error:', err);
