@@ -4,6 +4,9 @@
  * Logo uses data URI so it renders perfectly in both browser and PDF export.
  */
 
+import React, { useState } from 'react';
+import { Trash2, Crown } from 'lucide-react';
+
 // Forge India Connect logo as a URL-encoded SVG data URI
 // (Same exact paths as ForgeLogo.jsx — blue F-bracket + yellow bar + yellow pyramid)
 const FORGE_LOGO_DATA_URI =
@@ -18,70 +21,125 @@ const FORGE_LOGO_DATA_URI =
   );
 
 const ResumeFooter = () => {
+  const handleRemoveClick = () => {
+    window.open('/plans', '_blank');
+  };
+
   return (
-    <div
-      contentEditable={false}
-      style={{
-        marginTop: '1.5rem',
-        paddingTop: '0.75rem',
-        borderTop: '1px solid #e2e8f0',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        boxSizing: 'border-box',
-        pointerEvents: 'none',
-        userSelect: 'none',
-        WebkitUserSelect: 'none',
-        MozUserSelect: 'none',
-        msUserSelect: 'none',
-        cursor: 'default'
-      }}
-    >
-      {/* Left: Website URL — constant, always visible */}
-      <span style={{
-        fontSize: '0.68rem',
-        color: '#94a3b8',
-        fontWeight: 500,
-        letterSpacing: '0.02em',
-        fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
-      }}>
-        www.forgeindiaconnect.com
-      </span>
-
-      {/* Right: Powered by + Real Logo + Brand Name */}
-      <span style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.45rem',
-        fontSize: '0.68rem',
-        color: '#94a3b8',
-        fontWeight: 500,
-        fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
-      }}>
-        Powered by
-
-        {/* Real Forge India Connect logo — data URI renders in both browser and PDF */}
-        <img
-          src={FORGE_LOGO_DATA_URI}
-          alt="Forge India Connect"
-          width="18"
-          height="18"
-          style={{
-            display: 'inline-block',
-            verticalAlign: 'middle',
-            flexShrink: 0
-          }}
-        />
-
-        {/* Brand text: FORGE INDIA Connect */}
-        <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '0.15rem', fontWeight: 800, letterSpacing: '0.01em' }}>
-          <span style={{ color: '#0056b8', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>FORGE</span>
-          <span style={{ color: '#f59e0b', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>INDIA</span>
-          <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.68rem' }}>Connect</span>
+    <>
+      <style>{`
+        .resume-footer-container .remove-branding-btn {
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(10px);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .resume-footer-container:hover .remove-branding-btn {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+      `}</style>
+      <div
+        className="resume-footer-container"
+        onClick={handleRemoveClick}
+        contentEditable={false}
+        style={{
+          marginTop: '1.5rem',
+          paddingTop: '0.75rem',
+          borderTop: '1px solid #e2e8f0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          boxSizing: 'border-box',
+          position: 'relative',
+          cursor: 'pointer',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          MozUserSelect: 'none',
+          msUserSelect: 'none'
+        }}
+      >
+        {/* Left: Website URL — constant, always visible */}
+        <span style={{
+          fontSize: '0.68rem',
+          color: '#94a3b8',
+          fontWeight: 500,
+          letterSpacing: '0.02em',
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
+        }}>
+          www.forgeindiaconnect.com
         </span>
-      </span>
-    </div>
+
+        {/* Right: Powered by + Real Logo + Brand Name */}
+        <span style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.45rem',
+          fontSize: '0.68rem',
+          color: '#94a3b8',
+          fontWeight: 500,
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
+        }}>
+          Powered by
+
+          {/* Real Forge India Connect logo — data URI renders in both browser and PDF */}
+          <img
+            src={FORGE_LOGO_DATA_URI}
+            alt="Forge India Connect"
+            width="18"
+            height="18"
+            style={{
+              display: 'inline-block',
+              verticalAlign: 'middle',
+              flexShrink: 0
+            }}
+          />
+
+          {/* Brand text: FORGE INDIA Connect */}
+          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '0.15rem', fontWeight: 800, letterSpacing: '0.01em' }}>
+            <span style={{ color: '#0056b8', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>FORGE</span>
+            <span style={{ color: '#f59e0b', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>INDIA</span>
+            <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.68rem' }}>Connect</span>
+          </span>
+        </span>
+
+        {/* Remove Branding Hover Button (Pure CSS) */}
+        <div 
+          className="remove-branding-btn"
+          style={{ 
+            position: 'absolute', 
+            right: 0, 
+            top: '-32px', // perfectly positioned above text
+            zIndex: 100 
+          }}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); handleRemoveClick(); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '20px',
+              padding: '0.4rem 1rem',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              boxShadow: '0 8px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -2px rgba(16, 185, 129, 0.15)'
+            }}
+          >
+            <Trash2 size={14} />
+            Remove branding
+            <Crown size={14} color="#f59e0b" fill="#f59e0b" />
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 

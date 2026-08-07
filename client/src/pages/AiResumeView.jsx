@@ -26,17 +26,28 @@ const AiResumeView = () => {
   const [activeLayout, setActiveLayout] = useState('modern');
   const [saveNote, setSaveNote] = useState('Click any text to edit directly on paper ✏️');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentReason, setPaymentReason] = useState('download');
 
   const handleDownloadPdf = async () => {
     const isPremium = localStorage.getItem('user_premium') === 'true';
     if (!isPremium) {
       setShowPaymentModal(true);
+      return;
     } else {
       const sheet = printRef.current || document.getElementById('resume-preview-sheet');
       const filename = generateProfessionalFilename(sessionData?.personalInfo?.name, `${activeLayout}_Resume`);
       await exportResumeToPdf(sheet, filename, true);
     }
   };
+
+  useEffect(() => {
+    const handleOpenPayment = (e) => {
+      setPaymentReason(e.detail?.reason || 'download');
+      setShowPaymentModal(true);
+    };
+    window.addEventListener('open-payment-modal', handleOpenPayment);
+    return () => window.removeEventListener('open-payment-modal', handleOpenPayment);
+  }, []);
 
   useEffect(() => {
     const data = loadSession(sessionId);
@@ -284,6 +295,7 @@ const AiResumeView = () => {
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
+        reason={paymentReason}
         onSuccessDownload={() => {
           localStorage.setItem('user_premium', 'true');
           const sheet = printRef.current || document.getElementById('resume-preview-sheet');

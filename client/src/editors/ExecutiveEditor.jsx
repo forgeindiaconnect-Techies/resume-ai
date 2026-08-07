@@ -5,6 +5,7 @@ import {
   Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
+import SignatureModal from '../components/common/SignatureModal';
 
 const buildFromSession = (session) => ({
   title: session.title || 'Executive Resume',
@@ -39,6 +40,7 @@ const buildFromSession = (session) => ({
   certifications: (session.certificates || []).map(c => c.name || c.title || '').filter(Boolean),
   achievements: (session.achievements || []).map((a, i) => ({ id: i + 1, title: a.title || '', desc: a.desc || a.description || '' })),
   languagesList: (session.languagesList || []).map((l, i) => ({ id: i + 1, name: l.name || '', level: l.level || '' })),
+  signature: session.signature || { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
   references: 'Available upon request.',
 });
 
@@ -62,6 +64,9 @@ const defaultData = () => ({
     { id: 1, degree: 'MBA – Business Administration', institution: 'Harvard Business School', tenure: '2004 – 2006' }
   ],
   certifications: ['PMP – Project Management Professional', 'Six Sigma Black Belt'],
+  achievements: [],
+  languagesList: [],
+  signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
   references: 'Available upon request from senior board-level contacts.',
 });
 
@@ -70,6 +75,7 @@ const ExecutiveEditor = () => {
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
   const [accentColor, setAccentColor] = useState('#0f172a');
   const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [sections, setSections] = useState([
     { id: 'summary', title: 'Executive Summary', enabled: true },
     { id: 'experience', title: 'Work Experience', enabled: true },
@@ -118,6 +124,7 @@ const ExecutiveEditor = () => {
     training: data.certifications.map(c => ({ title: c })).filter(c => c.title),
     languagesList: data.languagesList || [],
     achievements: data.achievements || [],
+    signature: data.signature,
     references: data.references,
   };
 
@@ -224,11 +231,23 @@ const ExecutiveEditor = () => {
       </div>
       <AddButton label="+ Add Language" onClick={() => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }))} accent={accentColor} />
 
+      <div style={{ height: '1rem' }} />
+      <SectionHeader icon="✍️" title="Signature" accent={accentColor} />
+      <AddButton label="Add Signature" onClick={() => setIsSignatureModalOpen(true)} accent={accentColor} />
+      
       <SectionHeader icon="📋" title="References" accent={accentColor} />
       <TextArea label="References Note" value={data.references} rows={2}
         onChange={e => setData(d => ({ ...d, references: e.target.value }))} accent={accentColor} />
 
       <div style={{ height: '2rem' }} />
+
+      <SignatureModal 
+        isOpen={isSignatureModalOpen} 
+        onClose={() => setIsSignatureModalOpen(false)} 
+        signature={data.signature} 
+        onSave={(sig) => setData(d => ({ ...d, signature: sig }))} 
+        accentColor={accentColor} 
+      />
     </EditorShell>
   );
 };

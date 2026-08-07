@@ -337,8 +337,8 @@ const LandingPage = () => {
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 30px rgba(2,132,199,0.45)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(2,132,199,0.35)'; }}
             >
-              <span>Create Resume</span>
-              <ArrowRight size={18} />
+              <span style={{ lineHeight: 1, marginTop: '2px' }}>Create Resume</span>
+              <ArrowRight size={18} style={{ marginTop: '1px' }} />
             </button>
 
             <button 
@@ -388,8 +388,8 @@ const LandingPage = () => {
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#0284c7'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
             >
-              <span>Resume Examples</span>
-              <ArrowRight size={18} />
+              <span style={{ lineHeight: 1, marginTop: '2px' }}>Resume Examples</span>
+              <ArrowRight size={18} style={{ marginTop: '1px' }} />
             </button>
           </div>
 
@@ -795,7 +795,7 @@ const LandingPage = () => {
               onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
             >
-              Create My Career 360° <ArrowRight size={20} />
+              <span style={{ lineHeight: 1, marginTop: '2px' }}>Create My Career 360°</span> <ArrowRight size={20} style={{ marginTop: '1px' }} />
             </button>
             <p style={{ marginTop: '2rem', color: '#94a3b8', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>
               Join thousands of professionals today · No credit card required

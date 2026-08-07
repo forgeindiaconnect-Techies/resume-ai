@@ -72,9 +72,52 @@ const ResumeExample = () => {
 
   const handleUseTemplate = () => {
     if (example) {
-      localStorage.setItem('selectedTemplateId', example.template || 'Modern');
-      localStorage.setItem('prefilledJobTitle', example.jobTitle);
-      localStorage.setItem('prefilledResumeJson', JSON.stringify(example.resumeJson));
+      const templateSlug = (example.template || 'Modern').toLowerCase().replace(/\s+/g, '-');
+      
+      const draftObj = {
+        title: `${example.jobTitle} Resume`,
+        templateId: templateSlug,
+        department: example.jobTitle,
+        personalInfo: {
+          name: example.resumeJson?.name || '',
+          email: example.resumeJson?.contact?.email || '',
+          phone: example.resumeJson?.contact?.phone || '',
+          location: example.resumeJson?.contact?.location || '',
+          linkedin: example.resumeJson?.contact?.linkedin || '',
+          github: example.resumeJson?.contact?.github || '',
+          summary: example.resumeJson?.objective || ''
+        },
+        experience: (example.resumeJson?.experience || []).map(e => ({
+          role: e.title || '',
+          company: e.company || '',
+          duration: e.duration || '',
+          desc: e.desc || ''
+        })),
+        education: (example.resumeJson?.education || []).map(e => ({
+          degree: e.degree || '',
+          institution: e.institution || '',
+          tenure: e.tenure || '',
+          cgpa: e.cgpa || ''
+        })),
+        skills: {
+          programming: example.resumeJson?.skills?.languages ? example.resumeJson.skills.languages.split(',').map(s=>s.trim()) : [],
+          frameworks: example.resumeJson?.skills?.frameworks ? example.resumeJson.skills.frameworks.split(',').map(s=>s.trim()) : [],
+          databases: example.resumeJson?.skills?.tools ? example.resumeJson.skills.tools.split(',').map(s=>s.trim()) : []
+        },
+        projects: (example.resumeJson?.projects || []).map(p => ({
+          name: p.title || '',
+          technology: p.technology || '',
+          desc: p.desc || ''
+        })),
+        certificates: (example.resumeJson?.training || []).map(t => ({
+          name: t, organization: '', year: ''
+        }))
+      };
+
+      localStorage.setItem('localResumeDraft', JSON.stringify(draftObj));
+      localStorage.setItem('selectedTemplateSlug', templateSlug);
+      localStorage.setItem('selectedJobRole', example.jobTitle);
+      localStorage.removeItem('activeResumeSessionId'); 
       navigate('/builder');
     }
   };

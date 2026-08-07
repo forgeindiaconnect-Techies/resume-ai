@@ -5,6 +5,7 @@ import {
   Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
+import SignatureModal from '../components/common/SignatureModal';
 
 const buildFromSession = (session) => ({
   title: session.title || 'Project Manager Resume',
@@ -57,16 +58,9 @@ const buildFromSession = (session) => ({
     organization: c.organization || c.org || '',
     year: c.year || '',
   })),
-  achievements: (session.achievements || []).map((a, i) => ({
-    id: i + 1,
-    title: a.title || '',
-    desc: a.desc || a.description || '',
-  })),
-  languagesList: (session.languagesList || []).map((l, i) => ({
-    id: i + 1,
-    name: l.name || '',
-    level: l.level || '',
-  })),
+  achievements: (session.achievements || []).map((a, i) => ({ id: i + 1, title: a.title || '', desc: a.desc || a.description || '' })),
+  languagesList: (session.languagesList || []).map((l, i) => ({ id: i + 1, name: l.name || '', level: l.level || '' })),
+  signature: session.signature || { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
 });
 
 const defaultData = () => ({
@@ -99,13 +93,15 @@ const defaultData = () => ({
   certificates: [],
   achievements: [],
   languagesList: [],
+  signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
 });
 
 const EnhancvEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
-  const [accentColor, setAccentColor] = useState('#0284c7');
-  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [accentColor, setAccentColor] = useState('#2a85ff');
+  const [fontFamily, setFontFamily] = useState("'Rubik', sans-serif");
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [sections, setSections] = useState([
     { id: 'summary', title: 'Summary', enabled: true },
     { id: 'experience', title: 'Experience', enabled: true },
@@ -177,6 +173,7 @@ const EnhancvEditor = () => {
     training: (data.certificates || []).map(c => ({ title: c.name, org: c.organization, year: c.year })),
     languagesList: data.languagesList || [],
     achievements: data.achievements || [],
+    signature: data.signature,
   };
 
   return (
@@ -301,9 +298,21 @@ const EnhancvEditor = () => {
           </ItemCard>
         ))}
       </div>
-      <AddButton label="+ Add Language" onClick={addLangItem} accent={accentColor} />
+      <AddButton label="Add Language" onClick={addLangItem} accent={accentColor} />
 
+      <div style={{ height: '1rem' }} />
+      <SectionHeader icon="✍️" title="Signature" accent={accentColor} />
+      <AddButton label="Add Signature" onClick={() => setIsSignatureModalOpen(true)} accent={accentColor} />
+      
       <div style={{ height: '2rem' }} />
+
+      <SignatureModal 
+        isOpen={isSignatureModalOpen} 
+        onClose={() => setIsSignatureModalOpen(false)} 
+        signature={data.signature} 
+        onSave={(sig) => setData(d => ({ ...d, signature: sig }))} 
+        accentColor={accentColor} 
+      />
     </EditorShell>
   );
 };

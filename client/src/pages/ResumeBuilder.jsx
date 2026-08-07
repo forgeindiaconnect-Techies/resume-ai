@@ -25,6 +25,7 @@ import SkillsForm from '../components/resume/SkillsForm';
 import CertificatesForm from '../components/resume/CertificatesForm';
 import LanguagesForm from '../components/resume/LanguagesForm';
 import AchievementsForm from '../components/resume/AchievementsForm';
+import SignatureForm from '../components/resume/SignatureForm';
 import AIAssistant from '../components/resume/AIAssistant';
 import ResumeToolbar from '../components/resume/ResumeToolbar';
 import DragDropSections from '../components/DragDropSections';
@@ -33,6 +34,7 @@ import { generateResumeAI } from '../services/aiService';
 
 import PaymentModal from '../components/common/PaymentModal';
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
+import PhotoEditorModal from '../components/common/PhotoEditorModal';
 import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
 
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
@@ -43,8 +45,10 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [resumeSessionId, setResumeSessionId] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentReason, setPaymentReason] = useState('download'); // Default
   const [showFullPreviewModal, setShowFullPreviewModal] = useState(false);
   const [showDownloadWorkflowModal, setShowDownloadWorkflowModal] = useState(false);
+  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   
   // AI Assistant States
   const [showAiAssistantModal, setShowAiAssistantModal] = useState(false);
@@ -148,6 +152,15 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     }
   };
 
+  useEffect(() => {
+    const handleOpenPayment = (e) => {
+      setPaymentReason(e.detail?.reason || 'download');
+      setShowPaymentModal(true);
+    };
+    window.addEventListener('open-payment-modal', handleOpenPayment);
+    return () => window.removeEventListener('open-payment-modal', handleOpenPayment);
+  }, []);
+
   // Preview Config States
   const [zoomLevel, setZoomLevel] = useState(0.6);
   const [selectedColor, setSelectedColor] = useState('#7c3aed'); // Purple
@@ -199,7 +212,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       linkedin: 'linkedin.com/in/username',
       github: 'github.com/username',
       portfolio: 'portfolio.dev',
-      summary: 'Experienced software developer specialized in building modern web applications.'
+      summary: 'Experienced software developer specialized in building modern web applications.',
+      profilePhoto: ''
     },
     experience: [],
     education: [],
@@ -212,11 +226,12 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     certificates: [],
     languagesList: [],
     achievements: [],
-    references: 'Available upon request'
+    references: 'Available upon request',
+    signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' }
   });
 
   // Enable dynamic sections list (populated from database categorization)
-  const [enabledSections, setEnabledSections] = useState(['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Preview']);
+  const [enabledSections, setEnabledSections] = useState(['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Signature', 'Preview']);
 
   // Initialize Session & Dynamic Categorization
   useEffect(() => {
@@ -817,17 +832,19 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   }));
 
   const templatePreviewData = {
-    name: formData.personalInfo.name || 'Your Name',
-    role: formData.personalInfo.role || formData.department || '',
+    name: formData.personalInfo?.name || 'Your Name',
+    role: formData.personalInfo?.role || formData.department || '',
+    profilePhoto: formData.personalInfo?.profilePhoto || '',
+    photoData: formData.personalInfo?.profilePhoto || null,
     contact: {
-      email: formData.personalInfo.email || '',
-      phone: formData.personalInfo.phone || '',
-      location: formData.personalInfo.location || '',
-      linkedin: formData.personalInfo.linkedin || '',
-      github: formData.personalInfo.github || '',
-      portfolio: formData.personalInfo.portfolio || ''
+      email: formData.personalInfo?.email || '',
+      phone: formData.personalInfo?.phone || '',
+      location: formData.personalInfo?.location || '',
+      linkedin: formData.personalInfo?.linkedin || '',
+      github: formData.personalInfo?.github || '',
+      portfolio: formData.personalInfo?.portfolio || ''
     },
-    objective: formData.personalInfo.summary || '',
+    objective: formData.personalInfo?.summary || '',
     education: formData.education.map(e => ({
       degree: e.degree || 'Degree',
       institution: e.school || 'School',
@@ -855,7 +872,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     })),
     training: formData.certificates.map(c => c.name).filter(Boolean),
     languagesList: formData.languagesList || [],
-    references: formData.references || ''
+    references: formData.references || '',
+    signature: formData.signature
   };
 
   const renderLayout = () => {
@@ -908,7 +926,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         padding: '0.85rem 2.5rem', 
         background: 'white', 
         borderBottom: '1px solid #e2e8f0',
-        zIndex: 50
+        zIndex: 50,
+        flex: '0 0 auto'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           <ForgeLogo size={32} />
@@ -1002,7 +1021,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         display: 'flex', 
         justifyContent: 'center', 
         gap: '0.85rem', 
-        flexShrink: 0 
+        flex: '0 0 auto',
+        zIndex: 40
       }}>
         {steps.map((step) => {
           const isActive = activeStep === step.num;
@@ -1045,20 +1065,23 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       </div>
 
       {/* Three Column Grid Workspace */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: '1 1 auto', overflow: 'hidden', minHeight: 0, boxSizing: 'border-box', paddingTop: '10px' }}>
         
         {/* Left Column (Fixed 240px width): Metrics Sidebar */}
         <div className="no-print" style={{ 
           width: '240px',
           minWidth: '240px',
           maxWidth: '240px',
+          height: '100%',
+          minHeight: 0,
           background: 'white', 
           borderRight: '1px solid #e2e8f0', 
           display: 'flex', 
           flexDirection: 'column',
           padding: '1.25rem 1rem',
           gap: '1.5rem',
-          overflowY: 'auto'
+          overflowY: 'auto',
+          boxSizing: 'border-box'
         }}>
 
 
@@ -1263,12 +1286,14 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           flex: '0 0 440px',
           width: '440px', 
           maxWidth: '460px',
+          height: '100%',
+          minHeight: 0,
           background: 'white', 
           borderRight: '1px solid #e2e8f0', 
           display: 'flex', 
           flexDirection: 'column',
-          height: '100%',
-          position: 'relative'
+          position: 'relative',
+          boxSizing: 'border-box'
         }}>
           
           <div style={{ flex: 1, padding: '1.25rem 1.5rem', overflowY: 'auto' }}>
@@ -1284,6 +1309,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                   <PersonalForm 
                     personalInfo={formData.personalInfo} 
                     onChange={handlePersonalChange} 
+                    onOpenPhotoEditor={() => setShowPhotoEditor(true)}
                   />
                 )}
 
@@ -1357,6 +1383,13 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                     onDeleteAchievement={handleDeleteAchievement} 
                     references={formData.references}
                     onChangeReferences={(val) => setFormData({ ...formData, references: val })}
+                  />
+                )}
+
+                {currentLabel === 'Signature' && (
+                  <SignatureForm 
+                    signatureData={formData.signature} 
+                    onChange={(sig) => setFormData({ ...formData, signature: sig })} 
                   />
                 )}
 
@@ -1473,12 +1506,14 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         {/* Right Column (Flex Fill): Live Preview */}
         <div style={{ 
           flex: 1, 
+          height: '100%',
+          minHeight: 0,
           background: '#f1f5f9', 
           display: 'flex', 
           flexDirection: 'column', 
-          height: '100%', 
           overflow: 'hidden', 
-          position: 'relative' 
+          position: 'relative',
+          boxSizing: 'border-box'
         }}>
           
           {/* Preset controls */}
@@ -1870,10 +1905,29 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        onSuccessDownload={() => {
-          localStorage.setItem('user_premium', 'true');
+        planType="PREMIUM"
+        reason={paymentReason}
+        onSuccess={() => {
           setShowDownloadWorkflowModal(true);
         }}
+      />
+
+      {/* Profile Photo Editor Modal */}
+      <PhotoEditorModal
+        isOpen={showPhotoEditor}
+        onClose={() => setShowPhotoEditor(false)}
+        photoData={formData.personalInfo?.profilePhoto}
+        onSave={(photoData) => {
+          setFormData({
+            ...formData,
+            personalInfo: {
+              ...formData.personalInfo,
+              profilePhoto: photoData
+            }
+          });
+          setShowPhotoEditor(false);
+        }}
+        themeColor={theme.primaryColor}
       />
     </div>
   );

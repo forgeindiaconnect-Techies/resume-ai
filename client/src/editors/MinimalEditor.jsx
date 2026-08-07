@@ -5,6 +5,7 @@ import {
   Field, TextArea, SectionHeader, AddButton, ItemCard, Grid2,
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
+import SignatureModal from '../components/common/SignatureModal';
 
 const defaultData = () => ({
   title: 'Minimal Resume',
@@ -27,6 +28,7 @@ const defaultData = () => ({
   achievements: [],
   certificates: [],
   languagesList: [],
+  signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
 });
 
 const MinimalEditor = () => {
@@ -34,6 +36,7 @@ const MinimalEditor = () => {
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
   const [accentColor, setAccentColor] = useState('#374151');
   const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [sections, setSections] = useState([
     { id: 'summary', title: 'Summary', enabled: true },
     { id: 'experience', title: 'Experience', enabled: true },
@@ -77,6 +80,7 @@ const MinimalEditor = () => {
         achievements: (session.achievements || []).map((a, i) => ({ id: i + 1, title: a.title || '', desc: a.desc || '' })),
         certificates: (session.certificates || []).map((c, i) => ({ id: i + 1, name: c.name || c.title || '', organization: c.organization || c.org || '', year: c.year || '' })),
         languagesList: (session.languagesList || []).map((l, i) => ({ id: i + 1, name: l.name || '', level: l.level || '' })),
+        signature: session.signature || { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
       };
     }
     return defaultData();
@@ -110,6 +114,7 @@ const MinimalEditor = () => {
     training: (data.certificates || []).map(c => ({ title: c.name, org: c.organization, year: c.year })),
     languagesList: data.languagesList || [],
     achievements: data.achievements || [],
+    signature: data.signature,
   };
 
   return (
@@ -215,7 +220,19 @@ const MinimalEditor = () => {
       </div>
       <AddButton label="+ Add Language" onClick={() => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }))} accent={accentColor} />
 
+      <div style={{ height: '1rem' }} />
+      <SectionHeader icon="✍️" title="Signature" accent={accentColor} />
+      <AddButton label="Add Signature" onClick={() => setIsSignatureModalOpen(true)} accent={accentColor} />
+
       <div style={{ height: '2rem' }} />
+
+      <SignatureModal 
+        isOpen={isSignatureModalOpen} 
+        onClose={() => setIsSignatureModalOpen(false)} 
+        signature={data.signature} 
+        onSave={(sig) => setData(d => ({ ...d, signature: sig }))} 
+        accentColor={accentColor} 
+      />
     </EditorShell>
   );
 };

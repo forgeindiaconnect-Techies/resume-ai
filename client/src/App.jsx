@@ -11,6 +11,7 @@ import Templates from './pages/Templates';
 import TemplatePreview from './pages/TemplatePreview';
 import AdminTemplates from './pages/AdminTemplates';
 import AdminResumeExamples from './pages/AdminResumeExamples';
+import Plans from './pages/Plans';
 import { Toaster } from 'react-hot-toast';
 
 // Dynamic Template Editors (lazy-loaded for performance)
@@ -49,6 +50,7 @@ function App() {
         <Route path="/preview/:id" element={<TemplatePreview />} />
         <Route path="/admin/templates" element={<AdminTemplates />} />
         <Route path="/admin/examples" element={<AdminResumeExamples />} />
+        <Route path="/plans" element={<Plans />} />
 
         {/* ── Dynamic Template-Specific Editors ── */}
         <Route path="/editor/executive/:sessionId" element={<Suspense fallback={<EditorLoader />}><ExecutiveEditor /></Suspense>} />

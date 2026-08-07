@@ -1,5 +1,6 @@
 import React from 'react';
 import ResumeFooter from './ResumeFooter';
+import SignatureBlock from '../common/SignatureBlock';
 
 /**
  * ModernLayout - Exact Replica of Enhancv Business Analyst & Data Scientist Template
@@ -38,7 +39,33 @@ const ModernLayout = ({
   const isSingleColumn = layoutMode === 'single';
 
   const { name = 'Violet Rodriguez', role = 'Business Analyst | Data Insights & Visualization', contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data;
-  const userPhoto = profilePhoto || data.profilePhoto;
+  
+  // Handle complex photo object or legacy string
+  const photoObj = profilePhoto || data.photoData || (typeof data.profilePhoto === 'object' ? data.profilePhoto : null);
+  const photoUrl = photoObj?.url || (typeof data.profilePhoto === 'string' ? data.profilePhoto : null);
+
+  const getBorderRadius = () => {
+    if (!photoObj) return '50%';
+    if (photoObj.shape === 'circle') return '50%';
+    if (photoObj.shape === 'rounded') return '16px';
+    return '0px';
+  };
+
+  const getBorderValue = () => {
+    if (!photoObj) return '3px solid rgba(255,255,255,0.2)';
+    if (photoObj.border === 'white') return '3px solid #ffffff';
+    if (photoObj.border === 'black') return '3px solid #0f172a';
+    if (photoObj.border === 'theme') return `3px solid ${sidebarBg}`;
+    return 'none';
+  };
+
+  const getShadowValue = () => {
+    if (photoObj?.shadow) return '0 10px 25px -5px rgba(0, 0, 0, 0.4)';
+    return 'none';
+  };
+
+  const photoSize = photoObj?.size ? `${photoObj.size}px` : '80px';
+  const pos = photoObj?.position || profilePosition;
 
   const formatName = (str) => {
     if (!str) return 'Violet Rodriguez';
@@ -81,9 +108,9 @@ const ModernLayout = ({
       display: 'flex',
       flexDirection: 'column',
       minHeight: '297mm',
-      width: '210mm',
-      fontFamily: "'Source Sans 3', sans-serif",
-      background: 'white',
+      width: '100%',
+      fontFamily: fontFamily,
+      background: '#f8fafc',
       color: '#374151',
       boxSizing: 'border-box',
       lineHeight: lineH,
@@ -98,21 +125,43 @@ const ModernLayout = ({
         padding: '2.25rem 2rem 1.75rem',
         boxSizing: 'border-box',
         borderBottom: '3px solid rgba(255, 255, 255, 0.1)',
-        textAlign: profilePosition
+        textAlign: pos
       }}>
-        {/* Name Header in Uppercase Rubik Font */}
-        <h1 style={{
-          fontSize: `${1.95 * fScale}rem`,
-          fontWeight: 700,
-          fontFamily: "'Rubik', sans-serif",
-          color: '#ffffff',
-          margin: '0 0 0.35rem',
-          lineHeight: lineH,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase'
+        {/* Name Header with Optional Profile Photo */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '1.5rem', 
+          marginBottom: '0.35rem', 
+          justifyContent: pos === 'center' ? 'center' : pos === 'right' ? 'flex-end' : 'flex-start' 
         }}>
-          {formattedName}
-        </h1>
+          {photoUrl && (
+            <img 
+              src={photoUrl} 
+              alt="Profile" 
+              style={{ 
+                width: photoSize, 
+                height: photoSize, 
+                borderRadius: getBorderRadius(), 
+                objectFit: 'cover', 
+                border: getBorderValue(),
+                boxShadow: getShadowValue()
+              }} 
+            />
+          )}
+          <h1 style={{
+            fontSize: headingSize ? `${headingSize}px` : `${1.95 * fScale}rem`,
+            fontWeight: 700,
+            
+            color: '#ffffff',
+            margin: 0,
+            lineHeight: lineH,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>
+            {formattedName}
+          </h1>
+        </div>
 
         {/* Role Subtitle in Light Blue Accent */}
         <div style={{
@@ -120,7 +169,7 @@ const ModernLayout = ({
           fontWeight: 600,
           color: '#93c5fd',
           marginBottom: '0.85rem',
-          fontFamily: "'Rubik', sans-serif",
+          
           letterSpacing: '0.02em'
         }}>
           {role}
@@ -201,7 +250,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -229,7 +278,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -263,7 +312,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -284,7 +333,7 @@ const ModernLayout = ({
                           <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
                             <span style={{ fontSize: `${0.82 * fScale}rem`, color: '#93c5fd', marginTop: '1px' }}>{icons[idx % 3]}</span>
                             <div>
-                              <div style={{ fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#ffffff', lineHeight: lineH, marginBottom: '0.15rem' }}>
+                              <div style={{ fontWeight: 700,  color: '#ffffff', lineHeight: lineH, marginBottom: '0.15rem' }}>
                                 {ach.title}
                               </div>
                               <div style={{ color: '#cbd5e1', fontSize: `${0.7 * fScale}rem`, lineHeight: lineH }}>
@@ -304,7 +353,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -317,7 +366,7 @@ const ModernLayout = ({
                     <div style={{ fontSize: `${0.72 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                       {interestsList.map((item, idx) => (
                         <div key={idx}>
-                          <div style={{ fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#ffffff', marginBottom: '0.1rem' }}>
+                          <div style={{ fontWeight: 700,  color: '#ffffff', marginBottom: '0.1rem' }}>
                             {typeof item === 'object' ? item.title : item}
                           </div>
                           {typeof item === 'object' && item.desc && (
@@ -339,7 +388,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -362,7 +411,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -391,7 +440,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -444,7 +493,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.84 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       color: '#111827',
@@ -468,7 +517,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.84 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       color: '#111827',
@@ -485,7 +534,7 @@ const ModernLayout = ({
                       {experience.map((exp, idx) => (
                         <div key={idx}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                            <h4 style={{ margin: 0, fontSize: `${0.88 * fScale}rem`, fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827' }}>
+                            <h4 style={{ margin: 0, fontSize: `${0.88 * fScale}rem`, fontWeight: 700,  color: '#111827' }}>
                               {exp.title || exp.role}
                             </h4>
                             <span style={{ fontSize: `${0.76 * fScale}rem`, fontWeight: 500, color: '#64748b' }}>
@@ -522,7 +571,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.84 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       color: '#111827',
@@ -538,7 +587,7 @@ const ModernLayout = ({
                       {education.map((edu, idx) => (
                         <div key={idx}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                            <span style={{ fontSize: `${0.86 * fScale}rem`, fontWeight: 700, fontFamily: "'Rubik', sans-serif", color: '#111827' }}>
+                            <span style={{ fontSize: `${0.86 * fScale}rem`, fontWeight: 700,  color: '#111827' }}>
                               {edu.degree}
                             </span>
                             <span style={{ fontSize: `${0.76 * fScale}rem`, fontWeight: 500, color: '#64748b' }}>
@@ -560,7 +609,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.84 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       color: '#111827',
@@ -590,7 +639,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.84 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       color: '#111827',
@@ -626,7 +675,7 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.84 * fScale}rem`,
                       fontWeight: 700,
-                      fontFamily: "'Rubik', sans-serif",
+                      
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       color: '#111827',
@@ -648,8 +697,12 @@ const ModernLayout = ({
         </div>
       </div>
 
+      <div style={{ padding: '0 2rem' }}>
+        <SignatureBlock signature={data.signature} />
+      </div>
+
       {/* FULL-WIDTH FOOTER WATERMARK ACROSS ENTIRE BOTTOM */}
-      <div style={{ padding: '0 2rem 1.25rem', background: 'white' }}>
+      <div style={{ padding: '0 2rem 1.25rem', background: 'white', marginTop: 'auto' }}>
         <ResumeFooter />
       </div>
     </div>

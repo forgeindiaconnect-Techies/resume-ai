@@ -3,6 +3,7 @@ import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw, Spa
 import { useNavigate } from 'react-router-dom';
 import PaymentModal from '../components/common/PaymentModal';
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
+import PhotoEditorModal from '../components/common/PhotoEditorModal';
 import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
 
 import ModernLayout from '../components/layouts/ModernLayout';
@@ -30,7 +31,13 @@ export const PRESET_FONTS = [
   { id: 'roboto', name: 'Roboto (Standard)', value: "'Roboto', sans-serif" },
   { id: 'lato', name: 'Lato (Clean)', value: "'Lato', sans-serif" },
   { id: 'open-sans', name: 'Open Sans (Neutral)', value: "'Open Sans', sans-serif" },
-  { id: 'playfair', name: 'Playfair (Serif)', value: "'Playfair Display', serif" }
+  { id: 'playfair', name: 'Playfair (Serif)', value: "'Playfair Display', serif" },
+  { id: 'merriweather', name: 'Merriweather (Serif)', value: "'Merriweather', serif" },
+  { id: 'lora', name: 'Lora (Elegant Serif)', value: "'Lora', serif" },
+  { id: 'montserrat', name: 'Montserrat (Bold)', value: "'Montserrat', sans-serif" },
+  { id: 'nunito', name: 'Nunito (Rounded)', value: "'Nunito', sans-serif" },
+  { id: 'raleway', name: 'Raleway (Elegant Sans)', value: "'Raleway', sans-serif" },
+  { id: 'ubuntu', name: 'Ubuntu (Tech)', value: "'Ubuntu', sans-serif" }
 ];
 
 // ─── Input Field ──────────────────────────────────────────────────────────
@@ -133,14 +140,17 @@ export const FormAccordionSection = ({ icon, title, accent = '#0284c7', children
 };
 
 // ─── Add Button ───────────────────────────────────────────────────────────
-export const AddButton = ({ label, onClick, accent }) => (
-  <button onClick={onClick}
-    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%', padding: '0.6rem', borderRadius: '8px', border: `1.5px dashed ${accent}50`, background: `${accent}06`, color: accent, fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', justifyContent: 'center', transition: 'all 0.15s' }}
-    onMouseEnter={e => { e.currentTarget.style.background = `${accent}12`; e.currentTarget.style.borderColor = accent; }}
-    onMouseLeave={e => { e.currentTarget.style.background = `${accent}06`; e.currentTarget.style.borderColor = `${accent}50`; }}>
-    <Plus size={13} /> {label}
-  </button>
-);
+export const AddButton = ({ label, onClick, accent }) => {
+  const cleanLabel = label.replace(/^\+\s*/, '');
+  return (
+    <button onClick={onClick}
+      style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%', padding: '0.6rem', borderRadius: '8px', border: `1.5px dashed ${accent}50`, background: `${accent}06`, color: accent, fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', justifyContent: 'center', transition: 'all 0.15s' }}
+      onMouseEnter={e => { e.currentTarget.style.background = `${accent}12`; e.currentTarget.style.borderColor = accent; }}
+      onMouseLeave={e => { e.currentTarget.style.background = `${accent}06`; e.currentTarget.style.borderColor = `${accent}50`; }}>
+      <Plus size={13} /> {cleanLabel}
+    </button>
+  );
+};
 
 // ─── Delete Button ────────────────────────────────────────────────────────
 export const DeleteBtn = ({ onClick }) => (
@@ -229,6 +239,7 @@ export const EditorShell = ({
   const [layoutMode, setLayoutMode] = useState('left-sidebar'); // 'left-sidebar' | 'right-sidebar' | 'single' | 'two-column'
   const [spacingDensity, setSpacingDensity] = useState('normal'); // 'compact' | 'normal' | 'comfortable'
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(0.82); // 0.50, 0.75, 0.82, 1.00, 1.25, 1.50
 
   const TEMPLATES = [
@@ -268,17 +279,6 @@ export const EditorShell = ({
     if (onFontChange) onFontChange(font);
   };
 
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePhoto(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   // Determine current active preview layout component
   const currentTplObj = TEMPLATES.find(t => t.id === activeTemplate) || TEMPLATES[0];
   const ActiveLayoutComponent = currentTplObj.component;
@@ -286,7 +286,7 @@ export const EditorShell = ({
   // Build cloned layout preview
   const renderedPreview = preview && preview.props && preview.props.data ? (
     <ActiveLayoutComponent 
-      data={preview.props.data} 
+      data={{ ...preview.props.data, profilePhoto: profilePhoto }} 
       role={preview.props.role}
       sections={preview.props.sections}
       customColor={primaryColor}
@@ -296,7 +296,6 @@ export const EditorShell = ({
       fontSize={bodySize}
       spacing={spacingDensity}
       layoutMode={layoutMode}
-      profilePhoto={profilePhoto}
     />
   ) : preview;
 
@@ -613,28 +612,37 @@ export const EditorShell = ({
                   🖼️ Profile Photo:
                 </label>
                 
-                {profilePhoto ? (
+                {profilePhoto?.url ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <img 
-                      src={profilePhoto} 
+                      src={profilePhoto.url} 
                       alt="Profile" 
                       style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover', border: '2px solid #cbd5e1' }}
                     />
-                    <button
-                      onClick={() => setProfilePhoto(null)}
-                      style={{ background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca', padding: '0.4rem 0.75rem', borderRadius: '6px', fontWeight: 800, fontSize: '0.72rem', cursor: 'pointer' }}
-                    >
-                      Remove Photo
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        onClick={() => setShowPhotoEditor(true)}
+                        style={{ background: '#e0e7ff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '0.4rem 0.75rem', borderRadius: '6px', fontWeight: 800, fontSize: '0.72rem', cursor: 'pointer' }}
+                      >
+                        Edit Photo
+                      </button>
+                      <button
+                        onClick={() => setProfilePhoto(null)}
+                        style={{ background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca', padding: '0.4rem 0.75rem', borderRadius: '6px', fontWeight: 800, fontSize: '0.72rem', cursor: 'pointer' }}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      style={{ fontSize: '0.75rem' }}
-                    />
+                    <button
+                      onClick={() => setShowPhotoEditor(true)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ffffff', color: '#0f172a', border: '1px solid #cbd5e1', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+                    >
+                      <span style={{ fontSize: '1rem' }}>🖼️</span>
+                      Upload Photo
+                    </button>
                   </div>
                 )}
               </div>
@@ -850,11 +858,21 @@ export const EditorShell = ({
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        onSuccessDownload={() => {
-          localStorage.setItem('user_premium', 'true');
-          setShowPaymentModal(false);
+        planType="PREMIUM"
+        onSuccess={() => {
           setShowDownloadWorkflowModal(true);
         }}
+      />
+
+      <PhotoEditorModal
+        isOpen={showPhotoEditor}
+        onClose={() => setShowPhotoEditor(false)}
+        photoData={profilePhoto}
+        onSave={(data) => {
+          setProfilePhoto(data);
+          setShowPhotoEditor(false);
+        }}
+        themeColor={primaryColor}
       />
     </div>
   );

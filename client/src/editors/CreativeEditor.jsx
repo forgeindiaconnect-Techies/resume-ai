@@ -5,6 +5,7 @@ import {
   Field, TextArea, SectionHeader, FormAccordionSection, AddButton, ItemCard, Grid2,
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
+import SignatureModal from '../components/common/SignatureModal';
 
 const buildDefaultFromSession = (session) => ({
   title: session.title || 'Creative Resume',
@@ -52,7 +53,12 @@ const buildDefaultFromSession = (session) => ({
     year: c.year || '',
   })),
   achievements: (session.achievements || []).map((a, i) => ({ id: i + 1, title: a.title || '', desc: a.desc || a.description || '' })),
-  languagesList: (session.languagesList || []).map((l, i) => ({ id: i + 1, name: l.name || '', level: l.level || '' })),
+  languagesList: (session.languagesList || []).map((l, i) => ({
+    id: i + 1,
+    name: l.name || '',
+    level: l.level || '',
+  })),
+  signature: session.signature || { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
 });
 
 const defaultData = () => ({
@@ -82,6 +88,7 @@ const defaultData = () => ({
   certificates: [],
   achievements: [],
   languagesList: [],
+  signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
 });
 
 const CreativeEditor = () => {
@@ -89,6 +96,7 @@ const CreativeEditor = () => {
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
   const [accentColor, setAccentColor] = useState('#7c3aed');
   const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [sections, setSections] = useState([
     { id: 'summary', title: 'Summary', enabled: true },
     { id: 'experience', title: 'Experience', enabled: true },
@@ -161,6 +169,7 @@ const CreativeEditor = () => {
     training: (data.certificates || []).map(c => ({ title: c.name, org: c.organization, year: c.year })),
     languagesList: data.languagesList || [],
     achievements: data.achievements || [],
+    signature: data.signature,
   };
 
   return (
@@ -343,9 +352,21 @@ const CreativeEditor = () => {
           ))}
         </div>
       </FormAccordionSection>
-      <AddButton label="+ Add Language" onClick={() => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }))} accent={accentColor} />
+      <AddButton label="Add Language" onClick={() => setData(d => ({ ...d, languagesList: [...(d.languagesList || []), { id: Date.now(), name: '', level: '' }] }))} accent={accentColor} />
 
+      <div style={{ height: '1rem' }} />
+      <SectionHeader icon="✍️" title="Signature" accent={accentColor} />
+      <AddButton label="Add Signature" onClick={() => setIsSignatureModalOpen(true)} accent={accentColor} />
+      
       <div style={{ height: '2rem' }} />
+
+      <SignatureModal 
+        isOpen={isSignatureModalOpen} 
+        onClose={() => setIsSignatureModalOpen(false)} 
+        signature={data.signature} 
+        onSave={(sig) => setData(d => ({ ...d, signature: sig }))} 
+        accentColor={accentColor} 
+      />
     </EditorShell>
   );
 };

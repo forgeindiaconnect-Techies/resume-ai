@@ -48,7 +48,7 @@ const PRICING_PLANS = [
   }
 ];
 
-const PaymentModal = ({ isOpen, onClose, onSuccessDownload }) => {
+const PaymentModal = ({ isOpen, onClose, onSuccessDownload, reason = 'download' }) => {
   const [selectedPlan, setSelectedPlan] = useState('Monthly');
   const [loadingPayment, setLoadingPayment] = useState(false);
 
@@ -226,13 +226,19 @@ const PaymentModal = ({ isOpen, onClose, onSuccessDownload }) => {
           position: 'relative'
         }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', color: '#fbbf24', padding: '0.25rem 0.75rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 900, marginBottom: '0.75rem' }}>
-            <Crown size={14} /> UNLOCK PREMIUM PDF DOWNLOAD
+            <Crown size={14} /> {reason === 'branding' ? 'REMOVE FORGE INDIA CONNECT BRANDING' : 'UNLOCK PREMIUM PDF DOWNLOAD'}
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 900, margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-            Upgrade to Download Your Resume in High-Res PDF
+            {reason === 'branding' 
+              ? 'Upgrade to Premium to Remove the Watermark'
+              : 'Upgrade to Download Your Resume in High-Res PDF'
+            }
           </h2>
           <p style={{ fontSize: '0.9rem', color: '#c7d2fe', margin: 0, maxWidth: '600px' }}>
-            Choose a plan to instantly download your resume, unlock all 5+ ATS templates, AI generator, and cover letter writer.
+            {reason === 'branding'
+              ? 'Choose a plan to instantly unlock unbranded PDF downloads, plus all 5+ ATS templates and our advanced AI cover letter writer.'
+              : 'Choose a plan to instantly download your resume, unlock all 5+ ATS templates, AI generator, and cover letter writer.'
+            }
           </p>
         </div>
 

@@ -2103,7 +2103,6 @@ const IndustryExamples = () => {
   const handleUseTemplate = () => {
     const routeMap = { enhancv: '/editor/enhancv', modern: '/editor/modern', creative: '/editor/creative', professional: '/editor/professional', minimal: '/editor/minimal' };
     const editorRoute = routeMap[activeRole.layout] || '/editor/executive';
-
     // Convert skills.languages string (dot-separated) to an array
     const skillsArray = (currentResumeData.skills?.languages || '')
       .split('·')
