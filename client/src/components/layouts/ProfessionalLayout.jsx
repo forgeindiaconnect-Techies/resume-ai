@@ -7,6 +7,8 @@ const ProfessionalLayout = ({data, customColor, customFont,
   fontSize,
   lineHeight,
   theme,
+  spacing = 'normal',
+  layoutMode = 'left-sidebar',
   sections: customSections,
   profilePhoto,
   headingSize
@@ -15,7 +17,13 @@ const ProfessionalLayout = ({data, customColor, customFont,
 
   const fScale = (fontSize || 13) / 13;
   const lineH = lineHeight || 1.6;
-  const spacingPadding = theme?.margin ? `${theme.margin}px` : '2rem';
+  const spacingPadding = theme?.margin ? `${theme.margin}px`
+    : spacing === 'compact' ? '1.1rem'
+    : spacing === 'comfortable' ? '2.8rem'
+    : '2rem';
+  const sectionGap = spacing === 'compact' ? '1rem' : spacing === 'comfortable' ? '2.2rem' : '1.75rem';
+  const isRightSidebar = layoutMode === 'right-sidebar';
+  const isSingleColumn = layoutMode === 'single';
 
   const sidebarBg = customColor || '#14532d';
   const fontFamily = customFont || "'Inter', sans-serif";
@@ -42,16 +50,16 @@ const ProfessionalLayout = ({data, customColor, customFont,
       lineHeight: lineH,
       textAlign: 'left'
     }}>
-      <div style={{ display: 'flex', flex: 1 }}>
-        {/* LEFT SIDEBAR (Dark Forest Green Background) */}
+      <div style={{ display: 'flex', flex: 1, flexDirection: isSingleColumn ? 'column' : (isRightSidebar ? 'row-reverse' : 'row') }}>
+        {/* SIDEBAR (Dark Forest Green Background) */}
         <div style={{
-          width: '34%',
+          width: isSingleColumn ? '100%' : '34%',
           background: sidebarBg,
           color: '#ffffff',
           padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.75rem',
+          gap: sectionGap,
           boxSizing: 'border-box'
         }}>
           {/* Name & Photo */}
@@ -217,7 +225,7 @@ const ProfessionalLayout = ({data, customColor, customFont,
           padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.5rem',
+          gap: sectionGap,
           boxSizing: 'border-box'
         }}>
           {/* Role Header */}

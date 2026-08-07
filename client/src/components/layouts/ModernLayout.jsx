@@ -29,7 +29,10 @@ const ModernLayout = ({
   const primaryAccent = secondaryColor || '#0284c7';
   const fontFamily = customFont || "'Inter', sans-serif";
 
-  const spacingPadding = theme?.margin ? `${theme.margin}px` : '2rem';
+  const spacingPadding = theme?.margin ? `${theme.margin}px`
+    : spacing === 'compact' ? '1.1rem'
+    : spacing === 'comfortable' ? '2.8rem'
+    : '2rem';
   const spacingGap = spacing === 'compact' ? '0.85rem' : spacing === 'comfortable' ? '1.8rem' : '1.5rem';
   const lineH = lineHeight || 1.6;
   const hSize = headingSize ? `${headingSize}px` : '1.35rem';
@@ -216,10 +219,10 @@ const ModernLayout = ({
       {/* ========================================================================= */}
       {/* === TWO-COLUMN BODY CONTENT (SIDEBAR + MAIN COLUMN) === */}
       {/* ========================================================================= */}
-      <div style={{ display: 'flex', flex: 1 }}>
-        {/* LEFT SIDEBAR (Dark Navy Background - Exact Enhancv Width 34%) */}
+      <div style={{ display: 'flex', flex: 1, flexDirection: isSingleColumn ? 'column' : (isRightSidebar ? 'row-reverse' : 'row') }}>
+        {/* SIDEBAR (Dark Navy Background) */}
         <div style={{
-          width: '34%',
+          width: isSingleColumn ? '100%' : '34%',
           background: sidebarBg,
           color: '#ffffff',
           padding: spacingPadding,
@@ -468,7 +471,7 @@ const ModernLayout = ({
           padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.4rem',
+          gap: spacingGap,
           boxSizing: 'border-box'
         }}>
           {(customSections || [
