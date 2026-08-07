@@ -109,7 +109,8 @@ const ProfessionalLayout = ({data, customColor, customFont,
 
             switch(secId) {
               case 'languages':
-                return (
+                const langs = Array.isArray(data.languagesList) ? data.languagesList : [];
+                return langs.length > 0 ? (
                   <div key="languages">
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
@@ -124,20 +125,18 @@ const ProfessionalLayout = ({data, customColor, customFont,
                       {titleStr}
                     </h3>
                     <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>English</span>
-                        <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#86efac' }}>Native •••••</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>Spanish</span>
-                        <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#86efac' }}>Bilingual •••••</span>
-                      </div>
+                      {langs.map((lang, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>{typeof lang === 'string' ? lang : lang.name}</span>
+                          {typeof lang === 'object' && lang.level && <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#86efac' }}>{lang.level}</span>}
+                        </div>
+                      ))}
                     </div>
                   </div>
-                );
+                ) : null;
               
               case 'achievements':
-                return (
+                return achievements && achievements.length > 0 ? (
                   <div key="achievements">
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
@@ -152,11 +151,7 @@ const ProfessionalLayout = ({data, customColor, customFont,
                       {titleStr}
                     </h3>
                     <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {(achievements.length > 0 ? achievements : [
-                        { title: '35% Defect Reduction', desc: 'Led redesign of EV battery housing assembly.' },
-                        { title: '$4M Capital Project', desc: 'Delivered new stamping line 6 weeks ahead of schedule.' },
-                        { title: '18% Material Waste Cut', desc: 'Implemented lean manufacturing process improvements.' }
-                      ]).map((ach, idx) => (
+                      {achievements.map((ach, idx) => (
                         <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
                           <span style={{ fontSize: `${0.8 * fScale}rem`, color: '#86efac', marginTop: '1px' }}>✓</span>
                           <div>
@@ -171,11 +166,11 @@ const ProfessionalLayout = ({data, customColor, customFont,
                       ))}
                     </div>
                   </div>
-                );
+                ) : null;
               
               case 'skills':
               case 'competencies':
-                return (
+                return skillsList ? (
                   <div key="skills">
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
@@ -190,10 +185,38 @@ const ProfessionalLayout = ({data, customColor, customFont,
                       {titleStr}
                     </h3>
                     <p style={{ margin: 0, fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
-                      {skillsList || 'AutoCAD · SolidWorks · CATIA · ANSYS · Six Sigma · Lean Manufacturing · Root Cause Analysis'}
+                      {skillsList}
                     </p>
                   </div>
-                );
+                ) : null;
+              
+              case 'certifications':
+              case 'certificates':
+                const certs = data.certifications || data.certificates || data.training || [];
+                return certs.length > 0 ? (
+                  <div key="certifications">
+                    <h3 style={{
+                      fontSize: `${0.78 * fScale}rem`,
+                      fontWeight: 900,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: '#86efac',
+                      borderBottom: '1px solid rgba(255,255,255,0.2)',
+                      paddingBottom: '0.35rem',
+                      margin: '0 0 0.65rem'
+                    }}>
+                      {titleStr}
+                    </h3>
+                    <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                      {certs.map((cert, idx) => (
+                        <div key={idx}>
+                          <div style={{ fontWeight: 800, color: '#ffffff', marginBottom: '0.15rem' }}>{cert.name || cert.title}</div>
+                          <div style={{ color: '#cbd5e1', fontSize: `${0.7 * fScale}rem` }}>{cert.org || cert.organization} {cert.year ? `(${cert.year})` : ''}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null;
               
               default:
                 return (
