@@ -1955,7 +1955,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         onClose={() => setShowPaymentModal(false)}
         planType="PREMIUM"
         reason={paymentReason}
-        onSuccess={() => {
+        onSuccessDownload={() => {
           setShowDownloadWorkflowModal(true);
         }}
       />
