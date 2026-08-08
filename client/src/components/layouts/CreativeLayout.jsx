@@ -68,9 +68,23 @@ const CreativeLayout = ({data, customColor, customFont,
     return photoObj?.shadow ? '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' : 'none';
   };
 
-  const skillsList = (skills && typeof skills === 'object' && !Array.isArray(skills))
-    ? [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' • ')
-    : (Array.isArray(skills) ? skills.join(' • ') : (skills || ''));
+  const getSkillsCategorized = () => {
+    const parseStr = (str) => str ? str.split(/·|•|-|,/).map(s => s.trim()).filter(Boolean) : [];
+    if (typeof skills === 'object' && !Array.isArray(skills)) {
+      return {
+        languages: parseStr(skills.languages),
+        frameworks: parseStr(skills.frameworks),
+        tools: parseStr(skills.tools)
+      };
+    }
+    let arr = [];
+    if (Array.isArray(skills)) arr = skills;
+    else if (typeof skills === 'string') arr = parseStr(skills);
+    return { languages: arr, frameworks: [], tools: [] };
+  };
+
+  const skillsCat = getSkillsCategorized();
+  const hasSkills = skillsCat.languages.length > 0 || skillsCat.frameworks.length > 0 || skillsCat.tools.length > 0;
 
   // Define how the sections map works
   const SIDEBAR_SECTION_IDS = ['languages', 'skills', 'competencies', 'achievements', 'interests', 'publication', 'publications', 'certifications', 'certificates', 'volunteering', 'awards', 'references'];
@@ -97,21 +111,42 @@ const CreativeLayout = ({data, customColor, customFont,
     if (isSidebarContext) {
       switch(secId) {
         case 'languages':
-          return (
+          const langs = data.languagesList || [];
+          return langs.length > 0 ? (
             <div key="languages">
               <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.25)', paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
                 {titleStr}
               </h3>
               <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>English</span><span style={{ fontSize: `${0.7 * fScale}rem`, color: '#cbd5e1' }}>Native •••••</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Spanish</span><span style={{ fontSize: `${0.7 * fScale}rem`, color: '#cbd5e1' }}>Advanced •••••</span>
-                </div>
+                {langs.map((lang, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>{typeof lang === 'string' ? lang : lang.name}</span>
+                    {typeof lang === 'object' && lang.level && <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#cbd5e1' }}>{lang.level}</span>}
+                  </div>
+                ))}
               </div>
             </div>
-          );
+          ) : null;
+
+        case 'certifications':
+        case 'certificates':
+        case 'training':
+          const certs = data.certifications || data.certificates || data.training || [];
+          return certs.length > 0 ? (
+            <div key="certifications">
+              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.25)', paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
+                {titleStr}
+              </h3>
+              <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {certs.map((cert, idx) => (
+                  <div key={idx}>
+                    <div style={{ fontWeight: 800, color: '#ffffff', marginBottom: '0.15rem' }}>{cert.name || cert.title}</div>
+                    <div style={{ color: '#cbd5e1', fontSize: `${0.68 * fScale}rem` }}>{cert.org || cert.organization} {cert.year ? `(${cert.year})` : ''}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null;
         case 'achievements':
           return (
             <div key="achievements">
@@ -145,9 +180,38 @@ const CreativeLayout = ({data, customColor, customFont,
               <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.25)', paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
                 {titleStr}
               </h3>
-              <p style={{ margin: 0, fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
-                {skillsList || 'Script Analysis - Character Development - Voice-over Techniques - Improvisational Acting - Film Production'}
-              </p>
+              {!hasSkills ? (
+                <p style={{ margin: 0, fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
+                  Script Analysis - Character Development - Voice-over Techniques - Improvisational Acting - Film Production
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {skillsCat.languages.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 800, color: '#ffffff', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Programming Languages</div>
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
+                        {skillsCat.languages.join(' • ')}
+                      </div>
+                    </div>
+                  )}
+                  {skillsCat.frameworks.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 800, color: '#ffffff', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
+                        {skillsCat.frameworks.join(' • ')}
+                      </div>
+                    </div>
+                  )}
+                  {skillsCat.tools.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 800, color: '#ffffff', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Databases & Tools</div>
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
+                        {skillsCat.tools.join(' • ')}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         case 'interests':
@@ -232,12 +296,20 @@ const CreativeLayout = ({data, customColor, customFont,
               {education.map((edu, idx) => (
                 <div key={idx}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: `${0.82 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>{edu.degree}</span>
-                    <span style={{ fontSize: `${0.72 * fScale}rem`, color: '#64748b', fontWeight: 500 }}>{edu.tenure || edu.year}</span>
+                    <span style={{ fontSize: `${0.82 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
+                      {edu.degree}{edu.department ? ` in ${edu.department}` : ''}
+                    </span>
+                    <span style={{ fontSize: `${0.72 * fScale}rem`, color: '#64748b', fontWeight: 500 }}>
+                      {edu.tenure || edu.year}
+                    </span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, color: accentTeal }}>{edu.institution || edu.school}</span>
-                    <span style={{ fontSize: `${0.72 * fScale}rem`, color: '#64748b', fontWeight: 500 }}>{edu.location || ''}</span>
+                    <span style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, color: accentTeal }}>
+                      {edu.institution || edu.school}{edu.cgpa ? ` (CGPA: ${edu.cgpa})` : ''}
+                    </span>
+                    <span style={{ fontSize: `${0.72 * fScale}rem`, color: '#64748b', fontWeight: 500 }}>
+                      {edu.location || ''}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -257,11 +329,87 @@ const CreativeLayout = ({data, customColor, customFont,
                 <div key={idx}>
                   <div style={{ fontSize: `${0.76 * fScale}rem`, fontWeight: 800, color: accentTeal }}>{p.title || p.name}</div>
                   <div style={{ fontSize: `${0.71 * fScale}rem`, color: '#64748b' }}>{p.technology || p.desc}</div>
+                  {(p.github || p.liveDemo) && (
+                    <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.3rem', flexWrap: 'wrap' }}>
+                      {p.github && (
+                        <a href={p.github.startsWith('http') ? p.github : `https://${p.github}`} target="_blank" rel="noreferrer"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: 'rgba(240,253,244,0.12)', color: '#86efac', border: '1px solid rgba(134,239,172,0.35)', padding: '0.15rem 0.45rem', borderRadius: '99px', fontSize: `${0.65 * fScale}rem`, fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.37.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                          GitHub
+                        </a>
+                      )}
+                      {p.liveDemo && (
+                        <a href={p.liveDemo.startsWith('http') ? p.liveDemo : `https://${p.liveDemo}`} target="_blank" rel="noreferrer"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: 'rgba(239,246,255,0.12)', color: '#93c5fd', border: '1px solid rgba(147,197,253,0.35)', padding: '0.15rem 0.45rem', borderRadius: '99px', fontSize: `${0.65 * fScale}rem`, fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                          Live Demo
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         ) : null;
+
+      case 'certifications':
+      case 'certificates':
+      case 'training':
+        const certs = data.certifications || data.certificates || data.training || [];
+        return certs.length > 0 ? (
+          <div key="certifications">
+            <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.25rem', margin: `0 0 0.65rem` }}>
+              {titleStr}
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              {certs.map((cert, idx) => (
+                <div key={idx}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <span style={{ fontSize: `${0.8 * fScale}rem`, fontWeight: 700, color: '#1e293b' }}>
+                      {cert.name || cert.title}
+                    </span>
+                    <span style={{ fontSize: `${0.72 * fScale}rem`, color: '#64748b' }}>
+                      {cert.year || ''}
+                    </span>
+                  </div>
+                  {(cert.organization || cert.org) && (
+                    <div style={{ fontSize: `${0.72 * fScale}rem`, color: '#475569' }}>
+                      {cert.organization || cert.org}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null;
+
+      case 'languages':
+        const langs = data.languagesList || [];
+        return langs.length > 0 ? (
+          <div key="languages">
+            <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.25rem', margin: `0 0 0.55rem` }}>
+              {titleStr}
+            </h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+              {langs.map((lang, idx) => (
+                <span key={idx} style={{
+                  background: '#f8fafc',
+                  color: '#334155',
+                  fontSize: `${0.72 * fScale}rem`,
+                  fontWeight: 500,
+                  padding: '0.2rem 0.55rem',
+                  borderRadius: '4px',
+                  border: '1px solid #e2e8f0'
+                }}>
+                  {typeof lang === 'string' ? lang : lang.name}
+                  {typeof lang === 'object' && lang.level ? ` (${lang.level})` : ''}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null;
+      
       default:
         // Render sidebar items as main items if in single column mode
         if (SIDEBAR_SECTION_IDS.includes(secId) && layoutMode === 'single') {
@@ -294,8 +442,8 @@ const CreativeLayout = ({data, customColor, customFont,
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '297mm',
-      width: '210mm',
+      minHeight: '100%',
+      width: '100%',
       fontFamily: fontFamily,
       background: 'white',
       color: '#1e293b',
@@ -392,6 +540,8 @@ const CreativeLayout = ({data, customColor, customFont,
               {contact.email && <span>✉ {contact.email}</span>}
               {contact.linkedin && <span>🔗 {contact.linkedin}</span>}
               {contact.location && <span>📍 {contact.location}</span>}
+              {contact.github && <span>💻 {contact.github}</span>}
+              {contact.portfolio && <span>🌐 {contact.portfolio}</span>}
             </div>
           </div>
 

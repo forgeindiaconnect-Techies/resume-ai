@@ -214,11 +214,11 @@ export const DragDropSections = ({
             
             {/* Quick Presets */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem' }}>
-              {['Volunteering', 'Publications', 'Awards', 'References'].map(preset => (
+              {['Volunteering', 'Publications', 'Awards', 'References', 'Languages', 'Certificates'].map(preset => (
                 <button
                   key={preset}
                   type="button"
-                  onClick={() => handleAddCustomSection(preset, ['Volunteering', 'Publications', 'Awards', 'References'].includes(preset) ? 'sidebar' : 'main')}
+                  onClick={() => handleAddCustomSection(preset, ['Volunteering', 'Publications', 'Awards', 'References', 'Languages'].includes(preset) ? 'sidebar' : 'main')}
                   style={{
                     fontSize: '0.65rem',
                     fontWeight: 700,

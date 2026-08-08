@@ -216,6 +216,10 @@ export const EditorShell = ({
   onColorChange,
   fontFamily = "'Inter', sans-serif",
   onFontChange,
+  settings,
+  onSettingsChange,
+  templateId,
+  onTemplateChange,
   templateName = 'Modern', 
   templateEmoji = '💻', 
   onDownload, 
@@ -230,14 +234,42 @@ export const EditorShell = ({
 
   // Premium Editor Customization States
   const [activeTab, setActiveTab] = useState('content'); // 'content' | 'style' | 'layout' | 'scores'
-  const [activeTemplate, setActiveTemplate] = useState(templateName.toLowerCase()); // 'modern' | 'executive' | 'creative' | 'minimal' | 'professional' | 'enhancv'
+  
+  // Controlled Template Fallback
+  const [localTemplate, setLocalTemplate] = useState(templateName.toLowerCase());
+  const activeTemplate = templateId || localTemplate;
+
   const [primaryColor, setPrimaryColor] = useState(accentColor || '#0284c7');
   const [secondaryColor, setSecondaryColor] = useState('#2563eb');
   const [selectedFont, setSelectedFont] = useState(fontFamily || "'Inter', sans-serif");
-  const [headingSize, setHeadingSize] = useState(24);
-  const [bodySize, setBodySize] = useState(14);
-  const [layoutMode, setLayoutMode] = useState('left-sidebar'); // 'left-sidebar' | 'right-sidebar' | 'single' | 'two-column'
-  const [spacingDensity, setSpacingDensity] = useState('normal'); // 'compact' | 'normal' | 'comfortable'
+  
+  // Controlled Settings Fallback
+  const [localSettings, setLocalSettings] = useState({
+    headingSize: 24,
+    bodySize: 14,
+    layoutMode: 'left-sidebar',
+    spacingDensity: 'normal'
+  });
+
+  const currentSettings = settings || localSettings;
+  const headingSize = currentSettings.headingSize ?? 24;
+  const bodySize = currentSettings.bodySize ?? 14;
+  const layoutMode = currentSettings.layoutMode || 'left-sidebar';
+  const spacingDensity = currentSettings.spacingDensity || 'normal';
+
+  const updateSetting = (key, value) => {
+    if (onSettingsChange) {
+      onSettingsChange({ ...(settings || localSettings), [key]: value });
+    } else {
+      setLocalSettings(prev => ({ ...prev, [key]: value }));
+    }
+  };
+
+  const setHeadingSize = (val) => updateSetting('headingSize', val);
+  const setBodySize = (val) => updateSetting('bodySize', val);
+  const setLayoutMode = (val) => updateSetting('layoutMode', val);
+  const setSpacingDensity = (val) => updateSetting('spacingDensity', val);
+
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(0.82); // 0.50, 0.75, 0.82, 1.00, 1.25, 1.50
@@ -250,6 +282,9 @@ export const EditorShell = ({
     { id: 'professional', name: 'Professional', emoji: '📋', isPremium: true, component: ProfessionalLayout },
     { id: 'enhancv', name: 'Enhancv', emoji: '⚡', isPremium: true, component: EnhancvLayout },
   ];
+
+  const source = localStorage.getItem('source') || 'create';
+  console.log("Resume source:", source);
 
   const handleDownloadAction = () => {
     const isPremium = localStorage.getItem('user_premium') === 'true';
@@ -266,7 +301,11 @@ export const EditorShell = ({
       setShowPaymentModal(true);
       return;
     }
-    setActiveTemplate(tpl.id);
+    if (onTemplateChange) {
+      onTemplateChange(tpl.id);
+    } else {
+      setLocalTemplate(tpl.id);
+    }
   };
 
   const handlePrimaryColorChange = (hex) => {
@@ -330,6 +369,19 @@ export const EditorShell = ({
 
           {/* Dynamic Template Switcher Row */}
           <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '0.4rem', scrollbarWidth: 'none', marginBottom: '0.4rem' }}>
+            <button
+              onClick={() => {
+                localStorage.removeItem('user_premium');
+                alert('Premium status reset! The payment modal will now show again.');
+                window.location.reload();
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '3px', padding: '0.25rem 0.5rem', borderRadius: '6px',
+                border: '1px solid #fca5a5', background: '#fef2f2', color: '#ef4444', fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap'
+              }}
+            >
+              <RefreshCw size={9} /> Reset Payment Test
+            </button>
             {TEMPLATES.map(t => (
               <button
                 key={t.id}
@@ -782,24 +834,23 @@ export const EditorShell = ({
         </div>
 
         {/* Preview Scroll Area */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', justifyContent: 'center', padding: '2rem 1.5rem', scrollbarWidth: 'thin', scrollbarColor: '#c8d0dd transparent' }}>
-          {/* A4 Paper Sheet */}
+        <div className="resume-preview-container" style={{ flex: 1, padding: '2rem 1.5rem', scrollbarWidth: 'thin', scrollbarColor: '#c8d0dd transparent' }}>
           <div 
-            id="resume-preview-sheet"
-            className="print-paper-sheet"
-            style={{
-              width: 794,
-              minHeight: 1123,
-              background: '#fff',
-              boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-              borderRadius: '3px',
-              transformOrigin: 'top center',
-              transform: `scale(${zoomLevel})`,
-              marginBottom: '-190px',
-              flexShrink: 0,
-              overflow: 'visible'
-            }}>
-            {renderedPreview}
+            className="resume-scale-wrapper"
+            style={{ transform: `scale(${zoomLevel})`, marginBottom: '-190px' }}
+          >
+            <div id="resume-preview-sheet" className="resume-page" style={{ position: 'relative', overflow: 'hidden' }}>
+              {renderedPreview}
+              {localStorage.getItem('user_premium') !== 'true' && (
+                <div className="pdf-watermark" style={{
+                  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-45deg)',
+                  textAlign: 'center', fontSize: '48px', fontWeight: 900, color: 'rgba(203, 213, 225, 0.4)',
+                  letterSpacing: '0.15em', pointerEvents: 'none', zIndex: 9999, whiteSpace: 'nowrap'
+                }}>
+                  SAMPLE PREVIEW<br/><span style={{ fontSize: '16px' }}>Forge India Connect</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -858,8 +909,8 @@ export const EditorShell = ({
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        planType="PREMIUM"
-        onSuccess={() => {
+        source={source}
+        onSuccessDownload={() => {
           setShowDownloadWorkflowModal(true);
         }}
       />
@@ -885,7 +936,16 @@ export const loadSession = (sessionId) => {
     if (!raw) raw = localStorage.getItem('localResumeDraft');
     if (raw) {
       raw = raw.replace(/enhancv\.com/gi, 'forgeindiaconnect.com');
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      
+      // Inject pricing configuration
+      if (!parsed.source) {
+        parsed.source = localStorage.getItem('source') || 'create';
+      }
+      if (!parsed.paymentStatus) {
+        parsed.paymentStatus = 'pending';
+      }
+      return parsed;
     }
   } catch (e) {}
   return null;
@@ -894,6 +954,14 @@ export const loadSession = (sessionId) => {
 // ─── Save Session to localStorage ────────────────────────────────────────
 export const saveSession = (sessionId, data) => {
   try {
+    // Ensure pricing configuration is saved
+    if (!data.source) {
+      data.source = localStorage.getItem('source') || 'create';
+    }
+    if (!data.paymentStatus) {
+      data.paymentStatus = 'pending';
+    }
+    
     if (sessionId) localStorage.setItem(`resume_draft_${sessionId}`, JSON.stringify(data));
     localStorage.setItem('localResumeDraft', JSON.stringify(data));
   } catch (e) {}

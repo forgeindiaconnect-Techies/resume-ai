@@ -88,6 +88,7 @@ const Templates = () => {
   }, []);
 
   const handleUseTemplate = (template) => {
+    localStorage.setItem('source', 'template');
     const layoutName = (template.layout?.layout || template.name || 'modern').toLowerCase();
     const editorRouteMap = {
       enhancv:      '/editor/enhancv',

@@ -2101,6 +2101,7 @@ const IndustryExamples = () => {
   };
 
   const handleUseTemplate = () => {
+    localStorage.setItem('source', 'template');
     const routeMap = { enhancv: '/editor/enhancv', modern: '/editor/modern', creative: '/editor/creative', professional: '/editor/professional', minimal: '/editor/minimal' };
     const editorRoute = routeMap[activeRole.layout] || '/editor/executive';
     // Convert skills.languages string (dot-separated) to an array
@@ -2157,9 +2158,21 @@ const IndustryExamples = () => {
       level: l.level || ''
     }));
 
+    const templateSettings = {
+      color: activeRole.color || '#0369a1',
+      fontFamily: "'Inter', sans-serif",
+      headingSize: 24,
+      bodySize: 14,
+      layoutMode: 'left-sidebar',
+      spacingDensity: 'normal'
+    };
+
     const sessionData = {
       title: `${activeRole.title} Resume`,
       templateId: activeRole.layout || 'modern',
+      color: templateSettings.color,
+      font: templateSettings.fontFamily,
+      settings: templateSettings,
       personalInfo: {
         name: currentResumeData.name || '',
         role: currentResumeData.role || '',
@@ -2191,7 +2204,74 @@ const IndustryExamples = () => {
   };
 
   const renderPreviewLayout = () => {
-    const props = { data: currentResumeData, customColor: activeRole.color, customFont: "'Inter', sans-serif" };
+    const templateSettings = {
+      color: activeRole.color || '#0369a1',
+      fontFamily: "'Inter', sans-serif",
+      headingSize: 24,
+      bodySize: 14,
+      layoutMode: 'left-sidebar',
+      spacingDensity: 'normal'
+    };
+    
+    // Default sections to match Editor
+    const sections = [
+      { id: 'summary', title: 'Summary', enabled: true },
+      { id: 'experience', title: 'Experience', enabled: true },
+      { id: 'education', title: 'Education', enabled: true },
+      { id: 'skills', title: 'Skills', enabled: true },
+      { id: 'certifications', title: 'Certifications', enabled: true },
+    ];
+
+    // Transform currentResumeData into the EXACT shape expected by Editor's previewData
+    // This ensures 100% visual parity between Industry Examples and the Editor (e.g. skills arrays vs strings)
+    const editorPreviewData = {
+      name: currentResumeData.name || '',
+      role: currentResumeData.role || '',
+      contact: currentResumeData.contact || {},
+      objective: currentResumeData.objective || currentResumeData.summary || '',
+      skills: [
+        ...((currentResumeData.skills?.languages || '').split('·').map(s => s.trim())),
+        ...(currentResumeData.skills?.frameworks || []),
+        ...(currentResumeData.skills?.databases || [])
+      ].filter(Boolean),
+      experience: (currentResumeData.experience || []).map(e => ({
+        title: e.title || e.role || '',
+        company: e.company || '',
+        duration: e.duration || '',
+        desc: e.desc || e.description || ''
+      })),
+      education: (currentResumeData.education || []).map(e => ({
+        degree: e.degree || '',
+        institution: e.institution || e.school || '',
+        tenure: e.tenure || e.year || ''
+      })),
+      projects: [],
+      training: (currentResumeData.certificates || currentResumeData.training || []).map(c => ({
+        title: c.name || c.title || '',
+        org: c.organization || c.org || '',
+        year: c.year || ''
+      })),
+      certifications: (currentResumeData.certificates || currentResumeData.training || []).map(c => ({
+        id: Math.random(),
+        name: c.name || c.title || '',
+        org: c.organization || c.org || '',
+        year: c.year || ''
+      })),
+      languagesList: (currentResumeData.languagesList || []).map(l => `${l.name}${l.level ? ' (' + l.level + ')' : ''}`).filter(Boolean),
+      achievements: currentResumeData.achievements || [],
+      signature: currentResumeData.signature
+    };
+
+    const props = { 
+      data: editorPreviewData, 
+      customColor: templateSettings.color, 
+      customFont: templateSettings.fontFamily,
+      headingSize: templateSettings.headingSize,
+      fontSize: templateSettings.bodySize,
+      layoutMode: templateSettings.layoutMode,
+      spacing: templateSettings.spacingDensity,
+      sections: sections
+    };
     switch (activeRole.layout) {
       case 'modern':       return <ModernLayout {...props} />;
       case 'creative':     return <CreativeLayout {...props} />;
@@ -2372,37 +2452,17 @@ const IndustryExamples = () => {
 
             {/* SCALED LIVE RESUME PREVIEW CONTAINER */}
             {(() => {
-              const baseScale = previewContainerWidth / RESUME_FULL_WIDTH;
+              const baseScale = previewContainerWidth / 794;
               const finalScale = baseScale * userZoom;
-              const containerW = Math.round(previewContainerWidth * userZoom);
-              const scaledH = Math.round(previewContentHeight * finalScale);
               return (
-                <div style={{
-                  width: `${containerW}px`,
-                  height: `${scaledH}px`,
-                  position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: '0 12px 36px rgba(0,0,0,0.12)',
-                  borderRadius: '4px',
-                  marginBottom: '2rem',
-                  background: 'white'
-                }}>
-                  <div
-                    ref={resumeSheetRef}
-                    id="resume-preview-sheet"
-                    className="print-paper-sheet"
-                    style={{
-                      width: `${RESUME_FULL_WIDTH}px`,
-                      minHeight: '1122px',
-                      background: 'white',
-                      transformOrigin: 'top left',
-                      transform: `scale(${finalScale})`,
-                      position: 'absolute',
-                      top: 0,
-                      left: 0
-                    }}
+                <div className="resume-preview-container" style={{ padding: 0, marginBottom: '2rem' }}>
+                  <div 
+                    className="resume-scale-wrapper"
+                    style={{ transform: `scale(${finalScale})` }}
                   >
-                    {renderPreviewLayout()}
+                    <div ref={resumeSheetRef} id="resume-preview-sheet" className="resume-page">
+                      {renderPreviewLayout()}
+                    </div>
                   </div>
                 </div>
               );

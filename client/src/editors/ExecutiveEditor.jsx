@@ -73,8 +73,14 @@ const defaultData = () => ({
 const ExecutiveEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
-  const [accentColor, setAccentColor] = useState('#0f172a');
-  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [accentColor, setAccentColor] = useState(() => {
+    const session = loadSession(sessionId);
+    return session?.color || '#0f172a';
+  });
+  const [fontFamily, setFontFamily] = useState(() => {
+    const session = loadSession(sessionId);
+    return session?.font || "'Inter', sans-serif";
+  });
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [sections, setSections] = useState([
     { id: 'summary', title: 'Executive Summary', enabled: true },
@@ -82,6 +88,9 @@ const ExecutiveEditor = () => {
     { id: 'competencies', title: 'Core Competencies', enabled: true },
     { id: 'education', title: 'Education', enabled: true },
     { id: 'certifications', title: 'Certifications', enabled: true },
+    { id: 'achievements', title: 'Achievements', enabled: true },
+    { id: 'languages', title: 'Languages', enabled: true },
+    { id: 'references', title: 'References', enabled: true },
   ]);
   
   const [data, setData] = useState(() => {

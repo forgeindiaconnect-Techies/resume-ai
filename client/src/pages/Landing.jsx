@@ -13,6 +13,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const onEnterApp = (action) => {
     localStorage.setItem('builder_mode', 'manual');
+    localStorage.setItem('source', 'create');
     navigate('/builder');
   };
   const isLoggedIn = false;
@@ -86,6 +87,9 @@ const LandingPage = () => {
         title: `${aiJobTitle} Resume`,
         department: aiJobTitle,
         templateId: 'modern',
+        source: 'ai',
+        price: 99,
+        paymentStatus: 'pending',
         personalInfo: {
           name: aiData?.personalInfo?.fullName || aiData?.name || 'Alexander Wright',
           role: aiJobTitle,
@@ -314,83 +318,84 @@ const LandingPage = () => {
             </span>
           </p>
 
-          {/* Hero Action Buttons */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
-            <button 
-              onClick={() => onEnterApp('create')}
-              style={{
-                background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
-                color: 'white',
-                border: 'none',
-                padding: '1.1rem 2.2rem',
-                borderRadius: '16px',
-                fontSize: '1.1rem',
-                fontWeight: 800,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.6rem',
-                boxShadow: '0 10px 25px rgba(2,132,199,0.35)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 30px rgba(2,132,199,0.45)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(2,132,199,0.35)'; }}
+          {/* Hero Action Cards */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch', gap: '2rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+            
+            {/* Create Resume */}
+            <div style={{
+              background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', width: '280px', textAlign: 'left',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s ease', cursor: 'pointer'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#0284c7'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+            onClick={() => onEnterApp('create')}
             >
-              <span style={{ lineHeight: 1, marginTop: '2px' }}>Create Resume</span>
-              <ArrowRight size={18} style={{ marginTop: '1px' }} />
-            </button>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📝</div>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>Create Resume</h3>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Build it yourself</p>
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#0284c7', margin: '0.5rem 0' }}>From ₹49</div>
+              <button style={{
+                background: '#f1f5f9', color: '#0f172a', border: 'none', padding: '0.75rem', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 600, width: '100%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer'
+              }}>
+                Start Creating <ArrowRight size={16} />
+              </button>
+            </div>
 
-            <button 
-              onClick={() => setShowAiModal(true)}
-              style={{
-                background: '#ffffff',
-                color: '#0284c7',
-                border: '2px solid #0284c7',
-                padding: '1.1rem 2.2rem',
-                borderRadius: '16px',
-                fontSize: '1.1rem',
-                fontWeight: 800,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.6rem',
-                boxShadow: '0 6px 20px rgba(2,132,199,0.12)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(2,132,199,0.2)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(2,132,199,0.12)'; }}
+            {/* AI Resume */}
+            <div style={{
+              background: '#ffffff', border: '2px solid #0ea5e9', borderRadius: '16px', padding: '1.5rem', width: '280px', textAlign: 'left',
+              boxShadow: '0 8px 16px rgba(14, 165, 233, 0.1)', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s ease', cursor: 'pointer'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(14, 165, 233, 0.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(14, 165, 233, 0.1)'; }}
+            onClick={() => {
+              localStorage.setItem('source', 'ai');
+              setShowAiModal(true);
+            }}
             >
-              <Sparkles size={18} color="#0284c7" />
-              <span>Generate with AI</span>
-            </button>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>✨</div>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>Generate with AI</h3>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Let AI build it</p>
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#0ea5e9', margin: '0.5rem 0' }}>From ₹99</div>
+              <button style={{
+                background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', border: 'none', padding: '0.75rem', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 700, width: '100%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer'
+              }}>
+                Generate with AI
+              </button>
+            </div>
 
-            <button 
-              onClick={() => navigate('/industry-examples')}
-              style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(8px)',
-                color: '#0f172a',
-                border: '2px solid #cbd5e1',
-                padding: '1.1rem 2.2rem',
-                borderRadius: '16px',
-                fontSize: '1.1rem',
-                fontWeight: 800,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.6rem',
-                boxShadow: '0 6px 20px rgba(0,0,0,0.04)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#0284c7'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+            {/* Resume Examples */}
+            <div style={{
+              background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', width: '280px', textAlign: 'left',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s ease', cursor: 'pointer'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#0284c7'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+            onClick={() => {
+              localStorage.setItem('source', 'template');
+              navigate('/industry-examples');
+            }}
             >
-              <span style={{ lineHeight: 1, marginTop: '2px' }}>Resume Examples</span>
-              <ArrowRight size={18} style={{ marginTop: '1px' }} />
-            </button>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📄</div>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>Resume Examples</h3>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Start from templates</p>
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#0284c7', margin: '0.5rem 0' }}>From ₹79</div>
+              <button style={{
+                background: '#f1f5f9', color: '#0f172a', border: 'none', padding: '0.75rem', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 600, width: '100%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer'
+              }}>
+                Browse Examples <ArrowRight size={16} />
+              </button>
+            </div>
+
           </div>
 
           <div style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.95rem', fontWeight: 700 }}>

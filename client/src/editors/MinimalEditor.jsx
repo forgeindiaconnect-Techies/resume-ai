@@ -43,6 +43,8 @@ const MinimalEditor = () => {
     { id: 'education', title: 'Education', enabled: true },
     { id: 'skills', title: 'Skills', enabled: true },
     { id: 'achievements', title: 'Achievements', enabled: true },
+    { id: 'certifications', title: 'Certifications', enabled: true },
+    { id: 'languages', title: 'Languages', enabled: true },
   ]);
 
   const [data, setData] = useState(() => {

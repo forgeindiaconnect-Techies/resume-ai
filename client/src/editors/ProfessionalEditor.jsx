@@ -33,13 +33,19 @@ const defaultData = () => ({
   languagesList: [],
   achievements: [],
   signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
+  settings: {
+    color: '#0369a1',
+    fontFamily: "'Inter', sans-serif",
+    headingSize: 24,
+    bodySize: 14,
+    layoutMode: 'left-sidebar',
+    spacingDensity: 'normal'
+  },
 });
 
 const ProfessionalEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
-  const [accentColor, setAccentColor] = useState('#0369a1');
-  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [sections, setSections] = useState([
     { id: 'summary', title: 'Summary', enabled: true },
@@ -47,6 +53,8 @@ const ProfessionalEditor = () => {
     { id: 'education', title: 'Education', enabled: true },
     { id: 'skills', title: 'Skills', enabled: true },
     { id: 'certifications', title: 'Certifications', enabled: true },
+    { id: 'achievements', title: 'Achievements', enabled: true },
+    { id: 'languages', title: 'Languages', enabled: true },
   ]);
   
   const [data, setData] = useState(() => {
@@ -87,6 +95,14 @@ const ProfessionalEditor = () => {
         achievements: (session.achievements || []).map((a, i) => ({ id: i + 1, title: a.title || '', desc: a.desc || a.description || '' })),
         languagesList: (session.languagesList || []).map((l, i) => ({ id: i + 1, name: l.name || '', level: l.level || '' })),
         signature: session.signature || { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
+        settings: session.settings || {
+          color: session.color || '#0369a1',
+          fontFamily: session.font || "'Inter', sans-serif",
+          headingSize: 24,
+          bodySize: 14,
+          layoutMode: 'left-sidebar',
+          spacingDensity: 'normal'
+        },
       };
     }
     return defaultData();
@@ -112,6 +128,7 @@ const ProfessionalEditor = () => {
   const addCert = () => setData(d => ({ ...d, certifications: [...d.certifications, { id: Date.now(), name: '', org: '', year: '' }] }));
   const delCert = (id) => setData(d => ({ ...d, certifications: d.certifications.filter(c => c.id !== id) }));
   const updCert = (id, field, val) => setData(d => ({ ...d, certifications: d.certifications.map(c => c.id === id ? { ...c, [field]: val } : c) }));
+  const updateSettings = (newSettings) => setData(d => ({ ...d, settings: newSettings }));
 
   const previewData = {
     name: data.personalInfo.name,
@@ -129,17 +146,36 @@ const ProfessionalEditor = () => {
     signature: data.signature,
   };
 
+  const accentColor = data.settings?.color || '#0369a1';
+  const fontFamily = data.settings?.fontFamily || "'Inter', sans-serif";
+
   return (
     <EditorShell 
       accentColor={accentColor} 
-      onColorChange={setAccentColor}
+      onColorChange={(color) => updateSettings({ ...data.settings, color })}
       fontFamily={fontFamily}
-      onFontChange={setFontFamily}
+      onFontChange={(fontFamily) => updateSettings({ ...data.settings, fontFamily })}
+      settings={data.settings}
+      onSettingsChange={updateSettings}
+      templateId={data.templateId}
+      onTemplateChange={(id) => setData(d => ({ ...d, templateId: id }))}
       templateName="Professional" 
       templateEmoji="📋" 
       onDownload={() => window.print()} 
       saveStatus={saveStatus}
-      preview={<ProfessionalLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
+      preview={
+        <ProfessionalLayout 
+          data={previewData} 
+          sections={sections} 
+          role={data.personalInfo.role} 
+          customColor={accentColor} 
+          customFont={fontFamily} 
+          headingSize={data.settings?.headingSize}
+          fontSize={data.settings?.bodySize}
+          layoutMode={data.settings?.layoutMode}
+          spacing={data.settings?.spacingDensity}
+        />
+      }
     >
       <SectionReorderControl
         sections={sections}

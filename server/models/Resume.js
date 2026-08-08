@@ -35,18 +35,27 @@ const ResumeSchema = new mongoose.Schema({
     school: { type: String, default: '' },
     location: { type: String, default: '' },
     year: { type: String, default: '' },
-    desc: { type: String, default: '' }
+    desc: { type: String, default: '' },
+    department: { type: String, default: '' },
+    cgpa: { type: String, default: '' }
   }],
   projects: [{
     name: { type: String, default: '' },
     role: { type: String, default: '' },
     duration: { type: String, default: '' },
     desc: { type: String, default: '' },
-    link: { type: String, default: '' }
+    link: { type: String, default: '' },
+    github: { type: String, default: '' },
+    liveDemo: { type: String, default: '' },
+    technology: { type: String, default: '' }
   }],
   skills: [{ type: String }],
   languages: [{ type: String }],
-  certificates: [{ type: String }],
+  certificates: [{
+    name: { type: String, default: '' },
+    organization: { type: String, default: '' },
+    year: { type: String, default: '' }
+  }],
   premium: { type: Boolean, default: false },
   layout: {
     type: mongoose.Schema.Types.ObjectId,

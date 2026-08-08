@@ -30,9 +30,23 @@ const ProfessionalLayout = ({data, customColor, customFont,
 
   const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data || {};
 
-  const skillsList = (skills && typeof skills === 'object' && !Array.isArray(skills))
-    ? [skills.languages, skills.frameworks, skills.tools].filter(Boolean).join(' • ')
-    : (Array.isArray(skills) ? skills.join(' • ') : (skills || ''));
+  const getSkillsCategorized = () => {
+    const parseStr = (str) => str ? str.split(/·|•|-|,/).map(s => s.trim()).filter(Boolean) : [];
+    if (typeof skills === 'object' && !Array.isArray(skills)) {
+      return {
+        languages: parseStr(skills.languages),
+        frameworks: parseStr(skills.frameworks),
+        tools: parseStr(skills.tools)
+      };
+    }
+    let arr = [];
+    if (Array.isArray(skills)) arr = skills;
+    else if (typeof skills === 'string') arr = parseStr(skills);
+    return { languages: arr, frameworks: [], tools: [] };
+  };
+
+  const skillsCat = getSkillsCategorized();
+  const hasSkills = skillsCat.languages.length > 0 || skillsCat.frameworks.length > 0 || skillsCat.tools.length > 0;
 
   const photoObj = profilePhoto || data?.photoData || (typeof data?.profilePhoto === 'object' ? data.profilePhoto : null);
   const photoUrl = photoObj?.url || (typeof data?.profilePhoto === 'string' ? data.profilePhoto : null);
@@ -41,8 +55,8 @@ const ProfessionalLayout = ({data, customColor, customFont,
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '297mm',
-      width: '210mm',
+      minHeight: '100%',
+      width: '100%',
       fontFamily: fontFamily,
       background: 'white',
       color: '#1e293b',
@@ -170,7 +184,7 @@ const ProfessionalLayout = ({data, customColor, customFont,
               
               case 'skills':
               case 'competencies':
-                return skillsList ? (
+                return hasSkills ? (
                   <div key="skills">
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
@@ -184,9 +198,32 @@ const ProfessionalLayout = ({data, customColor, customFont,
                     }}>
                       {titleStr}
                     </h3>
-                    <p style={{ margin: 0, fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
-                      {skillsList}
-                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                      {skillsCat.languages.length > 0 && (
+                        <div>
+                          <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Programming Languages</div>
+                          <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
+                            {skillsCat.languages.join(' • ')}
+                          </div>
+                        </div>
+                      )}
+                      {skillsCat.frameworks.length > 0 && (
+                        <div>
+                          <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
+                          <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
+                            {skillsCat.frameworks.join(' • ')}
+                          </div>
+                        </div>
+                      )}
+                      {skillsCat.tools.length > 0 && (
+                        <div>
+                          <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Databases & Tools</div>
+                          <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
+                            {skillsCat.tools.join(' • ')}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : null;
               
@@ -275,6 +312,8 @@ const ProfessionalLayout = ({data, customColor, customFont,
               {contact.email && <span>✉ {contact.email}</span>}
               {contact.linkedin && <span>🔗 {contact.linkedin}</span>}
               {contact.location && <span>📍 {contact.location}</span>}
+              {contact.github && <span>💻 {contact.github}</span>}
+              {contact.portfolio && <span>🌐 {contact.portfolio}</span>}
             </div>
           </div>
 
@@ -370,6 +409,71 @@ const ProfessionalLayout = ({data, customColor, customFont,
                   </div>
                 ) : null;
               
+              case 'projects':
+                return projects && projects.length > 0 ? (
+                  <div key="projects">
+                    <h3 style={{
+                      fontSize: `${0.8 * fScale}rem`,
+                      fontWeight: 900,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: '#0f172a',
+                      margin: '0 0 0.65rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
+                    }}>
+                      {titleStr}
+                      <span style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
+                    </h3>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                      {projects.map((proj, idx) => (
+                        <div key={idx}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <span style={{ fontSize: `${0.85 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
+                              {proj.title || proj.name}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
+                            <span style={{ fontSize: `${0.8 * fScale}rem`, fontWeight: 700, color: '#047857' }}>
+                              {proj.technology}
+                            </span>
+                          </div>
+                          {(proj.github || proj.liveDemo) && (
+                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+                              {proj.github && (
+                                <a href={proj.github.startsWith('http') ? proj.github : `https://${proj.github}`} target="_blank" rel="noreferrer"
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.28rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.18rem 0.55rem', borderRadius: '99px', fontSize: `${0.72 * fScale}rem`, fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.37.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.01 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                                  GitHub
+                                </a>
+                              )}
+                              {proj.liveDemo && (
+                                <a href={proj.liveDemo.startsWith('http') ? proj.liveDemo : `https://${proj.liveDemo}`} target="_blank" rel="noreferrer"
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.28rem', background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '0.18rem 0.55rem', borderRadius: '99px', fontSize: `${0.72 * fScale}rem`, fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                  Live Demo
+                                </a>
+                              )}
+                            </div>
+                          )}
+                          {proj.desc && (
+                            <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                              {proj.desc.split('\n').map((line, i) => (
+                                <div key={i} style={{ marginBottom: '0.15rem', paddingLeft: '0.75rem', position: 'relative' }}>
+                                  <span style={{ position: 'absolute', left: 0, top: 0, color: '#64748b' }}>•</span>
+                                  {line.replace(/^•\s*/, '')}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null;
+              
               case 'education':
                 return education && education.length > 0 ? (
                   <div key="education">
@@ -393,14 +497,14 @@ const ProfessionalLayout = ({data, customColor, customFont,
                         <div key={idx}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                             <h4 style={{ margin: 0, fontSize: `${0.85 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
-                              {edu.degree}
+                              {edu.degree}{edu.department ? ` in ${edu.department}` : ''}
                             </h4>
                             <span style={{ fontSize: `${0.75 * fScale}rem`, fontWeight: 700, color: '#64748b' }}>
                               {edu.tenure || edu.year}
                             </span>
                           </div>
                           <div style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, color: '#047857' }}>
-                            {edu.institution || edu.school}
+                            {edu.institution || edu.school}{edu.cgpa ? ` (CGPA: ${edu.cgpa})` : ''}
                           </div>
                         </div>
                       ))}

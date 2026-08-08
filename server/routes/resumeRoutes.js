@@ -91,10 +91,12 @@ router.get("/resumes", async (req, res) => {
 });
 
 const resumeController = require('../controllers/resumeController');
-router.post('/resume-session/use-template/:id', resumeController.createResumeFromTemplate);
-router.post('/resume-session', resumeController.createResume);
+const authMiddleware = require('../middleware/authMiddleware');
+
+router.post('/resume-session/use-template/:id', authMiddleware, resumeController.createResumeFromTemplate);
+router.post('/resume-session', authMiddleware, resumeController.createResume);
 router.route('/resume-session/:id')
-  .get(resumeController.getResumeById)
-  .put(resumeController.updateResume);
+  .get(authMiddleware, resumeController.getResumeById)
+  .put(authMiddleware, resumeController.updateResume);
 
 module.exports = router;

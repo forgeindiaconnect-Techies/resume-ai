@@ -55,6 +55,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [aiAssistantTask, setAiAssistantTask] = useState('');
   const [aiAssistantOutput, setAiAssistantOutput] = useState('');
   const [aiAssistantLoading, setAiAssistantLoading] = useState(false);
+  const [aiTargetProjectId, setAiTargetProjectId] = useState(null);
 
   // AI Resume Generator States
   const [showAiGeneratorModal, setShowAiGeneratorModal] = useState(false);
@@ -227,11 +228,13 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     languagesList: [],
     achievements: [],
     references: 'Available upon request',
-    signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' }
+    signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
+    source: localStorage.getItem('source') || 'create',
+    paymentStatus: 'pending'
   });
 
   // Enable dynamic sections list (populated from database categorization)
-  const [enabledSections, setEnabledSections] = useState(['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Signature', 'Preview']);
+  const [enabledSections, setEnabledSections] = useState(['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Languages', 'Signature', 'Preview']);
 
   // Initialize Session & Dynamic Categorization
   useEffect(() => {
@@ -267,6 +270,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                 title: draftObj.title || prev.title,
                 templateId: draftObj.templateId || prev.templateId,
                 department: draftObj.department || prev.department,
+                source: draftObj.source || localStorage.getItem('source') || 'create',
+                paymentStatus: draftObj.paymentStatus || 'pending',
                 personalInfo: {
                   name: draftObj.personalInfo?.name || draftObj.personalInfo?.fullName || prev.personalInfo.name,
                   email: (draftObj.personalInfo?.email || prev.personalInfo.email || '').replace(/enhancv\.com/gi, 'forgeindiaconnect.com'),
@@ -283,23 +288,30 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                   databases: Array.isArray(draftObj.skills?.databases) ? draftObj.skills.databases : [],
                 },
                 experience: (draftObj.experience || []).map(e => ({
+                  id: e.id || Date.now() + Math.random(),
                   role: e.title || e.role || e.position || '',
                   company: e.company || '',
                   duration: e.duration || '',
                   desc: e.desc || e.description || ''
                 })),
                 education: (draftObj.education || []).map(e => ({
+                  id: e.id || Date.now() + Math.random(),
                   degree: e.degree || '',
-                  institution: e.institution || e.school || '',
-                  tenure: e.tenure || e.year || '',
+                  school: e.school || e.institution || '',
+                  department: e.department || '',
+                  year: e.year || e.tenure || '',
                   cgpa: e.cgpa || ''
                 })),
                 projects: (draftObj.projects || []).map(p => ({
+                  id: p.id || Date.now() + Math.random(),
                   name: p.name || p.title || '',
                   technology: p.technology || '',
-                  desc: p.desc || p.description || ''
+                  desc: p.desc || p.description || '',
+                  github: p.github || '',
+                  liveDemo: p.liveDemo || ''
                 })),
                 certificates: (draftObj.certificates || []).map(c => ({
+                  id: c.id || Date.now() + Math.random(),
                   name: c.name || c.title || '',
                   organization: c.organization || c.org || '',
                   year: c.year || ''
@@ -308,10 +320,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                   title: a.title || '',
                   desc: a.desc || a.description || ''
                 })),
-                languagesList: (draftObj.languagesList || []).map(l => ({
-                  name: l.name || '',
-                  level: l.level || ''
-                })),
+                languagesList: (draftObj.languagesList || []).map(l => typeof l === 'string' ? l : (l.name || l.title || '')).filter(Boolean),
               }));
               setLoading(false);
               return;
@@ -341,7 +350,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               projects: rData.projects || [],
               skills: rData.skills || { programming: [], frameworks: [], databases: [] },
               certificates: rData.certificates || [],
-              languagesList: rData.languagesList || [],
+              languagesList: rData.languages || rData.languagesList || [],
               achievements: rData.achievements || [],
               references: rData.references || ''
             }));
@@ -731,7 +740,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
 
 
-  const runAiAssistant = async (taskName) => {
+  const runAiAssistant = async (taskName, projectId = null) => {
+    setAiTargetProjectId(projectId);
     setAiAssistantTask(taskName);
     setAiAssistantLoading(true);
     setAiAssistantOutput('');
@@ -745,7 +755,12 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     } else if (taskName.includes('Experience')) {
       promptContext = formData.experience.map(e => e.desc).join('\n');
     } else if (taskName.includes('Project')) {
-      promptContext = formData.projects.map(p => p.desc).join('\n');
+      if (projectId) {
+        const targetProject = formData.projects.find(p => p.id === projectId);
+        promptContext = targetProject ? `${targetProject.name || ''}: ${targetProject.desc || ''}` : formData.projects.map(p => p.desc).join('\n');
+      } else {
+        promptContext = formData.projects.map(p => p.desc).join('\n');
+      }
     }
 
     try {
@@ -799,20 +814,31 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         ]
       }));
     } else if (aiAssistantTask.includes('Project')) {
-      setFormData(prev => ({
-        ...prev,
-        projects: [
-          ...prev.projects,
-          {
-            id: Date.now(),
-            name: `${prev.personalInfo.role || 'Core'} Project Platform`,
-            technology: 'React, Node.js, Cloud',
-            desc: aiAssistantOutput,
-            github: '',
-            liveDemo: ''
-          }
-        ]
-      }));
+      if (aiTargetProjectId) {
+        // Update the description of the specific project that triggered the AI
+        setFormData(prev => ({
+          ...prev,
+          projects: prev.projects.map(p =>
+            p.id === aiTargetProjectId ? { ...p, desc: aiAssistantOutput } : p
+          )
+        }));
+      } else {
+        // Fallback: add a new project if no target id
+        setFormData(prev => ({
+          ...prev,
+          projects: [
+            ...prev.projects,
+            {
+              id: Date.now(),
+              name: `${prev.personalInfo.role || 'Core'} Project Platform`,
+              technology: 'React, Node.js, Cloud',
+              desc: aiAssistantOutput,
+              github: '',
+              liveDemo: ''
+            }
+          ]
+        }));
+      }
     } else if (aiAssistantTask.includes('Skills')) {
       const parsed = aiAssistantOutput.split(',').map(s => s.trim()).filter(Boolean);
       setFormData(prev => ({
@@ -868,9 +894,31 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       title: p.name || 'Project',
       technology: p.technology || '',
       desc: p.desc || '',
-      points: p.desc ? p.desc.split('\n').filter(b => b.trim().length > 0) : []
+      points: p.desc ? p.desc.split('\n').filter(b => b.trim().length > 0) : [],
+      github: p.github || '',
+      liveDemo: p.liveDemo || ''
     })),
-    training: formData.certificates.map(c => c.name).filter(Boolean),
+    training: (formData.certificates || []).map(c => ({
+      name: c.name || '',
+      title: c.name || '',
+      org: c.organization || c.org || '',
+      organization: c.organization || c.org || '',
+      year: c.year || ''
+    })),
+    certificates: (formData.certificates || []).map(c => ({
+      name: c.name || '',
+      title: c.name || '',
+      org: c.organization || c.org || '',
+      organization: c.organization || c.org || '',
+      year: c.year || ''
+    })),
+    certifications: (formData.certificates || []).map(c => ({
+      name: c.name || '',
+      title: c.name || '',
+      org: c.organization || c.org || '',
+      organization: c.organization || c.org || '',
+      year: c.year || ''
+    })),
     languagesList: formData.languagesList || [],
     references: formData.references || '',
     signature: formData.signature

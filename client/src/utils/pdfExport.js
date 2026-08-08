@@ -40,20 +40,20 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
   if (!isPremium) {
     watermarkEl = document.createElement('div');
     watermarkEl.className = 'pdf-watermark';
-    watermarkEl.innerText = 'Created with Forge India Connect • Free Version';
+    watermarkEl.innerHTML = 'SAMPLE PREVIEW<br/><span style="font-size:16px">Forge India Connect</span>';
     watermarkEl.style.cssText = `
       position: absolute;
-      bottom: 12mm;
-      left: 0;
-      width: 100%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
       text-align: center;
-      font-size: 10px;
-      font-weight: 700;
-      color: #94a3b8;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-size: 48px;
+      font-weight: 900;
+      color: rgba(203, 213, 225, 0.4);
+      letter-spacing: 0.15em;
       pointer-events: none;
-      z-index: 99;
+      z-index: 9999;
+      white-space: nowrap;
     `;
     element.appendChild(watermarkEl);
   }

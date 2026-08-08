@@ -107,8 +107,14 @@ const defaultData = () => ({
 const ModernEditor = () => {
   const { sessionId } = useParams();
   const [saveStatus, setSaveStatus] = useState('All changes saved ✔');
-  const [accentColor, setAccentColor] = useState('#0284c7');
-  const [fontFamily, setFontFamily] = useState("'Inter', sans-serif");
+  const [accentColor, setAccentColor] = useState(() => {
+    const session = loadSession(sessionId);
+    return session?.color || '#0284c7';
+  });
+  const [fontFamily, setFontFamily] = useState(() => {
+    const session = loadSession(sessionId);
+    return session?.font || "'Inter', sans-serif";
+  });
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [sections, setSections] = useState([
     { id: 'summary', title: 'Summary', enabled: true },
@@ -116,6 +122,9 @@ const ModernEditor = () => {
     { id: 'projects', title: 'Projects', enabled: true },
     { id: 'skills', title: 'Skills', enabled: true },
     { id: 'education', title: 'Education', enabled: true },
+    { id: 'achievements', title: 'Achievements', enabled: true },
+    { id: 'certifications', title: 'Certifications', enabled: true },
+    { id: 'languages', title: 'Languages', enabled: true },
   ]);
   
   const [data, setData] = useState(() => {
