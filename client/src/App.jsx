@@ -1,4 +1,5 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
+import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/Landing';
 import OnboardingStart from './pages/OnboardingStart';
@@ -7,11 +8,27 @@ import ResumeBuilder from './pages/ResumeBuilder';
 import IndustryExamples from './pages/IndustryExamples';
 import IndustryCategory from './pages/IndustryCategory';
 import ResumeExample from './pages/ResumeExample';
+import ResumeExamples from './pages/ResumeExamples';
 import Templates from './pages/Templates';
 import TemplatePreview from './pages/TemplatePreview';
-import AdminTemplates from './pages/AdminTemplates';
-import AdminResumeExamples from './pages/AdminResumeExamples';
 import Plans from './pages/Plans';
+import Pricing from './pages/Pricing';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminPayments from './pages/admin/AdminPayments';
+import AdminTemplates from './pages/admin/AdminTemplates';
+import AddTemplate from './pages/admin/AddTemplate';
+import EditTemplate from './pages/admin/EditTemplate';
+import AdminResumeExamples from './pages/admin/AdminResumeExamples';
+import AdminPlans from './pages/admin/AdminPlans';
+import PlanForm from './pages/admin/PlanForm';
+import AdminReports from './pages/admin/AdminReports';
+import AdminDownloads from './pages/admin/AdminDownloads';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminUserDetails from './pages/admin/AdminUserDetails';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
+import { getAnonymousId } from './utils/userIdentity';
 import { Toaster } from 'react-hot-toast';
 
 // Dynamic Template Editors (lazy-loaded for performance)
@@ -33,6 +50,49 @@ const EditorLoader = () => (
 import AiResumeView from './pages/AiResumeView';
 
 function App() {
+  useEffect(() => {
+    getAnonymousId();
+  }, []);
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          localStorage.removeItem("user_premium");
+          return;
+        }
+
+        const response = await axios.get("http://localhost:5000/api/subscription/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.isPremium === true) {
+          localStorage.setItem("user_premium", "true");
+        } else {
+          localStorage.setItem("user_premium", "false");
+        }
+      } catch (error) {
+        console.error("Subscription check failed:", error);
+        localStorage.setItem("user_premium", "false");
+      }
+    };
+
+    const fetchPublicSettings = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/settings");
+        if (res.data.success && res.data.settings) {
+          localStorage.setItem("app_settings", JSON.stringify(res.data.settings));
+        }
+      } catch (error) {
+        console.error("Failed to fetch app settings:", error);
+      }
+    };
+
+    checkSubscription();
+    fetchPublicSettings();
+  }, []);
+
   return (
     <Router>
       <Toaster position="top-right" />
@@ -45,12 +105,32 @@ function App() {
         <Route path="/ai-resume/:sessionId" element={<AiResumeView />} />
         <Route path="/industry-examples" element={<IndustryExamples />} />
         <Route path="/industry-examples/:industryId" element={<IndustryCategory />} />
+        <Route path="/resume-examples" element={<ResumeExamples />} />
         <Route path="/resume-examples/:id" element={<ResumeExample />} />
         <Route path="/templates" element={<Templates />} />
         <Route path="/preview/:id" element={<TemplatePreview />} />
-        <Route path="/admin/templates" element={<AdminTemplates />} />
         <Route path="/admin/examples" element={<AdminResumeExamples />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        
+        <Route element={<AdminProtectedRoute />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/templates" element={<AdminTemplates />} />
+          <Route path="/admin/templates/add" element={<AddTemplate />} />
+          <Route path="/admin/templates/edit/:id" element={<EditTemplate />} />
+          <Route path="/admin/resume-examples" element={<AdminResumeExamples />} />
+          <Route path="/admin/plans" element={<AdminPlans />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/downloads" element={<AdminDownloads />} />
+          <Route path="/admin/payments" element={<AdminPayments />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users/:id" element={<AdminUserDetails />} />
+          <Route path="/admin/plans/add" element={<PlanForm />} />
+          <Route path="/admin/plans/edit/:id" element={<PlanForm />} />
+        </Route>
+        
         <Route path="/plans" element={<Plans />} />
+        <Route path="/pricing" element={<Pricing />} />
 
         {/* ── Dynamic Template-Specific Editors ── */}
         <Route path="/editor/executive/:sessionId" element={<Suspense fallback={<EditorLoader />}><ExecutiveEditor /></Suspense>} />

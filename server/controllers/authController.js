@@ -136,6 +136,13 @@ exports.login = async (req, res) => {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
 
+      if (user.isActive === false) {
+        return res.status(403).json({
+          success: false,
+          message: "Your account has been deactivated by the administrator.",
+        });
+      }
+
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -161,6 +168,13 @@ exports.login = async (req, res) => {
       const user = localUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
       if (!user) {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      }
+
+      if (user.isActive === false) {
+        return res.status(403).json({
+          success: false,
+          message: "Your account has been deactivated by the administrator.",
+        });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);

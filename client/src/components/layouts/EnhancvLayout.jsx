@@ -540,7 +540,7 @@ const EnhancvLayout = ({data, customColor,
       <SignatureBlock signature={data.signature} />
 
       {/* === PERMANENT WATERMARK FOOTER === */}
-      <ResumeFooter />
+      
           
     </div>
   );

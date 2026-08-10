@@ -8,7 +8,7 @@ const templateSchema = new mongoose.Schema(
     },
     industry: {
       type: String,
-      required: true,
+      default: "General",
     },
     category: {
       type: String,
@@ -22,6 +22,10 @@ const templateSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    previewImage: {
+      type: String,
+      default: "",
+    },
     atsScore: {
       type: Number,
       default: 95,
@@ -29,7 +33,6 @@ const templateSchema = new mongoose.Schema(
     layout: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ResumeLayout",
-      required: true,
     },
     isPremium: {
       type: Boolean,

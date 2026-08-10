@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { Trash2, Crown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Forge India Connect logo as a URL-encoded SVG data URI
 // (Same exact paths as ForgeLogo.jsx — blue F-bracket + yellow bar + yellow pyramid)
@@ -19,9 +20,30 @@ const ForgeLogo = () => (
 );
 
 const ResumeFooter = () => {
+  const navigate = useNavigate();
+
   const handleRemoveClick = () => {
-    window.open('/plans', '_blank');
+    const activeSessionId = localStorage.getItem('activeResumeSessionId') || window.location.pathname.split('/').pop();
+    navigate(`/plans?resumeId=${activeSessionId}`);
   };
+
+  const appSettingsString = localStorage.getItem('app_settings');
+  let appSettings = {};
+  if (appSettingsString) {
+    try {
+      appSettings = JSON.parse(appSettingsString);
+    } catch (e) {}
+  }
+
+  const isPremium = localStorage.getItem('user_premium') === 'true';
+  const adminWatermarkEnabled = appSettings.watermarkEnabled !== false;
+  const watermarkText = appSettings.watermarkText || "Powered by FORGE INDIA Connect";
+
+  // Is admin watermark setting ON? -> YES -> Is user premium? NO -> SHOW, YES -> HIDE
+  // Is admin watermark setting ON? -> NO -> HIDE
+  if (isPremium || !adminWatermarkEnabled) {
+    return null;
+  }
 
   return (
     <>
@@ -45,13 +67,20 @@ const ResumeFooter = () => {
         style={{
           marginTop: '1.5rem',
           paddingTop: '0.75rem',
+          paddingBottom: '0.75rem',
+          paddingLeft: '10mm',
+          paddingRight: '10mm',
           borderTop: '1px solid #e2e8f0',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
           boxSizing: 'border-box',
-          position: 'relative',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          background: 'white',
+          zIndex: 50,
           cursor: 'pointer',
           userSelect: 'none',
           WebkitUserSelect: 'none',
@@ -80,17 +109,19 @@ const ResumeFooter = () => {
           fontWeight: 500,
           fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
         }}>
-          Powered by
-
-          {/* Real Forge India Connect logo — inline SVG renders perfectly in html2canvas */}
-          <ForgeLogo />
-
-          {/* Brand text: FORGE INDIA Connect */}
-          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '0.15rem', fontWeight: 800, letterSpacing: '0.01em' }}>
-            <span style={{ color: '#0056b8', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>FORGE</span>
-            <span style={{ color: '#f59e0b', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>INDIA</span>
-            <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.68rem' }}>Connect</span>
-          </span>
+          {watermarkText.includes("FORGE INDIA") ? (
+            <>
+              Powered by
+              <ForgeLogo />
+              <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '0.15rem', fontWeight: 800, letterSpacing: '0.01em' }}>
+                <span style={{ color: '#0056b8', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>FORGE</span>
+                <span style={{ color: '#f59e0b', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>INDIA</span>
+                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.68rem' }}>Connect</span>
+              </span>
+            </>
+          ) : (
+            <span>{watermarkText}</span>
+          )}
         </span>
 
         {/* Remove Branding Hover Button (Pure CSS) */}

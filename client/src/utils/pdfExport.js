@@ -35,28 +35,7 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
   const origHeight = element.style.height;
   const origOverflow = element.style.overflow;
 
-  // Optional Watermark for non-premium users
-  let watermarkEl = null;
-  if (!isPremium) {
-    watermarkEl = document.createElement('div');
-    watermarkEl.className = 'pdf-watermark';
-    watermarkEl.innerHTML = 'SAMPLE PREVIEW<br/><span style="font-size:16px">Forge India Connect</span>';
-    watermarkEl.style.cssText = `
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(-45deg);
-      text-align: center;
-      font-size: 48px;
-      font-weight: 900;
-      color: rgba(203, 213, 225, 0.4);
-      letter-spacing: 0.15em;
-      pointer-events: none;
-      z-index: 9999;
-      white-space: nowrap;
-    `;
-    element.appendChild(watermarkEl);
-  }
+  // Diagonal watermark removed to allow clean footer watermark
 
   try {
     // Hide focus outlines and reset scaling
@@ -102,10 +81,7 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
     toast.error('PDF export failed. Opening print window...', { id: toastId });
     window.print();
   } finally {
-    // Remove watermark if added
-    if (watermarkEl && watermarkEl.parentNode) {
-      watermarkEl.parentNode.removeChild(watermarkEl);
-    }
+    // No watermark element to remove anymore
     // Restore original inline styles
     element.classList.remove('exporting-pdf');
     element.style.transform = origTransform;

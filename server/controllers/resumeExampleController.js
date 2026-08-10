@@ -398,7 +398,7 @@ exports.createResumeExample = async (req, res) => {
 exports.getAllResumeExamples = async (req, res) => {
   try {
     if (isDBConnected()) {
-      let examples = await ResumeExample.find().sort({ createdAt: -1 });
+      let examples = await ResumeExample.find({ isActive: true }).sort({ createdAt: -1 });
       if (examples.length === 0) {
         examples = await ResumeExample.insertMany(seedExamplesData);
       }
@@ -423,6 +423,7 @@ exports.searchResumeExamples = async (req, res) => {
     const regex = new RegExp(q, 'i');
     if (isDBConnected()) {
       const examples = await ResumeExample.find({
+        isActive: true,
         $or: [{ title: regex }, { category: regex }, { industry: regex }, { description: regex }]
       });
       return res.status(200).json({ success: true, count: examples.length, data: examples });
@@ -443,6 +444,7 @@ exports.getResumeExamplesByCategory = async (req, res) => {
     const { category } = req.params;
     if (isDBConnected()) {
       const examples = await ResumeExample.find({
+        isActive: true,
         category: { $regex: new RegExp(`^${category}$`, 'i') }
       });
       return res.status(200).json({ success: true, count: examples.length, data: examples });

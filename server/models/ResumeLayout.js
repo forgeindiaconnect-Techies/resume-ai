@@ -1,9 +1,34 @@
 const mongoose = require('mongoose');
 
 const ResumeLayoutSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: false, // Make it optional to avoid breaking existing documents, we can set true if needed later but for admin templates it's required
+  },
+  category: {
+    type: String,
+    default: "Professional",
+  },
+  description: {
+    type: String,
+    default: "",
+  },
+  previewImage: {
+    type: String,
+    default: "",
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+  usageCount: {
+    type: Number,
+    default: 0,
+  },
   resumeId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Resume'
+    ref: 'Resume',
+    required: false
   },
   layout: {
     type: String,

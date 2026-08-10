@@ -6,6 +6,7 @@ import ModernLayout from '../components/layouts/ModernLayout';
 import CreativeLayout from '../components/layouts/CreativeLayout';
 import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
 import MinimalLayout from '../components/layouts/MinimalLayout';
+import ResumeFooter from '../components/layouts/ResumeFooter';
 import { Search, Edit3, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 const categorySlugMap = {
@@ -2462,6 +2463,7 @@ const IndustryExamples = () => {
                   >
                     <div ref={resumeSheetRef} id="resume-preview-sheet" className="resume-page">
                       {renderPreviewLayout()}
+                      <ResumeFooter />
                     </div>
                   </div>
                 </div>

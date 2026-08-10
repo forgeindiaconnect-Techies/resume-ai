@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, AlertTriangle, Download, FileText, X, RefreshCw } from 'lucide-react';
 import { generateProfessionalFilename, exportResumeToPdf } from '../../utils/pdfExport';
+import { useNavigate } from 'react-router-dom';
 
 const DownloadWorkflowModal = ({
   isOpen,
@@ -11,6 +12,7 @@ const DownloadWorkflowModal = ({
   onEdit,
   onNavigateHome
 }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState('review'); // 'review' | 'confirm' | 'progress' | 'success' | 'error'
   const [progress, setProgress] = useState(0);
   const [customFilename, setCustomFilename] = useState('');
@@ -39,6 +41,24 @@ const DownloadWorkflowModal = ({
   const completionPercent = Math.round((completedCount / checks.length) * 100);
 
   const startPdfGeneration = async () => {
+    const appSettingsString = localStorage.getItem('app_settings');
+    let appSettings = {};
+    if (appSettingsString) {
+      try {
+        appSettings = JSON.parse(appSettingsString);
+      } catch (e) {}
+    }
+
+    const premiumDownloadOnly = appSettings.premiumDownloadOnly !== false; // default true
+    const isPremium = localStorage.getItem('user_premium') === 'true';
+
+    if (premiumDownloadOnly && !isPremium) {
+      alert("Please upgrade your plan to download without watermark.");
+      onClose();
+      navigate("/pricing");
+      return;
+    }
+
     setStep('progress');
     setProgress(15);
     

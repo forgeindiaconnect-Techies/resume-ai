@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const resumeExampleSchema = new mongoose.Schema(
   {
@@ -9,88 +9,36 @@ const resumeExampleSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: true,
-      trim: true,
-    },
-    industry: {
-      type: String,
-      default: 'Software Engineering',
-      trim: true,
-    },
-    experienceLevel: {
-      type: String,
-      default: '2-5 Years',
-    },
-    template: {
-      type: String,
-      default: 'modern',
-    },
-    previewImage: {
-      type: String,
-      default: '',
-    },
-    atsScore: {
-      type: Number,
-      default: 95,
+      default: "Professional",
     },
     description: {
       type: String,
-      default: '',
+      default: "",
     },
-    isFeatured: {
-      type: Boolean,
-      default: false,
+    previewImage: {
+      type: String,
+      default: "",
     },
-    isPremium: {
-      type: Boolean,
-      default: false,
+    resumeFile: {
+      type: String,
+      default: "",
     },
     resumeData: {
-      personalInfo: {
-        fullName: { type: String, default: '' },
-        role: { type: String, default: '' },
-        email: { type: String, default: '' },
-        phone: { type: String, default: '' },
-        location: { type: String, default: '' },
-        linkedin: { type: String, default: '' },
-        github: { type: String, default: '' },
-        summary: { type: String, default: '' },
-      },
-      summary: { type: String, default: '' },
-      skills: {
-        type: [String],
-        default: [],
-      },
-      experience: [
-        {
-          title: String,
-          company: String,
-          duration: String,
-          desc: String,
-        },
-      ],
-      education: [
-        {
-          degree: String,
-          institution: String,
-          tenure: String,
-          cgpa: String,
-        },
-      ],
-      projects: [
-        {
-          title: String,
-          technology: String,
-          desc: String,
-        },
-      ],
-      certifications: {
-        type: [String],
-        default: [],
-      },
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    views: {
+      type: Number,
+      default: 0,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-module.exports = mongoose.model('ResumeExample', resumeExampleSchema);
+module.exports = mongoose.model("ResumeExample", resumeExampleSchema);

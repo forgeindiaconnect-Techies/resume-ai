@@ -3,10 +3,15 @@ const User = require('../models/User');
 const Payment = require('../models/Payment');
 const Resume = require('../models/Resume');
 const Candidate = require('../models/Candidate');
+const ResumeLayout = require('../models/ResumeLayout');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cloudinary = require('../config/cloudinary');
 
 const DB_PATH = path.join(__dirname, '../database.json');
+const JWT_SECRET = process.env.JWT_SECRET || 'forge_secret_key_123_abc';
 
 const isDBConnected = () => mongoose.connection.readyState === 1;
 
@@ -108,5 +113,264 @@ exports.getAnalytics = async (req, res) => {
   } catch (error) {
     console.error('Admin getAnalytics error:', error);
     res.status(500).json({ success: false, message: 'Failed to generate metrics report' });
+  }
+};
+
+// Admin Login
+exports.loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    let user;
+    if (isDBConnected()) {
+      user = await User.findOne({ email });
+    } else {
+      const localUsers = getLocalCollection('users');
+      user = localUsers.find(u => u.email === email);
+    }
+
+    if (!user || user.role !== 'admin') {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials' });
+    }
+
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    return res.status(200).json({ success: true, token });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ success: false, message: 'Server error during login' });
+  }
+};
+
+// Get All Templates
+exports.getAllTemplates = async (req, res) => {
+  try {
+    const templates = await ResumeLayout.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      templates,
+    });
+  } catch (error) {
+    console.error("Get templates error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch templates",
+    });
+  }
+};
+
+// Create New Template
+exports.createTemplate = async (req, res) => {
+  try {
+    const {
+      name,
+      category,
+      description,
+      isActive,
+    } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Template name is required",
+      });
+    }
+
+    let previewImage = "";
+
+    if (req.file) {
+      const uploadResult = await new Promise(
+        (resolve, reject) => {
+          const stream =
+            cloudinary.uploader.upload_stream(
+              {
+                folder: "resume-builder/templates",
+                resource_type: "image",
+              },
+              (error, result) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
+              }
+            );
+
+          stream.end(req.file.buffer);
+        }
+      );
+
+      previewImage = uploadResult.secure_url;
+    }
+
+    const template = await ResumeLayout.create({
+      name,
+      category,
+      description,
+      isActive:
+        isActive === "true" || isActive === true,
+      previewImage,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Template created successfully",
+      template,
+    });
+
+  } catch (error) {
+    console.error("Create template error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to create template",
+      error: error.message,
+    });
+  }
+};
+
+exports.getTemplateById = async (req, res) => {
+  try {
+    const template = await ResumeLayout.findById(req.params.id);
+
+    if (!template) {
+      return res.status(404).json({
+        success: false,
+        message: "Template not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      template,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch template",
+    });
+  }
+};
+
+exports.updateTemplate = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      name,
+      category,
+      description,
+      isActive,
+    } = req.body;
+
+    const template = await ResumeLayout.findById(id);
+
+    if (!template) {
+      return res.status(404).json({
+        success: false,
+        message: "Template not found",
+      });
+    }
+
+    if (name !== undefined) {
+      template.name = name;
+    }
+
+    if (category !== undefined) {
+      template.category = category;
+    }
+
+    if (description !== undefined) {
+      template.description = description;
+    }
+
+    if (isActive !== undefined) {
+      template.isActive =
+        isActive === "true" || isActive === true;
+    }
+
+    await template.save();
+
+    res.json({
+      success: true,
+      message: "Template updated successfully",
+      template,
+    });
+  } catch (error) {
+    console.error("Update template error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update template",
+    });
+  }
+};
+
+exports.toggleTemplateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const template = await ResumeLayout.findById(id);
+
+    if (!template) {
+      return res.status(404).json({
+        success: false,
+        message: "Template not found",
+      });
+    }
+
+    template.isActive = !template.isActive;
+
+    await template.save();
+
+    res.json({
+      success: true,
+      message: template.isActive
+        ? "Template activated"
+        : "Template deactivated",
+      template,
+    });
+  } catch (error) {
+    console.error("Toggle template error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update template status",
+    });
+  }
+};
+
+exports.deleteTemplate = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const template = await ResumeLayout.findById(id);
+
+    if (!template) {
+      return res.status(404).json({
+        success: false,
+        message: "Template not found",
+      });
+    }
+
+    await ResumeLayout.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: "Template deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete template error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete template",
+    });
   }
 };

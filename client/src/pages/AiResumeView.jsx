@@ -7,6 +7,7 @@ import MinimalLayout from '../components/layouts/MinimalLayout';
 import ExecutiveLayout from '../components/layouts/ExecutiveLayout';
 import CreativeLayout from '../components/layouts/CreativeLayout';
 import EnhancvLayout from '../components/layouts/EnhancvLayout';
+import ResumeFooter from '../components/layouts/ResumeFooter';
 import { 
   Sparkles, Download, ArrowLeft, Palette, Type, ShieldCheck, 
   Check, Edit2, Info
@@ -287,6 +288,7 @@ const AiResumeView = () => {
           onFocus={e => e.currentTarget.style.borderColor = '#0284c7'}
         >
           {renderLayout()}
+          <ResumeFooter />
         </div>
 
       </div>

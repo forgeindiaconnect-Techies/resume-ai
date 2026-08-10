@@ -34,22 +34,21 @@ const saveLocalTemplates = (templates) => {
 exports.getTemplates = async (req, res) => {
   try {
     if (isDBConnected()) {
-      const templates = await Template.find()
-        .populate("layout")
+      const templates = await Template.find({ isActive: true })
         .sort({ createdAt: -1 });
 
       res.status(200).json({
         success: true,
         count: templates.length,
-        data: templates,
+        templates,
       });
     } else {
       // Local fallback
-      const templates = getLocalTemplates();
+      const templates = getLocalTemplates().filter(t => t.isActive !== false);
       res.status(200).json({
         success: true,
         count: templates.length,
-        data: templates,
+        templates,
       });
     }
   } catch (error) {

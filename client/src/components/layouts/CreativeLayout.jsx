@@ -1,7 +1,6 @@
 import React from 'react';
 
 import SignatureBlock from '../common/SignatureBlock';
-import ResumeFooter from './ResumeFooter';
 
 const CreativeLayout = ({data, customColor, customFont,
   fontSize,
@@ -559,7 +558,7 @@ const CreativeLayout = ({data, customColor, customFont,
       {/* FULL-WIDTH FOOTER */}
       <SignatureBlock signature={data.signature} />
       <div style={{ padding: '0 1.8rem 1rem', background: 'white' }}>
-        <ResumeFooter />
+        
       </div>
           
     </div>

@@ -1,7 +1,6 @@
 import React from 'react';
 
 import SignatureBlock from '../common/SignatureBlock';
-import ResumeFooter from './ResumeFooter';
 
 const ExecutiveLayout = ({data, customColor, customFont,
   fontSize,
@@ -496,7 +495,7 @@ const ExecutiveLayout = ({data, customColor, customFont,
       <SignatureBlock signature={data.signature} />
 
       {/* === FOOTER WATERMARK === */}
-      <ResumeFooter />
+      
           
     </div>
   );

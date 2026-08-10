@@ -4,53 +4,6 @@ import Navbar from '../components/common/Navbar';
 import { getTemplates, useTemplate } from '../services/templateService';
 import { Search, ShieldCheck, Sparkles, Filter, CheckCircle } from 'lucide-react';
 
-const fallbackTemplates = [
-  {
-    _id: 'modern_tpl',
-    name: 'Modern ATS Template',
-    category: 'Technology',
-    industry: 'Software Engineering & IT',
-    description: 'Clean single and multi-column layout with vibrant accents, highly recommended for technical roles.',
-    atsScore: 98,
-    layout: { layout: 'modern', color: '#0284c7', columns: 2 }
-  },
-  {
-    _id: 'executive_tpl',
-    name: 'Executive Leadership Template',
-    category: 'Business',
-    industry: 'Management & Corporate',
-    description: 'Authoritative, elegant serif-infused header structure for directors, VPs, and senior executives.',
-    atsScore: 96,
-    layout: { layout: 'executive', color: '#1e293b', columns: 1 }
-  },
-  {
-    _id: 'creative_tpl',
-    name: 'Creative Portfolio Template',
-    category: 'Marketing',
-    industry: 'Design, UX & Media',
-    description: 'Bold sidebar layout with skill progress bars and project highlight blocks.',
-    atsScore: 94,
-    layout: { layout: 'creative', color: '#7c3aed', columns: 2 }
-  },
-  {
-    _id: 'professional_tpl',
-    name: 'Professional Standard Template',
-    category: 'Finance',
-    industry: 'Accounting, Banking & Legal',
-    description: 'Classic horizontal dividers, clean typography, 100% compliant with enterprise ATS scanners.',
-    atsScore: 99,
-    layout: { layout: 'professional', color: '#0f172a', columns: 1 }
-  },
-  {
-    _id: 'minimal_tpl',
-    name: 'Minimalist Sleek Template',
-    category: 'Education',
-    industry: 'Research, Academia & General',
-    description: 'Ultra-clean, distraction-free layout focusing strictly on experience and measurable achievements.',
-    atsScore: 95,
-    layout: { layout: 'minimal', color: '#334155', columns: 1 }
-  }
-];
 
 const Templates = () => {
   const navigate = useNavigate();
@@ -61,25 +14,24 @@ const Templates = () => {
 
   const categories = [
     'All',
-    'Technology',
-    'Business',
-    'Marketing',
-    'Finance',
-    'Education'
+    'Professional',
+    'Creative',
+    'Minimal',
+    'Modern'
   ];
 
   useEffect(() => {
     const fetchTemplatesData = async () => {
       try {
         const res = await getTemplates();
-        if (res.data && res.data.data && res.data.data.length > 0) {
-          setTemplates(res.data.data);
+        if (res.data && res.data.templates) {
+          setTemplates(res.data.templates);
         } else {
-          setTemplates(fallbackTemplates);
+          setTemplates([]);
         }
       } catch (error) {
-        console.error('Error fetching templates, using fallback:', error);
-        setTemplates(fallbackTemplates);
+        console.error('Error fetching templates:', error);
+        setTemplates([]);
       } finally {
         setLoading(false);
       }
@@ -89,7 +41,7 @@ const Templates = () => {
 
   const handleUseTemplate = (template) => {
     localStorage.setItem('source', 'template');
-    const layoutName = (template.layout?.layout || template.name || 'modern').toLowerCase();
+    const layoutName = (template.layout || 'modern').toLowerCase();
     const editorRouteMap = {
       enhancv:      '/editor/enhancv',
       executive:    '/editor/executive',
@@ -108,9 +60,8 @@ const Templates = () => {
   // Filter & Search Logic
   const filteredTemplates = templates.filter(tpl => {
     const matchesCategory = selectedCategory === 'All' || tpl.category === selectedCategory;
-    const matchesSearch = tpl.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          tpl.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          tpl.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (tpl.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (tpl.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -279,38 +230,36 @@ const Templates = () => {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  {/* Dynamic Graphic Preview based on layout configs */}
-                  <div style={{
-                    background: 'white',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: '100%',
-                    border: '1px solid #cbd5e1',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
-                    padding: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ height: '14px', width: '50%', background: tpl.layout?.color || '#0056b8', borderRadius: '4px' }} />
-                      <div style={{ height: '14px', width: '14px', borderRadius: '50%', background: '#cbd5e1' }} />
-                    </div>
-                    <div style={{ height: '6px', width: '30%', background: '#cbd5e1', borderRadius: '2px' }} />
-                    <div style={{ height: '1px', background: '#e2e8f0', margin: '4px 0' }} />
-                    <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ height: '10px', background: '#f1f5f9', borderRadius: '2px' }} />
-                        <div style={{ height: '18px', background: '#f1f5f9', borderRadius: '2px' }} />
+                  {tpl.previewImage ? (
+                    <img 
+                      src={tpl.previewImage} 
+                      alt={tpl.name} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px', border: '1px solid #cbd5e1' }} 
+                    />
+                  ) : (
+                    <div style={{
+                      background: 'white',
+                      borderRadius: '10px',
+                      width: '100%',
+                      height: '100%',
+                      border: '1px solid #cbd5e1',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
+                      padding: '12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ height: '14px', width: '50%', background: tpl.layout?.color || '#0056b8', borderRadius: '4px' }} />
+                        <div style={{ height: '14px', width: '14px', borderRadius: '50%', background: '#cbd5e1' }} />
                       </div>
-                      {tpl.layout?.columns > 1 && (
-                        <div style={{ width: '30%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <div style={{ height: '12px', background: '#e2e8f0', borderRadius: '2px' }} />
-                          <div style={{ height: '12px', background: '#e2e8f0', borderRadius: '2px' }} />
-                        </div>
-                      )}
+                      <div style={{ height: '6px', width: '30%', background: '#cbd5e1', borderRadius: '2px' }} />
+                      
+                      <div style={{ display: 'flex', gap: '8px', flex: 1, marginTop: '8px' }}>
+                        <div style={{ flex: 1, background: '#f8fafc', borderRadius: '4px' }} />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* ATS Score Badge */}
                   <div style={{
@@ -329,7 +278,7 @@ const Templates = () => {
                     backdropFilter: 'blur(4px)'
                   }}>
                     <ShieldCheck size={12} color="#10b981" />
-                    <span>ATS Score: {tpl.atsScore}%</span>
+                    <span>ATS Score: {tpl.atsScore || 95}%</span>
                   </div>
                 </div>
 

@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Briefcase, GraduationCap, Award, Code, Save, 
-  Download, Sparkles, Plus, Trash2, X, ChevronRight, ChevronLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2
+  Download, Sparkles, Plus, Trash2, X, ChevronRight, ChevronLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2,
+  AlertTriangle, Eye, Settings2, ShieldCheck, FileText, CheckCircle2
 } from 'lucide-react';
 import ModernResumeTemplate from '../components/builder/ModernResumeTemplate';
 import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
@@ -27,6 +28,7 @@ import LanguagesForm from '../components/resume/LanguagesForm';
 import AchievementsForm from '../components/resume/AchievementsForm';
 import SignatureForm from '../components/resume/SignatureForm';
 import AIAssistant from '../components/resume/AIAssistant';
+import ResumeFooter from '../components/layouts/ResumeFooter';
 import ResumeToolbar from '../components/resume/ResumeToolbar';
 import DragDropSections from '../components/DragDropSections';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -155,6 +157,13 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   };
 
   useEffect(() => {
+    // INTELLIGENT SYNC: If the current draft hasn't been paid for yet, ensure preview isn't artificially premium
+    const draft = JSON.parse(localStorage.getItem('localResumeDraft') || '{}');
+    if (draft.paymentStatus !== 'paid') {
+      localStorage.removeItem('user_premium');
+    }
+
+    // Load resume data
     const handleOpenPayment = (e) => {
       setPaymentReason(e.detail?.reason || 'download');
       setShowPaymentModal(true);
@@ -1733,10 +1742,12 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                 transformOrigin: 'top center',
                 transition: 'transform 0.15s ease-out',
                 background: 'white',
-                marginBottom: '4rem'
+                marginBottom: '4rem',
+                position: 'relative'
               }}
             >
               {renderLayout()}
+              <ResumeFooter />
             </div>
           </div>
 

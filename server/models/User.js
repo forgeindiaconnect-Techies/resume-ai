@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Name is required'],
     trim: true
   },
   email: {
@@ -14,13 +13,21 @@ const UserSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+  anonymousId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  lastSeenAt: {
+    type: Date,
+    default: Date.now,
+  },
   password: {
     type: String,
-    required: [true, 'Password is required']
   },
   role: {
     type: String,
-    enum: ['Employee', 'HR'],
+    enum: ['Employee', 'HR', 'admin'],
     default: 'Employee'
   },
   profileImage: {
@@ -31,21 +38,20 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: ['Free', 'Premium'],
     default: 'Free'
-  }
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 }, {
   timestamps: true
 });
 
 // Pre-save hook to hash passwords
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (err) {
-    next(err);
-  }
+UserSchema.pre('save', async function() {
+  if (!this.isModified('password') || !this.password) return;
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Method to compare candidate password

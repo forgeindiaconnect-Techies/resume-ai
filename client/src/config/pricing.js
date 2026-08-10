@@ -3,7 +3,7 @@ export const RESUME_PRICING = {
     id: "create",
     name: "Create Resume",
     description: "Build your resume manually",
-    price: 49,
+    price: 1,
     currency: "INR",
     features: [
       "High-quality PDF",

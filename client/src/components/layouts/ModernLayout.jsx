@@ -776,7 +776,7 @@ const ModernLayout = ({
 
       {/* FULL-WIDTH FOOTER WATERMARK ACROSS ENTIRE BOTTOM */}
       <div style={{ padding: '0 2rem 1.25rem', background: 'white', marginTop: 'auto' }}>
-        <ResumeFooter />
+        
       </div>
     </div>
   );

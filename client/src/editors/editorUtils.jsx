@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw, Sparkles, Lock, Eye, ZoomIn, ZoomOut, Maximize2, ShieldCheck, Award } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Trash2, Download, ArrowLeft, Palette, Type, Check, RefreshCw, Sparkles, Lock, Eye, ZoomIn, ZoomOut, Maximize2, ShieldCheck, Award, Edit3, Save, Search, RotateCcw, Image as ImageIcon, Briefcase, GraduationCap, Code, Globe, User, Medal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PaymentModal from '../components/common/PaymentModal';
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
@@ -13,8 +13,9 @@ import MinimalLayout from '../components/layouts/MinimalLayout';
 import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
 import EnhancvLayout from '../components/layouts/EnhancvLayout';
 import DragDropSections from '../components/DragDropSections';
+import ResumeFooter from '../components/layouts/ResumeFooter';
 
-// ─── Preset Color Swatches ────────────────────────────────────────────────
+// ─── Reusable Components ────────────────────────────────────────────────
 export const PRESET_COLORS = [
   { id: 'sky', name: 'Royal Blue', hex: '#0284c7' },
   { id: 'navy', name: 'Deep Navy', hex: '#1e3a8a' },
@@ -283,13 +284,30 @@ export const EditorShell = ({
     { id: 'enhancv', name: 'Enhancv', emoji: '⚡', isPremium: true, component: EnhancvLayout },
   ];
 
+  useEffect(() => {
+    // INTELLIGENT SYNC: If the current draft hasn't been paid for yet, ensure preview isn't artificially premium
+    const sessionId = window.location.pathname.split('/').pop();
+    const raw = localStorage.getItem(`resume_draft_${sessionId}`) || localStorage.getItem('localResumeDraft');
+    const draft = JSON.parse(raw || '{}');
+    if (draft.paymentStatus !== 'paid') {
+      localStorage.removeItem('user_premium');
+    }
+
+    const handleOpenPayment = (e) => {
+      setShowPaymentModal(true);
+    };
+    window.addEventListener('open-payment-modal', handleOpenPayment);
+    return () => window.removeEventListener('open-payment-modal', handleOpenPayment);
+  }, []);
+
   const source = localStorage.getItem('source') || 'create';
   console.log("Resume source:", source);
 
   const handleDownloadAction = () => {
     const isPremium = localStorage.getItem('user_premium') === 'true';
     if (!isPremium) {
-      setShowPaymentModal(true);
+      const sessionId = window.location.pathname.split('/').pop();
+      navigate(`/plans?resumeId=${sessionId}`);
     } else {
       setShowDownloadWorkflowModal(true);
     }
@@ -841,15 +859,8 @@ export const EditorShell = ({
           >
             <div id="resume-preview-sheet" className="resume-page" style={{ position: 'relative', overflow: 'hidden' }}>
               {renderedPreview}
-              {localStorage.getItem('user_premium') !== 'true' && (
-                <div className="pdf-watermark" style={{
-                  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-45deg)',
-                  textAlign: 'center', fontSize: '48px', fontWeight: 900, color: 'rgba(203, 213, 225, 0.4)',
-                  letterSpacing: '0.15em', pointerEvents: 'none', zIndex: 9999, whiteSpace: 'nowrap'
-                }}>
-                  SAMPLE PREVIEW<br/><span style={{ fontSize: '16px' }}>Forge India Connect</span>
-                </div>
-              )}
+              {/* Diagonal watermark removed to allow clean footer watermark */}
+              <ResumeFooter />
             </div>
           </div>
         </div>

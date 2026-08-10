@@ -92,6 +92,27 @@ router.get("/resumes", async (req, res) => {
 
 const resumeController = require('../controllers/resumeController');
 const authMiddleware = require('../middleware/authMiddleware');
+const premiumMiddleware = require('../middleware/premiumMiddleware');
+const Download = require('../models/Download');
+
+// Dummy backend download endpoint just to secure the API conceptually as requested
+router.post('/download', authMiddleware, premiumMiddleware, async (req, res) => {
+  try {
+    const subscription = req.subscription;
+    
+    await Download.create({
+      userId: req.user._id,
+      subscriptionId: subscription._id,
+      planId: subscription.planId,
+      downloadedAt: new Date(),
+    });
+
+    res.json({ success: true, message: "Download authorized via premium subscription and tracked" });
+  } catch (error) {
+    console.error("Download tracking error:", error);
+    res.status(500).json({ success: false, message: "Failed to process download" });
+  }
+});
 
 router.post('/resume-session/use-template/:id', authMiddleware, resumeController.createResumeFromTemplate);
 router.post('/resume-session', authMiddleware, resumeController.createResume);

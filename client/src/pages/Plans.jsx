@@ -10,8 +10,8 @@ const PRICING_PLANS = [
   {
     key: 'Single',
     title: '1 Resume Download',
-    price: '₹49',
-    rawPrice: 49,
+    price: '₹1',
+    rawPrice: 1,
     period: 'one-time',
     features: ['1 High-Res PDF Download', 'Basic ATS Check', 'Standard Templates'],
     popular: false,
@@ -69,8 +69,10 @@ const Plans = () => {
     });
   };
 
-  const completeInstantTestPayment = (payId) => {
-    localStorage.setItem('user_premium', 'true');
+  const completeInstantTestPayment = (payId, planKey) => {
+    if (planKey !== 'Single') {
+      localStorage.setItem('user_premium', 'true');
+    }
     setLoadingPayment(false);
     
     // Attempt to close the current tab (works if opened via window.open)
@@ -86,37 +88,77 @@ const Plans = () => {
     setLoadingPayment(true);
     try {
       const planObj = PRICING_PLANS.find(p => p.key === selectedPlan) || PRICING_PLANS[1];
+      const token = localStorage.getItem('token');
+      const activeSessionId = localStorage.getItem('activeResumeSessionId') || 'local_session';
 
       // 1. Create order on backend
       const resOrder = await fetch(`${API_BASE_URL}/payment/create-order`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planKey: selectedPlan })
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ planKey: selectedPlan, resumeSessionId: activeSessionId })
       });
       const dataOrder = await resOrder.json();
-
-      const orderInfo = dataOrder.order || {
-        paymentId: 'pay_' + Date.now(),
-        amount: planObj.rawPrice,
-        currency: 'INR'
-      };
-
-      // Auto-complete on Localhost
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      if (isLocalhost) {
-        completeInstantTestPayment(orderInfo.paymentId);
+      
+      if (!dataOrder.success) {
+        alert('Failed to initialize payment.');
+        setLoadingPayment(false);
         return;
       }
 
-      // 2. Simulate Secure Payment Processing
-      setTimeout(() => {
-        completeInstantTestPayment(orderInfo.paymentId);
-      }, 1500);
+      const options = {
+        key: dataOrder.razorpayKey,
+        amount: dataOrder.order.amount * 100,
+        currency: dataOrder.order.currency,
+        name: "Forge India Connect",
+        description: `Purchase ${planObj.title}`,
+        order_id: dataOrder.order.razorpayOrderId,
+        handler: async function (response) {
+          try {
+            const verifyRes = await fetch(`${API_BASE_URL}/payment/verify`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+              completeInstantTestPayment(response.razorpay_payment_id, selectedPlan);
+            } else {
+              alert('Payment verification failed.');
+              setLoadingPayment(false);
+            }
+          } catch (e) {
+            console.error(e);
+            alert('Error verifying payment.');
+            setLoadingPayment(false);
+          }
+        },
+        theme: {
+          color: "#4f46e5"
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        console.error(response.error);
+        alert('Payment Failed: ' + response.error.description);
+        setLoadingPayment(false);
+      });
+      rzp1.open();
 
     } catch (err) {
       console.error('Payment Error:', err);
-      completeInstantTestPayment('pay_demo_' + Date.now());
-    } finally {
+      alert('Could not start checkout process.');
       setLoadingPayment(false);
     }
   };
