@@ -65,15 +65,17 @@ const ResumeFooter = () => {
         onClick={handleRemoveClick}
         contentEditable={false}
         style={{
-          marginTop: '1.5rem',
-          paddingTop: '0.75rem',
-          borderTop: '1px solid #e2e8f0',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
           boxSizing: 'border-box',
-          position: 'relative',
+          position: 'absolute',
+          bottom: '10px',
+          left: '0',
+          padding: '0.65rem 15mm',
+          background: 'transparent',
+          zIndex: 50,
           cursor: 'pointer',
           userSelect: 'none',
           WebkitUserSelect: 'none',
@@ -87,7 +89,8 @@ const ResumeFooter = () => {
           color: '#94a3b8',
           fontWeight: 500,
           letterSpacing: '0.02em',
-          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+          textShadow: '0 0 6px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)'
         }}>
           www.forgeindiaconnect.com
         </span>
@@ -100,21 +103,16 @@ const ResumeFooter = () => {
           fontSize: '0.68rem',
           color: '#94a3b8',
           fontWeight: 500,
-          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+          textShadow: '0 0 6px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)'
         }}>
-          {watermarkText.includes("FORGE INDIA") ? (
-            <>
-              Powered by
-              <ForgeLogo />
-              <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '0.15rem', fontWeight: 800, letterSpacing: '0.01em' }}>
-                <span style={{ color: '#0056b8', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>FORGE</span>
-                <span style={{ color: '#f59e0b', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>INDIA</span>
-                <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.68rem' }}>Connect</span>
-              </span>
-            </>
-          ) : (
-            <span>{watermarkText}</span>
-          )}
+          Powered by
+          <ForgeLogo />
+          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '0.15rem', fontWeight: 800, letterSpacing: '0.01em' }}>
+            <span style={{ color: '#0056b8', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>FORGE</span>
+            <span style={{ color: '#f59e0b', fontFamily: "'Arial Black', 'Inter', sans-serif", fontSize: '0.68rem' }}>INDIA</span>
+            <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.68rem' }}>Connect</span>
+          </span>
         </span>
 
         {/* Remove Branding Hover Button (Pure CSS) */}
