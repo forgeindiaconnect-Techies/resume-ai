@@ -259,3 +259,211 @@
   overflow: hidden;
   box-shadow: 0 8px 40px rgba(0,0,0,0.18);
 }
+
+/* ─── Download Payment Modal ─── */
+.download-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(5px);
+}
+
+.download-modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 460px;
+
+  background: #ffffff;
+
+  border-radius: 22px;
+
+  padding: 34px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.22);
+
+  text-align: center;
+}
+
+.modal-close {
+  position: absolute;
+
+  top: 14px;
+  right: 16px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  background: transparent;
+
+  font-size: 26px;
+
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+.success-circle {
+  width: 60px;
+  height: 60px;
+
+  margin: 0 auto 18px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e9f9f1;
+  color: #059669;
+
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.download-modal h2 {
+  margin: 0;
+
+  font-size: 25px;
+  font-weight: 800;
+
+  color: #0f172a;
+}
+
+.modal-subtitle {
+  margin: 9px 0 24px;
+
+  color: #64748b;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.download-offer {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 14px;
+
+  text-align: left;
+
+  background: #f8fafc;
+}
+
+.offer-label {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.offer-description {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: 13px;
+
+  color: #64748b;
+}
+
+.download-offer strong {
+  font-size: 26px;
+
+  color: #0097d1;
+}
+
+.download-benefits {
+  margin: 20px 0;
+
+  text-align: left;
+}
+
+.download-benefits div {
+  display: flex;
+
+  gap: 10px;
+
+  margin: 9px 0;
+
+  font-size: 14px;
+
+  color: #334155;
+}
+
+.download-benefits span {
+  color: #059669;
+
+  font-weight: 800;
+}
+
+.continue-payment-btn {
+  width: 100%;
+
+  padding: 15px 20px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #0097d1;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.continue-payment-btn:hover {
+  transform: translateY(-1px);
+}
+
+.keep-editing-btn {
+  margin-top: 14px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #475569;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.secure-text {
+  margin-top: 18px;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+}

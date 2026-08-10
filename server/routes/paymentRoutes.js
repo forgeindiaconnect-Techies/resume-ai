@@ -18,6 +18,7 @@ const optionalAuth = (req, res, next) => {
 
 router.post('/create-order', optionalAuth, paymentController.createOrder);
 router.post('/verify', optionalAuth, paymentController.verifyPayment);
+router.post('/use-download', optionalAuth, paymentController.useDownload);
 router.get('/history', optionalAuth, paymentController.getHistory);
 
 module.exports = router;

@@ -333,12 +333,22 @@ const LandingPage = () => {
               <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📝</div>
               <div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>Create Resume</h3>
-                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Build it yourself</p>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Build your resume your way</p>
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#0284c7', margin: '0.5rem 0' }}>From ₹49</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', margin: '0.5rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Free to create
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Fully editable
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Live preview
+                </div>
+              </div>
               <button style={{
                 background: '#f1f5f9', color: '#0f172a', border: 'none', padding: '0.75rem', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 600, width: '100%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', marginTop: 'auto'
               }}>
                 Start Creating <ArrowRight size={16} />
               </button>
@@ -359,12 +369,22 @@ const LandingPage = () => {
               <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>✨</div>
               <div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>Generate with AI</h3>
-                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Let AI build it</p>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Let AI help build your resume</p>
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#0ea5e9', margin: '0.5rem 0' }}>From ₹99</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', margin: '0.5rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> AI-powered writing
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Edit before downloading
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Live preview
+                </div>
+              </div>
               <button style={{
                 background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', border: 'none', padding: '0.75rem', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 700, width: '100%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', marginTop: 'auto'
               }}>
                 Generate with AI
               </button>
@@ -385,12 +405,22 @@ const LandingPage = () => {
               <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📄</div>
               <div>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>Resume Examples</h3>
-                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Start from templates</p>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Start with a professional template</p>
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 600, color: '#0284c7', margin: '0.5rem 0' }}>From ₹79</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', margin: '0.5rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Professional templates
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Fully customizable
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Live preview
+                </div>
+              </div>
               <button style={{
                 background: '#f1f5f9', color: '#0f172a', border: 'none', padding: '0.75rem', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 600, width: '100%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', marginTop: 'auto'
               }}>
                 Browse Examples <ArrowRight size={16} />
               </button>
@@ -398,8 +428,17 @@ const LandingPage = () => {
 
           </div>
 
-          <div style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.95rem', fontWeight: 700 }}>
-            <Sparkles size={16} color="#eab308" /> Trusted by 10,000+ Professionals
+          <div style={{ marginTop: '3.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#0f172a', fontSize: '1.25rem', fontWeight: 700 }}>
+              🔒 Create for free. Pay only when you download.
+            </div>
+            <div style={{ color: '#64748b', fontSize: '0.95rem', fontWeight: 500 }}>
+              No subscription • One-time payment
+            </div>
+            
+            <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.95rem', fontWeight: 600 }}>
+              ✨ Trusted by 10,000+ professionals
+            </div>
           </div>
         </section>
 

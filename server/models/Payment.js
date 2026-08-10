@@ -17,12 +17,27 @@ const PaymentSchema = new mongoose.Schema({
   },
   plan: {
     type: String,
-    enum: ['Free', 'Basic', 'Pro'],
     default: 'Free'
   },
   paymentId: {
     type: String,
-    required: true
+    required: false
+  },
+  resumeSessionId: {
+    type: String,
+    required: false
+  },
+  downloadUsed: {
+    type: Boolean,
+    default: false
+  },
+  razorpayOrderId: {
+    type: String,
+    required: false
+  },
+  razorpayPaymentId: {
+    type: String,
+    required: false
   }
 }, {
   timestamps: true

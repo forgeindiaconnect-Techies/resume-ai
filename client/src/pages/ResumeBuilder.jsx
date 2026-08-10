@@ -36,6 +36,7 @@ import PaymentModal from '../components/common/PaymentModal';
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
 import PhotoEditorModal from '../components/common/PhotoEditorModal';
 import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
+import { RESUME_PRICING } from '../config/pricing';
 
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
   const { resumeId } = useParams();
@@ -529,14 +530,146 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     return Math.min(score, 98);
   };
 
-  const handleDownload = () => {
-    const isPremium = localStorage.getItem('user_premium') === 'true';
-    if (!isPremium) {
-      setShowPaymentModal(true);
-    } else {
+  const currentPricing = RESUME_PRICING[formData?.source] || RESUME_PRICING['create'];
+
+  const handleTestPayment = async () => {
+    try {
+      const activeSessionId = resumeSessionId || localStorage.getItem('activeResumeSessionId') || 'local_session';
+      const token = localStorage.getItem('token');
+      
+      const resOrder = await fetch(`${API_BASE_URL}/payment/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          amount: currentPricing?.price,
+          planKey: formData?.source,
+          resumeSessionId: activeSessionId
+        })
+      });
+      
+      const orderData = await resOrder.json();
+      if (!orderData.success) {
+        alert('Failed to initialize payment.');
+        return;
+      }
+
+      const options = {
+        key: orderData.razorpayKey,
+        amount: orderData.order.amount * 100,
+        currency: orderData.order.currency,
+        name: "Forge India Connect",
+        description: `Download ${currentPricing?.name}`,
+        order_id: orderData.order.razorpayOrderId,
+        handler: async function (response) {
+          try {
+            const verifyRes = await fetch(`${API_BASE_URL}/payment/verify`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+              const updatedFormData = {
+                ...formData,
+                paymentStatus: "paid",
+                paymentAmount: currentPricing?.price,
+              };
+          
+              setFormData(updatedFormData);
+              
+              if (activeSessionId) {
+                localStorage.setItem(`resume_draft_${activeSessionId}`, JSON.stringify(updatedFormData));
+              }
+              localStorage.setItem('localResumeDraft', JSON.stringify(updatedFormData));
+          
+              setShowPaymentModal(false);
+          
+              setTimeout(() => {
+                setShowFullPreviewModal(false);
+                setShowDownloadWorkflowModal(true);
+              }, 300);
+            } else {
+              alert('Payment verification failed.');
+            }
+          } catch (e) {
+            console.error(e);
+            alert('Error verifying payment.');
+          }
+        },
+        prefill: {
+          name: formData.personalInfo?.name || "",
+          email: formData.personalInfo?.email || "",
+          contact: formData.personalInfo?.phone || ""
+        },
+        theme: {
+          color: "#0097d1"
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        console.error(response.error);
+        alert('Payment Failed: ' + response.error.description);
+      });
+      rzp1.open();
+      
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Could not start checkout process.');
+    }
+  };
+
+  const handleDownload = async () => {
+    if (formData?.paymentStatus === "paid") {
+      
+      const activeSessionId = resumeSessionId || localStorage.getItem('activeResumeSessionId') || 'local_session';
+      const token = localStorage.getItem('token');
+      
+      try {
+        const res = await fetch(`${API_BASE_URL}/payment/use-download`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({ resumeSessionId: activeSessionId })
+        });
+        const data = await res.json();
+        
+        if (!data.success) {
+          alert(data.message || 'Download already used or unauthorized.');
+          // Reset payment status since it's used
+          const updatedFormData = { ...formData, paymentStatus: 'pending' };
+          setFormData(updatedFormData);
+          localStorage.setItem('localResumeDraft', JSON.stringify(updatedFormData));
+          if (activeSessionId) {
+             localStorage.setItem(`resume_draft_${activeSessionId}`, JSON.stringify(updatedFormData));
+          }
+          setShowPaymentModal(true);
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Failed to authorize download.');
+        return;
+      }
+
       setShowFullPreviewModal(false);
       setShowDownloadWorkflowModal(true);
+      return;
     }
+    setShowPaymentModal(true);
   };
 
   // Handlers for personal details
@@ -1949,16 +2082,93 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         onNavigateHome={() => navigate('/')}
       />
 
-      {/* Razorpay Payment Modal */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        planType="PREMIUM"
-        reason={paymentReason}
-        onSuccessDownload={() => {
-          setShowDownloadWorkflowModal(true);
-        }}
-      />
+      {/* Fake Test Payment Modal */}
+      {showPaymentModal && (
+        <div className="download-modal-overlay">
+
+          <div className="download-modal">
+
+            <button
+              className="modal-close"
+              onClick={() => setShowPaymentModal(false)}
+            >
+              ×
+            </button>
+
+            <div className="success-circle">
+              ✓
+            </div>
+
+            <h2>Your resume is ready!</h2>
+
+            <p className="modal-subtitle">
+              Your professional resume has been created successfully.
+            </p>
+
+            <div className="download-offer">
+
+              <div>
+                <span className="offer-label">
+                  Final PDF Download
+                </span>
+
+                <span className="offer-description">
+                  One-time payment
+                </span>
+              </div>
+
+              <strong>
+                ₹{currentPricing?.price}
+              </strong>
+
+            </div>
+
+            <div className="download-benefits">
+
+              <div>
+                <span>✓</span>
+                High-quality PDF
+              </div>
+
+              <div>
+                <span>✓</span>
+                No watermark
+              </div>
+
+              <div>
+                <span>✓</span>
+                Instant download
+              </div>
+
+              <div>
+                <span>✓</span>
+                No subscription
+              </div>
+
+            </div>
+
+            <button
+              className="continue-payment-btn"
+              onClick={handleTestPayment}
+            >
+              Continue to Payment — ₹{currentPricing?.price}
+            </button>
+
+            <button
+              className="keep-editing-btn"
+              onClick={() => setShowPaymentModal(false)}
+            >
+              ← Keep Editing
+            </button>
+
+            <div className="secure-text">
+              🔒 One-time payment • Secure checkout
+            </div>
+
+          </div>
+
+        </div>
+      )}
 
       {/* Profile Photo Editor Modal */}
       <PhotoEditorModal

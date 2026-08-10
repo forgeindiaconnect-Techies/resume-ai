@@ -188,6 +188,31 @@
       "paymentId": "pay_2s96qmy6b",
       "orderId": "order_7bzuwql03",
       "createdAt": "2026-08-03T12:36:28.314Z"
+    },
+    {
+      "_id": "1786339813274",
+      "userId": "guest_user",
+      "amount": 199,
+      "currency": "INR",
+      "plan": "1 Month Premium",
+      "planKey": "create",
+      "status": "Pending",
+      "paymentId": "pay_nuagn4sg0",
+      "orderId": "order_st0z4syhy",
+      "createdAt": "2026-08-10T05:30:13.274Z"
+    },
+    {
+      "_id": "1786340241835",
+      "userId": "guest_user",
+      "amount": 99,
+      "currency": "INR",
+      "plan": "ai",
+      "status": "Pending",
+      "paymentId": "order_TNxCvTlfUuI8jl",
+      "razorpayOrderId": "order_TNxCvTlfUuI8jl",
+      "resumeSessionId": "session_ai_1786338136579",
+      "downloadUsed": false,
+      "createdAt": "2026-08-10T05:37:21.835Z"
     }
   ]
 }
