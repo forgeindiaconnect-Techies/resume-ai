@@ -189,7 +189,7 @@ const LandingPage = () => {
           {[
             { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
             { label: 'Features', href: '#features' },
-            { label: 'Examples', onClick: () => navigate('/resume-examples') },
+            { label: 'Examples', onClick: () => navigate('/industry-examples') },
             { label: 'Pricing', href: '#pricing' },
             { label: 'Contact', onClick: () => setShowContactModal(true) }
           ].map((item, idx) => (
@@ -399,7 +399,7 @@ const LandingPage = () => {
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
             onClick={() => {
               localStorage.setItem('source', 'template');
-              navigate('/resume-examples');
+              navigate('/industry-examples');
             }}
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📄</div>
@@ -861,7 +861,7 @@ const LandingPage = () => {
           </div>
           <div>
             <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Navigation</h4>
-            <span onClick={() => navigate('/resume-examples')} style={{ fontSize: '0.85rem', color: '#94a3b8', cursor: 'pointer', display: 'block', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = 'white'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>Resume Examples</span>
+            <span onClick={() => navigate('/industry-examples')} style={{ fontSize: '0.85rem', color: '#94a3b8', cursor: 'pointer', display: 'block', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = 'white'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>Industry Examples</span>
           </div>
           <div>
             <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Company</h4>
