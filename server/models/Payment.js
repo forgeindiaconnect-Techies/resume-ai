@@ -20,6 +20,14 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    email: {
+      type: String,
+      default: "",
+    },
+    plan: {
+      type: String,
+      default: "",
+    },
     razorpayOrderId: {
       type: String,
       required: true,

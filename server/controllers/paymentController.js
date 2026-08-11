@@ -8,105 +8,97 @@ const Resume = require("../models/Resume");
 
 exports.createOrder = async (req, res) => {
   try {
-    const { email, resumeId, planId, resumeSessionId, amount, watermarkRemoval } = req.body;
-    const targetResumeId = resumeId || resumeSessionId;
+    const { email, resumeId, plan } = req.body;
 
-    if (!planId && !targetResumeId) {
+    if (!email || !resumeId || !plan) {
       return res.status(400).json({
         success: false,
-        message: "Plan ID or Resume ID is required",
+        message: "Email, resumeId and plan are required",
+      });
+    }
+
+    const plans = {
+      watermarked: {
+        amount: 99,
+        watermarkRemoval: false,
+      },
+      no_watermark: {
+        amount: 199,
+        watermarkRemoval: true,
+      },
+    };
+
+    const selectedPlan = plans[plan];
+
+    if (!selectedPlan) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment plan",
       });
     }
 
     const User = require("../models/User");
+    const normalizedEmail = email.trim().toLowerCase();
 
-    // 1. Find User by email or token/userId
-    let user = null;
-    if (email) {
-      user = await User.findOne({ email: email.trim().toLowerCase() });
-    }
-    if (!user && req.user) {
-      const targetUserId = req.user.id || req.user._id;
-      user = await User.findOne({
-        $or: [
-          ...(mongoose.Types.ObjectId.isValid(targetUserId) ? [{ _id: targetUserId }] : []),
-          { userId: targetUserId }
-        ]
-      });
-    }
-    if (!user && req.body.userId) {
-      user = await User.findOne({
-        $or: [
-          ...(mongoose.Types.ObjectId.isValid(req.body.userId) ? [{ _id: req.body.userId }] : []),
-          { userId: req.body.userId }
-        ]
-      });
-    }
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found. Please provide a valid email.",
-      });
-    }
-
-    // 2. Find or Create Resume by resumeId
-    let resume = null;
-    if (targetResumeId) {
-      const idFilter = [];
-      if (mongoose.Types.ObjectId.isValid(targetResumeId)) {
-        idFilter.push({ _id: targetResumeId });
-      }
-      idFilter.push({ resumeId: targetResumeId });
-
-      resume = await Resume.findOne({ $or: idFilter });
-      if (!resume) {
-        resume = await Resume.create({
-          userId: user._id,
-          resumeId: targetResumeId.startsWith("RESUME_") ? targetResumeId : `RESUME_${Date.now()}`,
-          title: "My Resume"
-        });
-      } else {
-        // Link resume to user if not already linked
-        if (!resume.userId || resume.userId.toString() !== user._id.toString()) {
-          resume.userId = user._id;
-          await resume.save();
-        }
-      }
-    }
-
-    const orderAmount = amount || 79;
-    const amountInPaise = Math.round(orderAmount * 100);
-
-    // 3. Create Razorpay Order
-    const order = await razorpay.orders.create({
-      amount: amountInPaise,
-      currency: "INR",
-      receipt: `resume_${resume ? resume.resumeId : Date.now()}`,
+    let user = await User.findOne({
+      email: normalizedEmail,
     });
 
-    // 4. Save Payment Record with status = 'created' (Step 31.8)
+    if (!user) {
+      user = await User.create({
+        userId: `USR_${Date.now()}`,
+        email: normalizedEmail,
+        isGuest: false,
+      });
+    }
+
+    let resume = await Resume.findOne({
+      resumeId,
+    });
+
+    if (!resume) {
+      // The tutorial expected a 404 here, but because users can click Download
+      // before explicitly saving, we must auto-create the Resume record in the DB!
+      resume = await Resume.create({
+        userId: user._id,
+        resumeId: resumeId.startsWith("RESUME_") ? resumeId : `RESUME_${Date.now()}`,
+        title: "My Resume"
+      });
+    }
+
+    resume.userId = user._id;
+    await resume.save();
+
+    const options = {
+      amount: selectedPlan.amount * 100,
+      currency: "INR",
+      receipt: `resume_${resumeId}_${Date.now()}`,
+    };
+
+    const order = await razorpay.orders.create(options);
+
     const payment = await Payment.create({
       userId: user._id,
-      resumeId: resume ? resume._id : undefined,
-      resumeReference: resume ? resume.resumeId : targetResumeId,
+      resumeId: resume._id,
+      resumeReference: resumeId,
+      email: normalizedEmail,
+      plan: plan,
+      amount: selectedPlan.amount,
       razorpayOrderId: order.id,
-      amount: orderAmount,
-      currency: "INR",
       status: "created",
+      watermarkRemoval: selectedPlan.watermarkRemoval,
       downloadAllowed: false,
       downloadUsed: false,
-      watermarkRemoval: watermarkRemoval || false
     });
 
-    res.json({
+    return res.status(201).json({
       success: true,
       order: {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
       },
-      keyId: process.env.RAZORPAY_KEY_ID,
-      paymentId: payment._id
+      paymentId: payment._id,
     });
   } catch (error) {
     console.error("Create Razorpay order error:", error);

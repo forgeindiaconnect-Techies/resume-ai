@@ -3,6 +3,10 @@ import { getAnonymousId } from "./userIdentity";
 import { API_BASE_URL } from "../config/api";
 
 export const identifyUser = async (email = "") => {
+  if (!email || email.trim() === "") {
+    return { success: false, message: "No email provided" };
+  }
+
   const anonymousId = getAnonymousId();
 
   const response = await axios.post(`${API_BASE_URL}/users/identify`, {

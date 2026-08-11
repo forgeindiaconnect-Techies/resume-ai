@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Briefcase, GraduationCap, Award, Code, Save, 
   Download, Sparkles, Plus, Trash2, X, ChevronRight, ChevronLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2,
-  AlertTriangle, Eye, Settings2, ShieldCheck, FileText, CheckCircle2
+  AlertTriangle, Eye, Settings2, ShieldCheck, FileText, CheckCircle2, CreditCard
 } from 'lucide-react';
 import ModernResumeTemplate from '../components/builder/ModernResumeTemplate';
 import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
@@ -52,6 +52,9 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [paymentReason, setPaymentReason] = useState('download'); // Default
   const [showFullPreviewModal, setShowFullPreviewModal] = useState(false);
   const [showDownloadWorkflowModal, setShowDownloadWorkflowModal] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState("watermarked");
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   
   // AI Assistant States
@@ -543,8 +546,49 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const currentPricing = RESUME_PRICING[formData?.source] || RESUME_PRICING['create'];
 
   const handleDownload = () => {
-    setShowFullPreviewModal(false);
-    setShowDownloadWorkflowModal(true);
+    setShowDownloadModal(true);
+  };
+
+  const handleContinueToPayment = async () => {
+    if (!email.trim()) {
+      alert("Please enter your email ID.");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      alert("Please enter a valid email ID.");
+      return;
+    }
+
+    if (!selectedPlan) {
+      alert("Please select a payment plan.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/payments/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          resumeId: formData.resumeId || 'RESUME_001',
+          plan: selectedPlan,
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Unable to start payment.");
+      }
+
+      console.log("Razorpay order:", data);
+
+      // Step 44 will open Razorpay using this order.
+    } catch (error) {
+      console.error("Create payment order error:", error);
+      alert(error.message || "Unable to start payment.");
+    }
   };
 
   // Handlers for personal details
@@ -1075,6 +1119,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         borderBottom: '1px solid #e2e8f0', 
         padding: '0.75rem 2rem', 
         display: 'flex', 
+        flexWrap: 'wrap',
         justifyContent: 'center', 
         gap: '0.85rem', 
         flex: '0 0 auto',
@@ -1949,7 +1994,6 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         )}
       </AnimatePresence>
 
-      {/* Steps 28-34: Resume Review & Professional Download Workflow Modal */}
       <DownloadWorkflowModal
         isOpen={showDownloadWorkflowModal}
         onClose={() => setShowDownloadWorkflowModal(false)}
@@ -1958,6 +2002,79 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         onEdit={() => setShowDownloadWorkflowModal(false)}
         onNavigateHome={() => navigate('/')}
       />
+
+      <AnimatePresence>
+        {showDownloadModal && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '500px', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', overflow: 'hidden', border: '1px solid #e2e8f0', padding: '2rem' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Download Your Resume</h3>
+                <button onClick={() => setShowDownloadModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={20} /></button>
+              </div>
+              
+              <p style={{ margin: '0 0 1.5rem', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>
+                Enter your email address and select your preferred download option to continue.
+              </p>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Email Address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="john@example.com"
+                  style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '2rem' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Select your plan</label>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                  {/* Basic Plan */}
+                  <div 
+                    onClick={() => setSelectedPlan("watermarked")}
+                    style={{ cursor: 'pointer', padding: '1.25rem', border: selectedPlan === "watermarked" ? '2px solid #0284c7' : '2px solid #cbd5e1', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s', background: selectedPlan === "watermarked" ? '#f0f9ff' : '#f8fafc' }}
+                  >
+                    <div>
+                      <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.05rem', color: selectedPlan === "watermarked" ? '#0284c7' : '#334155', fontWeight: 800 }}>Resume Download</h4>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Watermark</p>
+                    </div>
+                    <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === "watermarked" ? '#0284c7' : '#475569' }}>₹99</div>
+                  </div>
+
+                  {/* Premium Plan */}
+                  <div 
+                    onClick={() => setSelectedPlan("no_watermark")}
+                    style={{ position: 'relative', cursor: 'pointer', padding: '1.25rem', border: selectedPlan === "no_watermark" ? '2px solid #0ea5e9' : '2px solid #cbd5e1', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s', background: selectedPlan === "no_watermark" ? '#f0f9ff' : 'white' }}
+                  >
+                    <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0ea5e9', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
+                    <div>
+                      <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.05rem', color: selectedPlan === "no_watermark" ? '#0ea5e9' : '#334155', fontWeight: 800 }}>Download + Remove Watermark</h4>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: selectedPlan === "no_watermark" ? '#0284c7' : '#64748b', fontWeight: 500 }}>High-res PDF, No Watermark</p>
+                    </div>
+                    <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === "no_watermark" ? '#0ea5e9' : '#475569' }}>₹199</div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={handleContinueToPayment}
+                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontWeight: 900, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              >
+                <CreditCard size={20} />
+                Continue to Payment
+              </button>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Profile Photo Editor Modal */}
       <PhotoEditorModal
