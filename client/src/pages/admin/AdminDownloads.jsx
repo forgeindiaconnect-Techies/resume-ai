@@ -37,7 +37,7 @@ const AdminDownloads = () => {
 
   const filteredDownloads = downloads.filter((download) => {
     const user = download.userId?.name || "";
-    const email = download.userId?.email || "";
+    const email = download.email || download.userId?.email || "";
     const resume = download.resumeId?.title || "";
     const plan = download.planId?.name || "";
 
@@ -94,8 +94,9 @@ const AdminDownloads = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>User</th>
+                  <th>User / Email</th>
                   <th>Resume</th>
+                  <th>Watermark</th>
                   <th>Plan</th>
                   <th>Downloaded</th>
                 </tr>
@@ -106,12 +107,19 @@ const AdminDownloads = () => {
                     <td>
                       <div className="payment-user">
                         <strong>
-                          {download.userId?.name || "Unknown"}
+                          {download.userId?.name || "Anonymous"}
                         </strong>
-                        <span>{download.userId?.email || "-"}</span>
+                        <span>{download.email || download.userId?.email || "-"}</span>
                       </div>
                     </td>
                     <td>{download.resumeId?.title || "Resume"}</td>
+                    <td>
+                      {download.watermarkApplied ? (
+                        <span style={{color: '#64748b', fontWeight: 600}}>Applied</span>
+                      ) : (
+                        <span style={{color: '#059669', fontWeight: 600}}>Clean</span>
+                      )}
+                    </td>
                     <td>{download.planId?.name || "-"}</td>
                     <td>
                       {new Date(download.downloadedAt).toLocaleString("en-IN", {

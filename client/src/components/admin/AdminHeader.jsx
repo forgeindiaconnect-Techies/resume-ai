@@ -2,11 +2,18 @@ import React from "react";
 import { Search, Bell, UserCircle } from "lucide-react";
 
 const AdminHeader = () => {
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <header className="admin-header">
       <div>
-        <h1>Admin Dashboard</h1>
-        <p>Manage your Resume Builder platform</p>
+        <h1 style={{ fontSize: "18px", margin: 0, color: "#111827" }}>Welcome back, Administrator!</h1>
+        <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>{today}</p>
       </div>
 
       <div className="admin-header-right">

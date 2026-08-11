@@ -12,7 +12,7 @@ import {
   Sparkles, Download, ArrowLeft, Palette, Type, ShieldCheck, 
   Check, Edit2, Info
 } from 'lucide-react';
-import PaymentModal from '../components/common/PaymentModal';
+import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
 import { PRESET_COLORS, PRESET_FONTS, loadSession, saveSession } from '../editors/editorUtils';
 import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
 
@@ -30,15 +30,7 @@ const AiResumeView = () => {
   const [paymentReason, setPaymentReason] = useState('download');
 
   const handleDownloadPdf = async () => {
-    const isPremium = localStorage.getItem('user_premium') === 'true';
-    if (!isPremium) {
-      setShowPaymentModal(true);
-      return;
-    } else {
-      const sheet = printRef.current || document.getElementById('resume-preview-sheet');
-      const filename = generateProfessionalFilename(sessionData?.personalInfo?.name, `${activeLayout}_Resume`);
-      await exportResumeToPdf(sheet, filename, true);
-    }
+    setShowPaymentModal(true);
   };
 
   useEffect(() => {
@@ -293,17 +285,13 @@ const AiResumeView = () => {
 
       </div>
 
-      {/* Razorpay Payment Modal */}
-      <PaymentModal
+      {/* New Unified Download Wizard Modal */}
+      <DownloadWorkflowModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        reason={paymentReason}
-        onSuccessDownload={() => {
-          localStorage.setItem('user_premium', 'true');
-          const sheet = printRef.current || document.getElementById('resume-preview-sheet');
-          const filename = generateProfessionalFilename(sessionData?.personalInfo?.name, `${activeLayout}_Resume`);
-          exportResumeToPdf(sheet, filename, true);
-        }}
+        formData={sessionData}
+        atsScore={92}
+        onNavigateHome={() => navigate('/')}
       />
     </div>
   );

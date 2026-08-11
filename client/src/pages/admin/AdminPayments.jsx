@@ -108,6 +108,7 @@ const AdminPayments = () => {
                   <th>Plan</th>
                   <th>Amount</th>
                   <th>Payment ID</th>
+                  <th>Watermark</th>
                   <th>Status</th>
                   <th>Date</th>
                 </tr>
@@ -137,6 +138,13 @@ const AdminPayments = () => {
                           payment.razorpayOrderId ||
                           "-"}
                       </span>
+                    </td>
+                    <td>
+                      {payment.watermarkRemoval ? (
+                        <span style={{color: '#059669', fontWeight: 600}}>Removed</span>
+                      ) : (
+                        <span style={{color: '#64748b', fontWeight: 600}}>Retained</span>
+                      )}
                     </td>
                     <td>
                       <span

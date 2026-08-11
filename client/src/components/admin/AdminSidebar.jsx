@@ -12,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import ForgeLogo from "../common/ForgeLogo";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -56,16 +57,16 @@ const AdminSidebar = () => {
     },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    navigate("/admin/login");
+  };
+
   return (
     <aside className="admin-sidebar">
       {/* Logo */}
-      <div className="admin-logo">
-        <div className="admin-logo-mark">F</div>
-
-        <div>
-          <h2>FORGE INDIA</h2>
-          <span>Connect</span>
-        </div>
+      <div className="admin-logo" style={{ padding: "10px", display: "flex", justifyContent: "center" }}>
+        <ForgeLogo variant="sidebar" size={35} />
       </div>
 
       {/* Menu */}
@@ -92,7 +93,7 @@ const AdminSidebar = () => {
 
       {/* Logout */}
       <div className="admin-sidebar-bottom">
-        <button className="admin-menu-item logout">
+        <button className="admin-menu-item logout" onClick={handleLogout}>
           <LogOut size={19} />
           <span>Logout</span>
         </button>

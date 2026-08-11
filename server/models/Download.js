@@ -27,6 +27,14 @@ const downloadSchema = new mongoose.Schema(
       ref: "Plan",
       default: null,
     },
+    email: {
+      type: String,
+      default: "",
+    },
+    watermarkApplied: {
+      type: Boolean,
+      default: true,
+    },
     downloadedAt: {
       type: Date,
       default: Date.now,

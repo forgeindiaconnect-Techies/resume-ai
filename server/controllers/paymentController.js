@@ -8,7 +8,7 @@ const Resume = require("../models/Resume");
 
 exports.createOrder = async (req, res) => {
   try {
-    const { email, resumeId, planId, resumeSessionId, amount } = req.body;
+    const { email, resumeId, planId, resumeSessionId, amount, watermarkRemoval } = req.body;
     const targetResumeId = resumeId || resumeSessionId;
 
     if (!planId && !targetResumeId) {
@@ -94,7 +94,8 @@ exports.createOrder = async (req, res) => {
       currency: "INR",
       status: "created",
       downloadAllowed: false,
-      downloadUsed: false
+      downloadUsed: false,
+      watermarkRemoval: watermarkRemoval || false
     });
 
     res.json({
@@ -207,6 +208,7 @@ exports.verifyPayment = async (req, res) => {
         status: payment.status,
         downloadAllowed: payment.downloadAllowed,
         downloadUsed: payment.downloadUsed,
+        watermarkRemoval: payment.watermarkRemoval
       },
     });
 

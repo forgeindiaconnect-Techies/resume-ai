@@ -35,7 +35,12 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
   const origHeight = element.style.height;
   const origOverflow = element.style.overflow;
 
-  // Diagonal watermark removed to allow clean footer watermark
+  let watermarkStyleEl = null;
+  if (isPremium) {
+    watermarkStyleEl = document.createElement('style');
+    watermarkStyleEl.innerHTML = '.resume-footer-container { display: none !important; }';
+    document.head.appendChild(watermarkStyleEl);
+  }
 
   try {
     // Hide focus outlines and reset scaling
@@ -81,7 +86,9 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
     toast.error('PDF export failed. Opening print window...', { id: toastId });
     window.print();
   } finally {
-    // No watermark element to remove anymore
+    if (watermarkStyleEl) {
+      document.head.removeChild(watermarkStyleEl);
+    }
     // Restore original inline styles
     element.classList.remove('exporting-pdf');
     element.style.transform = origTransform;

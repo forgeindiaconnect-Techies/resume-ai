@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 exports.downloadResume = async (req, res) => {
   try {
     const { resumeId } = req.params;
+    const { email, paymentId, watermarkApplied, planId } = req.body;
 
     if (!resumeId) {
       return res.status(400).json({
@@ -30,28 +31,48 @@ exports.downloadResume = async (req, res) => {
       });
     }
 
-    // 2. Find successful payment for this resume
-    const payment = await Payment.findOne({
-      $or: [
-        { resumeReference: resumeId },
-        { resumeId: resume._id }
-      ],
-      status: "paid",
-      downloadAllowed: true,
-    });
+    // 2. Find successful payment for this resume if paymentId is provided
+    let payment = null;
+    if (paymentId) {
+      payment = await Payment.findOne({
+        _id: paymentId,
+        status: "paid"
+      });
+    } else {
+      payment = await Payment.findOne({
+        $or: [
+          { resumeReference: resumeId },
+          { resumeId: resume._id }
+        ],
+        status: "paid",
+        downloadAllowed: true,
+      }).sort({ createdAt: -1 });
+    }
 
-    if (!payment) {
+    if (!payment && req.body.requirePayment) {
       return res.status(403).json({
         success: false,
         message: "Payment required before download",
       });
     }
 
+    // 3. Record the Download in Database
+    const downloadRecord = await Download.create({
+      userId: resume.userId || req.user?._id || null, 
+      resumeId: resume._id,
+      paymentId: payment ? payment._id : null,
+      planId: planId || (payment ? payment.planId : null),
+      email: email || "",
+      watermarkApplied: watermarkApplied !== undefined ? watermarkApplied : (payment ? !payment.watermarkRemoval : true)
+    });
+
     return res.status(200).json({
       success: true,
-      message: "Download allowed",
+      message: "Download recorded",
       resumeId,
-      paymentId: payment.razorpayPaymentId || payment._id,
+      downloadId: downloadRecord._id,
+      paymentId: payment ? (payment.razorpayPaymentId || payment._id) : null,
+      watermarkRemoval: payment ? payment.watermarkRemoval : false
     });
 
   } catch (error) {

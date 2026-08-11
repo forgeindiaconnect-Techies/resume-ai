@@ -35,13 +35,11 @@ const ResumeFooter = () => {
     } catch (e) {}
   }
 
-  const isPremium = localStorage.getItem('user_premium') === 'true';
   const adminWatermarkEnabled = appSettings.watermarkEnabled !== false;
   const watermarkText = appSettings.watermarkText || "Powered by FORGE INDIA Connect";
 
-  // Is admin watermark setting ON? -> YES -> Is user premium? NO -> SHOW, YES -> HIDE
   // Is admin watermark setting ON? -> NO -> HIDE
-  if (isPremium || !adminWatermarkEnabled) {
+  if (!adminWatermarkEnabled) {
     return null;
   }
 

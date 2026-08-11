@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, AlertTriangle, Download, FileText, X, RefreshCw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Download, FileText, X, RefreshCw, Mail, CreditCard } from 'lucide-react';
 import { generateProfessionalFilename, exportResumeToPdf } from '../../utils/pdfExport';
 import { useNavigate } from 'react-router-dom';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const DownloadWorkflowModal = ({
   isOpen,
@@ -13,16 +15,28 @@ const DownloadWorkflowModal = ({
   onNavigateHome
 }) => {
   const navigate = useNavigate();
-  const [step, setStep] = useState('review'); // 'review' | 'confirm' | 'progress' | 'success' | 'error'
+  // Steps: 'review' -> 'email' -> 'plan' -> 'progress' -> 'success' | 'error'
+  const [step, setStep] = useState('review'); 
   const [progress, setProgress] = useState(0);
   const [customFilename, setCustomFilename] = useState('');
+  
+  // New State for Wizard
+  const [email, setEmail] = useState('');
+  const [loadingPayment, setLoadingPayment] = useState(false);
+  const [watermarkRemoval, setWatermarkRemoval] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setStep('review');
       setProgress(0);
+      setLoadingPayment(false);
+      setWatermarkRemoval(false);
       const generated = generateProfessionalFilename(formData?.personalInfo?.name, formData?.department || formData?.personalInfo?.role);
       setCustomFilename(generated);
+      
+      if (formData?.personalInfo?.email) {
+        setEmail(formData.personalInfo.email);
+      }
     }
   }, [isOpen, formData]);
 
@@ -40,25 +54,122 @@ const DownloadWorkflowModal = ({
   const completedCount = checks.filter(c => c.ok).length;
   const completionPercent = Math.round((completedCount / checks.length) * 100);
 
-  const startPdfGeneration = async () => {
-    const appSettingsString = localStorage.getItem('app_settings');
-    let appSettings = {};
-    if (appSettingsString) {
-      try {
-        appSettings = JSON.parse(appSettingsString);
-      } catch (e) {}
-    }
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
-    const premiumDownloadOnly = appSettings.premiumDownloadOnly !== false; // default true
-    const isPremium = localStorage.getItem('user_premium') === 'true';
+  const handleFreeDownload = () => {
+    setWatermarkRemoval(false);
+    executeDownloadFlow(false, null);
+  };
 
-    if (premiumDownloadOnly && !isPremium) {
-      alert("Please upgrade your plan to download without watermark.");
-      onClose();
-      navigate("/pricing");
+  const handlePaidDownload = async () => {
+    setLoadingPayment(true);
+    const loaded = await loadRazorpay();
+    if (!loaded) {
+      alert("Failed to load payment gateway. Please check your connection.");
+      setLoadingPayment(false);
       return;
     }
 
+    try {
+      const activeSessionId = localStorage.getItem('activeResumeSessionId') || 'local_session';
+      const token = localStorage.getItem('token');
+      
+      const resOrder = await fetch(`${API_BASE_URL}/payments/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          resumeId: activeSessionId,
+          amount: 79,
+          watermarkRemoval: true
+        })
+      });
+      
+      const orderData = await resOrder.json();
+      if (!orderData.success) {
+        alert('Failed to initialize payment.');
+        setLoadingPayment(false);
+        return;
+      }
+
+      const options = {
+        key: orderData.keyId || orderData.razorpayKey,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency || "INR",
+        name: "Forge India Connect",
+        description: `Clean PDF Download without Watermark`,
+        order_id: orderData.order.id || orderData.order.razorpayOrderId,
+        handler: async function (response) {
+          try {
+            const verifyRes = await fetch(`${API_BASE_URL}/payments/verify`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                resumeId: activeSessionId
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+              setWatermarkRemoval(true);
+              executeDownloadFlow(true, verifyData.payment.paymentId);
+            } else {
+              alert('Payment verification failed.');
+              setLoadingPayment(false);
+            }
+          } catch (e) {
+            console.error(e);
+            alert('Error verifying payment.');
+            setLoadingPayment(false);
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            setLoadingPayment(false);
+          }
+        },
+        prefill: {
+          email: email.trim(),
+        },
+        theme: { color: "#0284c7" }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        alert('Payment Failed: ' + response.error.description);
+        setLoadingPayment(false);
+      });
+      rzp1.open();
+
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Could not start checkout process.');
+      setLoadingPayment(false);
+    }
+  };
+
+  const executeDownloadFlow = async (isClean, paymentIdStr) => {
     setStep('progress');
     setProgress(15);
     
@@ -73,8 +184,31 @@ const DownloadWorkflowModal = ({
     }, 150);
 
     try {
+      const activeSessionId = localStorage.getItem('activeResumeSessionId') || 'local_session';
+      const token = localStorage.getItem('token');
+      
+      // Log the download with backend
+      if (activeSessionId && activeSessionId !== 'local_session') {
+        try {
+          await fetch(`${API_BASE_URL}/downloads/${activeSessionId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({
+              email: email.trim(),
+              paymentId: paymentIdStr,
+              watermarkApplied: !isClean
+            })
+          });
+        } catch(e) {
+          console.error("Failed to log download:", e);
+        }
+      }
+
       const sheet = document.getElementById('resume-preview-sheet');
-      await exportResumeToPdf(sheet, customFilename, true);
+      await exportResumeToPdf(sheet, customFilename, isClean);
       clearInterval(interval);
       setProgress(100);
       setTimeout(() => {
@@ -95,7 +229,7 @@ const DownloadWorkflowModal = ({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '540px', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', overflow: 'hidden', border: '1px solid #e2e8f0' }}
         >
-          {/* STEP 28: RESUME REVIEW PAGE */}
+          {/* STEP 1: RESUME REVIEW PAGE */}
           {step === 'review' && (
             <div style={{ padding: '2rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -140,13 +274,6 @@ const DownloadWorkflowModal = ({
                 </div>
               </div>
 
-              {completionPercent < 80 && (
-                <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', color: '#b45309', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.82rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <AlertTriangle size={18} />
-                  <span>Your resume is {completionPercent}% complete. Complete all sections for optimal results.</span>
-                </div>
-              )}
-
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button
                   onClick={() => { onClose(); if (onEdit) onEdit(); }}
@@ -155,46 +282,45 @@ const DownloadWorkflowModal = ({
                   Edit Resume
                 </button>
                 <button
-                  onClick={() => setStep('confirm')}
+                  onClick={() => setStep('email')}
                   style={{ flex: 1.2, padding: '0.9rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontWeight: 900, fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)' }}
                 >
-                  Next: Download PDF →
+                  Next Step →
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 29: DOWNLOAD CONFIRMATION */}
-          {step === 'confirm' && (
+          {/* STEP 2: EMAIL ENTRY */}
+          {step === 'email' && (
             <div style={{ padding: '2rem' }}>
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
-                  <Download size={26} />
+                <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#f3e8ff', color: '#9333ea', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem' }}>
+                  <Mail size={26} />
                 </div>
-                <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 900, color: '#0f172a' }}>Download Resume</h3>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Confirm your file settings before exporting</p>
+                <h3 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 900, color: '#0f172a' }}>Where should we send it?</h3>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Enter your email to receive a backup copy.</p>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.75rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Professional File Name</label>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>Email Address</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="john@example.com"
+                    style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>PDF File Name</label>
                   <input
                     type="text"
                     value={customFilename}
                     onChange={e => setCustomFilename(e.target.value)}
                     style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
                   />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.85rem' }}>
-                    <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>Quality</span>
-                    <span style={{ fontWeight: 800, color: '#059669', fontSize: '0.85rem', marginTop: '0.2rem', display: 'block' }}>⭐⭐⭐⭐⭐ High Quality</span>
-                  </div>
-                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '0.85rem' }}>
-                    <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>Paper Size</span>
-                    <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.85rem', marginTop: '0.2rem', display: 'block' }}>Standard A4 (210mm × 297mm)</span>
-                  </div>
                 </div>
               </div>
 
@@ -203,19 +329,82 @@ const DownloadWorkflowModal = ({
                   onClick={() => setStep('review')}
                   style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', background: 'white', color: '#334155', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer' }}
                 >
-                  Cancel
+                  Back
                 </button>
                 <button
-                  onClick={startPdfGeneration}
-                  style={{ flex: 1.4, padding: '0.9rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontWeight: 900, fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)' }}
+                  onClick={() => {
+                    if (!email || !email.includes('@')) {
+                      alert('Please enter a valid email address.');
+                      return;
+                    }
+                    setStep('plan');
+                  }}
+                  style={{ flex: 1.2, padding: '0.9rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontWeight: 900, fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)' }}
                 >
-                  Download Now 📥
+                  Continue →
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 30: LOADING SCREEN */}
+          {/* STEP 3: SELECT PLAN */}
+          {step === 'plan' && (
+            <div style={{ padding: '2rem' }}>
+              <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Select Download Option</h3>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Choose how you want to download your resume.</p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                {/* Free Option */}
+                <div 
+                  onClick={handleFreeDownload}
+                  style={{ cursor: 'pointer', padding: '1.25rem', border: '2px solid #cbd5e1', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s', background: '#f8fafc' }}
+                >
+                  <div>
+                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: '#334155', fontWeight: 800 }}>Free Download</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Forge India Watermark</p>
+                  </div>
+                  <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#475569' }}>₹0</div>
+                </div>
+
+                {/* Paid Option */}
+                <div 
+                  style={{ position: 'relative', padding: '1.25rem', border: '2px solid #0284c7', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0f9ff' }}
+                >
+                  <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0284c7', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: '#0284c7', fontWeight: 800 }}>Clean PDF Export</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#0369a1', fontWeight: 500 }}>High-resolution, ATS-friendly, No Watermark</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 900, fontSize: '1.3rem', color: '#0f172a' }}>₹79</div>
+                    <div style={{ fontSize: '0.7rem', color: '#64748b', textDecoration: 'line-through' }}>₹149</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button
+                  onClick={() => setStep('email')}
+                  style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', background: 'white', color: '#334155', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer' }}
+                  disabled={loadingPayment}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handlePaidDownload}
+                  disabled={loadingPayment}
+                  style={{ flex: 1.4, padding: '0.9rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontWeight: 900, fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  {loadingPayment ? <RefreshCw size={18} className="animate-spin" /> : <CreditCard size={18} />}
+                  Pay ₹79 & Download
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4: LOADING SCREEN */}
           {step === 'progress' && (
             <div style={{ padding: '3rem 2rem', textAlign: 'center' }}>
               <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
@@ -231,7 +420,7 @@ const DownloadWorkflowModal = ({
             </div>
           )}
 
-          {/* STEP 31: SUCCESS SCREEN */}
+          {/* STEP 5: SUCCESS SCREEN */}
           {step === 'success' && (
             <div style={{ padding: '2.5rem 2rem', textAlign: 'center' }}>
               <div style={{ width: 65, height: 65, borderRadius: '50%', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
@@ -261,7 +450,7 @@ const DownloadWorkflowModal = ({
             </div>
           )}
 
-          {/* STEP 32: ERROR HANDLING & RETRY */}
+          {/* STEP 6: ERROR HANDLING & RETRY */}
           {step === 'error' && (
             <div style={{ padding: '2.5rem 2rem', textAlign: 'center' }}>
               <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#fef2f2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
@@ -272,13 +461,13 @@ const DownloadWorkflowModal = ({
 
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button
-                  onClick={() => setStep('confirm')}
+                  onClick={() => setStep('plan')}
                   style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', background: 'white', color: '#334155', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={startPdfGeneration}
+                  onClick={() => executeDownloadFlow(watermarkRemoval, null)}
                   style={{ flex: 1.2, padding: '0.9rem', borderRadius: '12px', border: 'none', background: '#dc2626', color: 'white', fontWeight: 900, fontSize: '0.88rem', cursor: 'pointer' }}
                 >
                   Retry PDF Download 🔄

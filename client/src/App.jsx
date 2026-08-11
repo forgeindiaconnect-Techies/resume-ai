@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect } from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/Landing';
 import OnboardingStart from './pages/OnboardingStart';
 import CareerWizard from './pages/CareerWizard';
@@ -113,6 +113,7 @@ function App() {
         <Route path="/preview/:id" element={<TemplatePreview />} />
         <Route path="/admin/examples" element={<AdminResumeExamples />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         
         <Route element={<AdminProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
