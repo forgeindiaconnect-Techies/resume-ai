@@ -4,6 +4,7 @@ import axios from "axios";
 import { ArrowLeft, User, CreditCard, Download, FileText } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminUserDetails = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ const AdminUserDetails = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(
-        `http://localhost:5000/api/admin/users/${id}`,
+        `${API_BASE_URL}/admin/users/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

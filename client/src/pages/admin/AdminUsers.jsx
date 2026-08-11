@@ -4,6 +4,7 @@ import axios from "axios";
 import { Search, UserCheck, UserX, Users } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminUsers = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const AdminUsers = () => {
     try {
       const token = localStorage.getItem("adminToken");
 
-      const response = await axios.get("http://localhost:5000/api/admin/users", {
+      const response = await axios.get(`${API_BASE_URL}/admin/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -38,7 +39,7 @@ const AdminUsers = () => {
       const token = localStorage.getItem("adminToken");
 
       await axios.patch(
-        `http://localhost:5000/api/admin/users/${userId}/status`,
+        `${API_BASE_URL}/admin/users/${userId}/status`,
         {},
         {
           headers: {

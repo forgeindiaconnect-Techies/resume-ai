@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminReports = () => {
   const [reports, setReports] = useState(null);
@@ -25,7 +26,7 @@ const AdminReports = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(
-        "http://localhost:5000/api/admin/reports",
+        `${API_BASE_URL}/admin/reports`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

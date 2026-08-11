@@ -3,6 +3,7 @@ import axios from "axios";
 import { Download, Search, FileText } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminDownloads = () => {
   const [downloads, setDownloads] = useState([]);
@@ -18,7 +19,7 @@ const AdminDownloads = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(
-        "http://localhost:5000/api/downloads/admin",
+        `${API_BASE_URL}/downloads/admin`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

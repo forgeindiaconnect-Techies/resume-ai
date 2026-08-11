@@ -4,6 +4,7 @@ import { ArrowLeft, Upload, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AddExample = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const AddExample = () => {
         data.append("previewImage", previewImage.file);
       }
 
-      await axios.post("http://localhost:5000/api/admin/examples", data, {
+      await axios.post(`${API_BASE_URL}/admin/examples`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

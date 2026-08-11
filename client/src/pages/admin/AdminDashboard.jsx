@@ -3,6 +3,7 @@ import axios from "axios";
 import { Users, IndianRupee, UserCheck, Download, CreditCard } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminDashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -15,7 +16,7 @@ const AdminDashboard = () => {
   const fetchDashboard = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get("http://localhost:5000/api/admin/dashboard", {
+      const response = await axios.get(`${API_BASE_URL}/admin/dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

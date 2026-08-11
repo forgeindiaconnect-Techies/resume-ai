@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Check } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 const loadRazorpay = () => {
   return new Promise((resolve) => {
@@ -22,7 +23,7 @@ const Pricing = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/plans");
+      const response = await axios.get(`${API_BASE_URL}/plans`);
       setPlans(response.data.plans || []);
     } catch (error) {
       console.error(error);
@@ -47,7 +48,7 @@ const Pricing = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/api/payments/create-order",
+        `${API_BASE_URL}/payments/create-order`,
         {
           planId: plan._id,
         },
@@ -70,7 +71,7 @@ const Pricing = () => {
         handler: async function (paymentResponse) {
           try {
             const verifyResponse = await axios.post(
-              "http://localhost:5000/api/payments/verify",
+              `${API_BASE_URL}/payments/verify`,
               paymentResponse,
               {
                 headers: {

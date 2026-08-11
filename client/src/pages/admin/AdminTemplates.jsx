@@ -3,6 +3,7 @@ import axios from "axios";
 import { Plus, Edit, Eye, EyeOff, Trash2, Palette } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminTemplates = () => {
   const [templates, setTemplates] = useState([]);
@@ -26,7 +27,7 @@ const AdminTemplates = () => {
 
   const fetchTemplates = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/templates", {
+      const response = await axios.get(`${API_BASE_URL}/admin/templates`, {
         headers: {
           Authorization: `Bearer ${getToken()}`,
         },
@@ -80,7 +81,7 @@ const AdminTemplates = () => {
 
       if (editingTemplate) {
         await axios.put(
-          `http://localhost:5000/api/admin/templates/${editingTemplate._id}`,
+          `${API_BASE_URL}/admin/templates/${editingTemplate._id}`,
           form,
           {
             headers: {
@@ -89,7 +90,7 @@ const AdminTemplates = () => {
           }
         );
       } else {
-        await axios.post("http://localhost:5000/api/admin/templates", form, {
+        await axios.post(`${API_BASE_URL}/admin/templates`, form, {
           headers: {
             Authorization: `Bearer ${getToken()}`,
           },
@@ -107,7 +108,7 @@ const AdminTemplates = () => {
   const toggleStatus = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/admin/templates/${id}/status`,
+        `${API_BASE_URL}/admin/templates/${id}/status`,
         {},
         {
           headers: {
@@ -127,7 +128,7 @@ const AdminTemplates = () => {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/templates/${id}`, {
+      await axios.delete(`${API_BASE_URL}/admin/templates/${id}`, {
         headers: {
           Authorization: `Bearer ${getToken()}`,
         },

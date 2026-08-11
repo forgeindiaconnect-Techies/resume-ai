@@ -1,10 +1,11 @@
 import axios from "axios";
 import { getAnonymousId } from "./userIdentity";
+import { API_BASE_URL } from "../config/api";
 
 export const identifyUser = async (email = "") => {
   const anonymousId = getAnonymousId();
 
-  const response = await axios.post("http://localhost:5000/api/users/identify", {
+  const response = await axios.post(`${API_BASE_URL}/users/identify`, {
     email,
     anonymousId,
   });

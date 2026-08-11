@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminPayments = () => {
   const [payments, setPayments] = useState([]);
@@ -24,7 +25,7 @@ const AdminPayments = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(
-        "http://localhost:5000/api/payments/admin",
+        `${API_BASE_URL}/payments/admin`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -3,6 +3,7 @@ import axios from "axios";
 import { ArrowLeft, Eye, FileText, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
+import { API_BASE_URL } from "../config/api";
 
 const ResumeExamples = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const ResumeExamples = () => {
 
   const fetchExamples = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/examples");
+      const response = await axios.get(`${API_BASE_URL}/examples`);
       setExamples(response.data.examples || []);
     } catch (error) {
       console.error("Failed to fetch examples:", error);

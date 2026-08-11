@@ -4,6 +4,7 @@ import { Plus, Edit, Trash2, Check, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminPlans = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const AdminPlans = () => {
     try {
       const token = localStorage.getItem("adminToken");
 
-      const response = await axios.get("http://localhost:5000/api/admin/plans", {
+      const response = await axios.get(`${API_BASE_URL}/admin/plans`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -37,7 +38,7 @@ const AdminPlans = () => {
       const token = localStorage.getItem("adminToken");
 
       await axios.patch(
-        `http://localhost:5000/api/admin/plans/${id}/status`,
+        `${API_BASE_URL}/admin/plans/${id}/status`,
         {},
         {
           headers: {
@@ -60,7 +61,7 @@ const AdminPlans = () => {
     try {
       const token = localStorage.getItem("adminToken");
 
-      await axios.delete(`http://localhost:5000/api/admin/plans/${id}`, {
+      await axios.delete(`${API_BASE_URL}/admin/plans/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

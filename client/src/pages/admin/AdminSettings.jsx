@@ -3,6 +3,7 @@ import axios from "axios";
 import { Settings, Save, AlertCircle } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminSettings = () => {
   const [settings, setSettings] = useState({
@@ -28,7 +29,7 @@ const AdminSettings = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(
-        "http://localhost:5000/api/admin/settings",
+        `${API_BASE_URL}/admin/settings`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +62,7 @@ const AdminSettings = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.put(
-        "http://localhost:5000/api/admin/settings",
+        `${API_BASE_URL}/admin/settings`,
         settings,
         {
           headers: {

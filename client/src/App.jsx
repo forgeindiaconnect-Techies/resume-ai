@@ -49,6 +49,7 @@ const EditorLoader = () => (
 );
 
 import AiResumeView from './pages/AiResumeView';
+import { API_BASE_URL } from "./config/api";
 
 function App() {
   useEffect(() => {
@@ -64,7 +65,7 @@ function App() {
           return;
         }
 
-        const response = await axios.get("http://localhost:5000/api/subscription/me", {
+        const response = await axios.get(`${API_BASE_URL}/subscription/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -81,7 +82,7 @@ function App() {
 
     const fetchPublicSettings = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/settings");
+        const res = await axios.get(`${API_BASE_URL}/settings`);
         if (res.data.success && res.data.settings) {
           localStorage.setItem("app_settings", JSON.stringify(res.data.settings));
         }

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { ArrowLeft, Save } from "lucide-react";
+import { API_BASE_URL } from "../../config/api";
 
 const EditTemplate = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ const EditTemplate = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(
-        `http://localhost:5000/api/admin/templates/${id}`,
+        `${API_BASE_URL}/admin/templates/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +58,7 @@ const EditTemplate = () => {
       const token = localStorage.getItem("adminToken");
 
       await axios.put(
-        `http://localhost:5000/api/admin/templates/${id}`,
+        `${API_BASE_URL}/admin/templates/${id}`,
         formData,
         {
           headers: {

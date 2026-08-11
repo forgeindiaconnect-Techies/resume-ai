@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AddTemplate = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const AddTemplate = () => {
         data.append("previewImage", previewImage.file);
       }
 
-      await axios.post("http://localhost:5000/api/admin/templates", data, {
+      await axios.post(`${API_BASE_URL}/admin/templates`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ShieldCheck, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +26,7 @@ const AdminLogin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/admin/auth/login",
+        `${API_BASE_URL}/admin/auth/login`,
         formData
       );
 

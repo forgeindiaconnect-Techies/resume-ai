@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Save, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const PlanForm = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const PlanForm = () => {
       const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(
-        `http://localhost:5000/api/admin/plans`,
+        `${API_BASE_URL}/admin/plans`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -126,7 +127,7 @@ const PlanForm = () => {
 
       if (isEdit) {
         await axios.put(
-          `http://localhost:5000/api/admin/plans/${id}`,
+          `${API_BASE_URL}/admin/plans/${id}`,
           payload,
           {
             headers: {
@@ -135,7 +136,7 @@ const PlanForm = () => {
           }
         );
       } else {
-        await axios.post("http://localhost:5000/api/admin/plans", payload, {
+        await axios.post(`${API_BASE_URL}/admin/plans`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

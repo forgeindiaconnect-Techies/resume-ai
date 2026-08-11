@@ -3,6 +3,7 @@ import axios from "axios";
 import { Plus, Edit, Eye, EyeOff, Trash2, FileText } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminResumeExamples = () => {
   const [examples, setExamples] = useState([]);
@@ -27,7 +28,7 @@ const AdminResumeExamples = () => {
 
   const fetchExamples = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/resume-examples", {
+      const response = await axios.get(`${API_BASE_URL}/admin/resume-examples`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -83,7 +84,7 @@ const AdminResumeExamples = () => {
 
       if (editingExample) {
         await axios.put(
-          `http://localhost:5000/api/admin/resume-examples/${editingExample._id}`,
+          `${API_BASE_URL}/admin/resume-examples/${editingExample._id}`,
           form,
           {
             headers: {
@@ -92,7 +93,7 @@ const AdminResumeExamples = () => {
           }
         );
       } else {
-        await axios.post("http://localhost:5000/api/admin/resume-examples", form, {
+        await axios.post(`${API_BASE_URL}/admin/resume-examples`, form, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -110,7 +111,7 @@ const AdminResumeExamples = () => {
   const toggleStatus = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/admin/resume-examples/${id}/status`,
+        `${API_BASE_URL}/admin/resume-examples/${id}/status`,
         {},
         {
           headers: {
@@ -130,7 +131,7 @@ const AdminResumeExamples = () => {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/admin/resume-examples/${id}`, {
+      await axios.delete(`${API_BASE_URL}/admin/resume-examples/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
