@@ -95,19 +95,51 @@ const authMiddleware = require('../middleware/authMiddleware');
 const premiumMiddleware = require('../middleware/premiumMiddleware');
 const Download = require('../models/Download');
 
-// Dummy backend download endpoint just to secure the API conceptually as requested
-router.post('/download', authMiddleware, premiumMiddleware, async (req, res) => {
+// Download tracking endpoint
+router.post('/download', authMiddleware, async (req, res) => {
   try {
-    const subscription = req.subscription;
-    
+    const { resumeId } = req.body;
+    let authorized = false;
+    let paymentId = null;
+
+    if (resumeId) {
+      const resume = await Resume.findOne({ _id: resumeId, userId: req.user._id });
+      if (resume && resume.downloadAllowed) {
+        authorized = true;
+        
+        // Find the payment associated with this resume to track it
+        const Payment = require('../models/Payment');
+        const payment = await Payment.findOne({ resumeId, status: 'paid' }).sort({ createdAt: -1 });
+        if (payment) paymentId = payment._id;
+        
+        // Increment resume download count
+        resume.downloadCount += 1;
+        await resume.save();
+      }
+    }
+
+    // Fallback to subscription check if not authorized by single resume payment
+    if (!authorized) {
+      const Subscription = require('../models/Subscription');
+      const subscription = await Subscription.findOne({ userId: req.user._id, status: 'active' });
+      
+      if (subscription && subscription.endDate > new Date() && subscription.downloadAllowed) {
+        authorized = true;
+      }
+    }
+
+    if (!authorized) {
+      return res.status(403).json({ success: false, message: "Payment or Premium subscription required to download" });
+    }
+
     await Download.create({
       userId: req.user._id,
-      subscriptionId: subscription._id,
-      planId: subscription.planId,
+      resumeId: resumeId || null,
+      paymentId: paymentId || null,
       downloadedAt: new Date(),
     });
 
-    res.json({ success: true, message: "Download authorized via premium subscription and tracked" });
+    res.json({ success: true, message: "Download authorized and tracked" });
   } catch (error) {
     console.error("Download tracking error:", error);
     res.status(500).json({ success: false, message: "Failed to process download" });
@@ -116,6 +148,9 @@ router.post('/download', authMiddleware, premiumMiddleware, async (req, res) => 
 
 router.post('/resume-session/use-template/:id', authMiddleware, resumeController.createResumeFromTemplate);
 router.post('/resume-session', authMiddleware, resumeController.createResume);
+router.post('/resumes', resumeController.createResume);
+router.put('/resumes/:resumeId/attach-user', resumeController.attachUserToResume);
+router.put('/:resumeId/attach-user', resumeController.attachUserToResume);
 router.route('/resume-session/:id')
   .get(authMiddleware, resumeController.getResumeById)
   .put(authMiddleware, resumeController.updateResume);

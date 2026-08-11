@@ -29,6 +29,7 @@ import AdminSettings from './pages/admin/AdminSettings';
 import AdminUserDetails from './pages/admin/AdminUserDetails';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 import { getAnonymousId } from './utils/userIdentity';
+import { identifyUser } from './utils/identifyUser';
 import { Toaster } from 'react-hot-toast';
 
 // Dynamic Template Editors (lazy-loaded for performance)
@@ -51,7 +52,7 @@ import AiResumeView from './pages/AiResumeView';
 
 function App() {
   useEffect(() => {
-    getAnonymousId();
+    identifyUser().catch(err => console.error("Identity error:", err));
   }, []);
 
   useEffect(() => {

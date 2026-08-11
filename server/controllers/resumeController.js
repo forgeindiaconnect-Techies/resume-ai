@@ -34,20 +34,43 @@ const saveLocalResumes = (resumes) => {
 // Create Resume
 exports.createResume = async (req, res) => {
   try {
-    const userId = req.user.id;
+    let userId = req.user?.id;
+    let user = null;
+
+    if (req.body.userId) {
+      const User = require('../models/User');
+      user = await User.findOne({ userId: req.body.userId });
+      if (!user) {
+        user = await User.create({
+          userId: req.body.userId,
+          isGuest: true,
+          email: `${req.body.userId}@guest.local`
+        });
+      }
+      userId = user._id;
+    }
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    const newResumeId = `RESUME_${Date.now()}`;
+
     const resumeData = {
       ...req.body,
+      resumeId: newResumeId,
       userId
     };
 
     if (isDBConnected()) {
       const resume = await Resume.create(resumeData);
-      return res.status(201).json({ success: true, data: resume });
+      return res.status(201).json({ success: true, resume, data: resume });
     } else {
       // Local fallback
       const localResumes = getLocalResumes();
       const newResume = {
         _id: Date.now().toString(),
+        resumeId: newResumeId,
         userId,
         title: req.body.title || 'Untitled Resume',
         templateId: req.body.templateId || 'modern',
@@ -66,7 +89,7 @@ exports.createResume = async (req, res) => {
       localResumes.push(newResume);
       saveLocalResumes(localResumes);
 
-      return res.status(201).json({ success: true, data: newResume });
+      return res.status(201).json({ success: true, data: newResume, resume: newResume });
     }
   } catch (error) {
     console.error('Create resume error:', error);
@@ -99,71 +122,85 @@ exports.getResumes = async (req, res) => {
 // Get Single Resume by ID
 exports.getResumeById = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || req.user?._id;
     const resumeId = req.params.id;
 
     if (isDBConnected()) {
-      let resume = await Resume.findOne({ _id: resumeId, userId }).populate('layout');
+      const idFilter = [];
+      if (mongoose.Types.ObjectId.isValid(resumeId)) {
+        idFilter.push({ _id: resumeId });
+      }
+      idFilter.push({ resumeId: resumeId });
+
+      let resume = await Resume.findOne({ $or: idFilter }).populate('layout');
       if (!resume) {
         return res.status(404).json({ success: false, message: 'Resume not found or unauthorized' });
       }
       
       // If layout is not linked, create a default one
       if (!resume.layout) {
-        let layout = await ResumeLayout.findOne({ resumeId });
+        const layoutSearchKey = resume._id;
+        let layout = await ResumeLayout.findOne({ resumeId: layoutSearchKey });
         if (!layout) {
-          layout = await ResumeLayout.create({ resumeId });
+          layout = await ResumeLayout.create({ resumeId: layoutSearchKey });
         }
         resume.layout = layout._id;
         await resume.save();
-        resume = await Resume.findOne({ _id: resumeId, userId }).populate('layout');
+        resume = await Resume.findOne({ $or: idFilter }).populate('layout');
       }
 
-      return res.status(200).json({ success: true, data: resume });
+      return res.status(200).json({ success: true, data: resume, resume });
     } else {
       // Local fallback
       const localResumes = getLocalResumes();
-      const resume = localResumes.find(r => r._id === resumeId && r.userId === userId);
+      const resume = localResumes.find(r => r._id === resumeId || r.resumeId === resumeId);
       if (!resume) {
         return res.status(404).json({ success: false, message: 'Resume not found or unauthorized' });
       }
-      return res.status(200).json({ success: true, data: resume });
+      return res.status(200).json({ success: true, data: resume, resume });
     }
   } catch (error) {
     console.error('Get resume by id error:', error);
-    res.status(500).json({ success: false, message: 'Failed to retrieve resume' });
+    res.status(500).json({ success: false, message: 'Failed to retrieve resume', error: error.message });
   }
 };
 
 // Update Resume by ID
 exports.updateResume = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || req.user?._id;
     const resumeId = req.params.id;
     const { layout: layoutData, ...updateData } = req.body;
 
     if (isDBConnected()) {
-      let resume = await Resume.findOne({ _id: resumeId, userId });
+      const idFilter = [];
+      if (mongoose.Types.ObjectId.isValid(resumeId)) {
+        idFilter.push({ _id: resumeId });
+      }
+      idFilter.push({ resumeId: resumeId });
+
+      let resume = await Resume.findOne({ $or: idFilter });
       if (!resume) {
         return res.status(404).json({ success: false, message: 'Resume not found or unauthorized' });
       }
 
       // Update layout if specified
       if (layoutData) {
+        const layoutSearchKey = resume._id;
         await ResumeLayout.findOneAndUpdate(
-          { resumeId },
+          { resumeId: layoutSearchKey },
           { ...layoutData },
           { new: true, upsert: true }
         );
       }
 
       const updatedResume = await Resume.findOneAndUpdate(
-        { _id: resumeId, userId },
+        { _id: resume._id },
         { ...updateData, updatedAt: Date.now() },
         { new: true, runValidators: true }
       ).populate('layout');
 
-      return res.status(200).json({ success: true, data: updatedResume });
+      return res.status(200).json({ success: true, data: updatedResume, resume: updatedResume });
     } else {
       // Local fallback
       const localResumes = getLocalResumes();
@@ -361,5 +398,67 @@ exports.createResumeFromTemplate = async (req, res) => {
   } catch (error) {
     console.error('Create from template error:', error);
     res.status(500).json({ success: false, message: 'Failed to create resume from template', error: error.message });
+  }
+};
+
+// Attach User to Resume by Email (Step 27)
+exports.attachUserToResume = async (req, res) => {
+  try {
+    const { resumeId } = req.params;
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const User = require('../models/User');
+    const user = await User.findOne({
+      email: email.trim().toLowerCase(),
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const idFilter = [];
+    if (mongoose.Types.ObjectId.isValid(resumeId)) {
+      idFilter.push({ _id: resumeId });
+    }
+    idFilter.push({ resumeId });
+
+    const resume = await Resume.findOneAndUpdate(
+      { $or: idFilter },
+      { userId: user._id },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!resume) {
+      return res.status(404).json({
+        success: false,
+        message: "Resume not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User attached to resume",
+      resume,
+    });
+  } catch (error) {
+    console.error("Attach user error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to attach user",
+    });
   }
 };

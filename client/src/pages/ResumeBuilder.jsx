@@ -48,6 +48,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [resumeSessionId, setResumeSessionId] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [userEmailInput, setUserEmailInput] = useState('');
   const [paymentReason, setPaymentReason] = useState('download'); // Default
   const [showFullPreviewModal, setShowFullPreviewModal] = useState(false);
   const [showDownloadWorkflowModal, setShowDownloadWorkflowModal] = useState(false);
@@ -544,15 +545,55 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const handleTestPayment = async () => {
     try {
       const activeSessionId = resumeSessionId || localStorage.getItem('activeResumeSessionId') || 'local_session';
-      const token = localStorage.getItem('token');
+      let token = localStorage.getItem('token');
+      const emailToUse = userEmailInput || formData?.personalInfo?.email;
+
+      if (!emailToUse || !emailToUse.trim()) {
+        alert("Please enter your email address to continue to payment.");
+        return;
+      }
+
+      // Step 29: Identify user with email
+      try {
+        const idRes = await fetch(`${API_BASE_URL}/users/identify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailToUse.trim() })
+        });
+        const idData = await idRes.json();
+        if (idData.success && idData.token) {
+          token = idData.token;
+          localStorage.setItem('token', token);
+          if (idData.userId) {
+            localStorage.setItem('resume_user_id', idData.userId);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to identify user with email:", e);
+      }
+
+      // Step 30: Attach user to resume
+      if (activeSessionId && activeSessionId !== 'local_session') {
+        try {
+          await fetch(`${API_BASE_URL}/resumes/${activeSessionId}/attach-user`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailToUse.trim() })
+          });
+        } catch (e) {
+          console.error("Failed to attach user to resume:", e);
+        }
+      }
       
-      const resOrder = await fetch(`${API_BASE_URL}/payment/create-order`, {
+      const resOrder = await fetch(`${API_BASE_URL}/payments/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
+          email: emailToUse.trim(),
+          resumeId: activeSessionId,
           amount: currentPricing?.price,
           planKey: formData?.source,
           resumeSessionId: activeSessionId
@@ -566,15 +607,15 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       }
 
       const options = {
-        key: orderData.razorpayKey,
-        amount: orderData.order.amount * 100,
-        currency: orderData.order.currency,
+        key: orderData.keyId || orderData.razorpayKey,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency || "INR",
         name: "Forge India Connect",
-        description: `Download ${currentPricing?.name}`,
-        order_id: orderData.order.razorpayOrderId,
+        description: `Download ${currentPricing?.name || 'Resume'}`,
+        order_id: orderData.order.id || orderData.order.razorpayOrderId,
         handler: async function (response) {
           try {
-            const verifyRes = await fetch(`${API_BASE_URL}/payment/verify`, {
+            const verifyRes = await fetch(`${API_BASE_URL}/payments/verify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -583,7 +624,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
               body: JSON.stringify({
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature
+                razorpay_signature: response.razorpay_signature,
+                resumeId: activeSessionId
               })
             });
             const verifyData = await verifyRes.json();
@@ -640,45 +682,33 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   };
 
   const handleDownload = async () => {
-    if (formData?.paymentStatus === "paid") {
-      
-      const activeSessionId = resumeSessionId || localStorage.getItem('activeResumeSessionId') || 'local_session';
-      const token = localStorage.getItem('token');
-      
-      try {
-        const res = await fetch(`${API_BASE_URL}/payment/use-download`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-          },
-          body: JSON.stringify({ resumeSessionId: activeSessionId })
-        });
-        const data = await res.json();
-        
-        if (!data.success) {
-          alert(data.message || 'Download already used or unauthorized.');
-          // Reset payment status since it's used
-          const updatedFormData = { ...formData, paymentStatus: 'pending' };
-          setFormData(updatedFormData);
-          localStorage.setItem('localResumeDraft', JSON.stringify(updatedFormData));
-          if (activeSessionId) {
-             localStorage.setItem(`resume_draft_${activeSessionId}`, JSON.stringify(updatedFormData));
-          }
-          setShowPaymentModal(true);
-          return;
+    const activeSessionId = resumeSessionId || localStorage.getItem('activeResumeSessionId') || 'local_session';
+    const token = localStorage.getItem('token');
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/downloads/${activeSessionId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         }
-      } catch (e) {
-        console.error(e);
-        alert('Failed to authorize download.');
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setUserEmailInput(formData?.personalInfo?.email || '');
+        setShowPaymentModal(true);
         return;
       }
-
-      setShowFullPreviewModal(false);
-      setShowDownloadWorkflowModal(true);
+    } catch (e) {
+      console.error(e);
+      setUserEmailInput(formData?.personalInfo?.email || '');
+      setShowPaymentModal(true);
       return;
     }
-    setShowPaymentModal(true);
+
+    setShowFullPreviewModal(false);
+    setShowDownloadWorkflowModal(true);
   };
 
   // Handlers for personal details
@@ -2156,6 +2186,27 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                 No subscription
               </div>
 
+            </div>
+
+            <div style={{ width: '100%', margin: '1rem 0', textAlign: 'left' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '0.4rem' }}>
+                Enter your Email address <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <input
+                type="email"
+                placeholder="pooja@gmail.com"
+                value={userEmailInput}
+                onChange={(e) => setUserEmailInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.95rem',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
             </div>
 
             <button

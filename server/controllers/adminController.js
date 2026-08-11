@@ -31,7 +31,21 @@ const getLocalCollection = (key) => {
 exports.getUsers = async (req, res) => {
   try {
     if (isDBConnected()) {
-      const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+      const rawUsers = await User.find({}).select('-password').sort({ createdAt: -1 });
+      const users = rawUsers.map(u => {
+        const uObj = u.toObject();
+        if (uObj.isGuest || (uObj.email && uObj.email.endsWith('@guest.local'))) {
+          uObj.name = "Guest User";
+        } else if (!uObj.name || uObj.name.trim() === "" || uObj.name === "Unknown User") {
+          if (uObj.email) {
+            const handle = uObj.email.split('@')[0];
+            uObj.name = handle.split(/[._-]/).filter(Boolean).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+          } else {
+            uObj.name = "User";
+          }
+        }
+        return uObj;
+      });
       return res.status(200).json({ success: true, users });
     } else {
       const localUsers = getLocalCollection('users');
@@ -48,7 +62,32 @@ exports.getUsers = async (req, res) => {
 exports.getPayments = async (req, res) => {
   try {
     if (isDBConnected()) {
-      const payments = await Payment.find({}).populate('userId', 'name email').sort({ createdAt: -1 });
+      const rawPayments = await Payment.find({})
+        .populate('userId', 'name email userId')
+        .sort({ createdAt: -1 });
+
+      const payments = rawPayments.map(p => {
+        const pObj = p.toObject();
+        if (pObj.userId && typeof pObj.userId === 'object') {
+          if (pObj.userId.isGuest || (pObj.userId.email && pObj.userId.email.endsWith('@guest.local'))) {
+            pObj.userId.name = "Guest User";
+          } else if (!pObj.userId.name || pObj.userId.name.trim() === "" || pObj.userId.name === "Unknown User") {
+            if (pObj.userId.email) {
+              const handle = pObj.userId.email.split('@')[0];
+              pObj.userId.name = handle.split(/[._-]/).filter(Boolean).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            } else {
+              pObj.userId.name = "User";
+            }
+          }
+        } else {
+          pObj.userId = {
+            name: "Guest User",
+            email: pObj.resumeReference || "guest@local"
+          };
+        }
+        return pObj;
+      });
+
       return res.status(200).json({ success: true, payments });
     } else {
       const localPayments = getLocalCollection('payments');

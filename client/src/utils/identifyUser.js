@@ -13,5 +13,11 @@ export const identifyUser = async (email = "") => {
     localStorage.setItem("resume_user_id", response.data.userId);
   }
 
+  if (response.data.token) {
+    if (!localStorage.getItem("token")) {
+      localStorage.setItem("token", response.data.token);
+    }
+  }
+
   return response.data;
 };

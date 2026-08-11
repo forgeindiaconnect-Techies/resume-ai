@@ -10,7 +10,12 @@ const downloadSchema = new mongoose.Schema(
     resumeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Resume",
-      required: false, // Make it optional for the dummy route if we don't have a specific resume context yet
+      required: true,
+    },
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      default: null,
     },
     subscriptionId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -10,7 +10,15 @@ const paymentSchema = new mongoose.Schema(
     planId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Plan",
-      required: true,
+    },
+    resumeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Resume",
+      required: false,
+    },
+    resumeReference: {
+      type: String,
+      default: "",
     },
     razorpayOrderId: {
       type: String,
@@ -37,6 +45,14 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       enum: ["created", "paid", "failed"],
       default: "created",
+    },
+    downloadAllowed: {
+      type: Boolean,
+      default: false,
+    },
+    downloadUsed: {
+      type: Boolean,
+      default: false,
     },
   },
   {

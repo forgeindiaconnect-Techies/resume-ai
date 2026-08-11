@@ -8,6 +8,8 @@ import {
   ArrowRight, ChevronRight, Layers, HelpCircle, X, Upload
 } from 'lucide-react';
 import { generateResumeAI } from '../services/aiService';
+import { getOrCreateUser } from '../utils/userIdentity';
+import { createResume } from '../services/resumeService';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -79,6 +81,9 @@ const LandingPage = () => {
       return;
     }
     try {
+      const user = await getOrCreateUser();
+      console.log("Current user:", user);
+      
       setGeneratingAi(true);
       const res = await generateResumeAI({ jobTitle: aiJobTitle, experience: aiExperience, skills: aiSkills });
       const aiData = typeof res.data?.data === 'string' ? JSON.parse(res.data.data) : (res.data?.data || res.data);
@@ -397,9 +402,15 @@ const LandingPage = () => {
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#0284c7'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
-            onClick={() => {
-              localStorage.setItem('source', 'template');
-              navigate('/industry-examples');
+            onClick={async () => {
+              try {
+                const user = await getOrCreateUser();
+                console.log("Current user:", user);
+                localStorage.setItem('source', 'template');
+                navigate('/industry-examples');
+              } catch (error) {
+                alert("Unable to continue. Please try again.");
+              }
             }}
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📄</div>

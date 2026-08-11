@@ -27,13 +27,14 @@ exports.getAdminDashboard = async (req, res) => {
     const recentPayments = await Payment.find()
       .populate("userId", "name email")
       .populate("planId", "name price")
+      .populate("resumeId", "title templateId")
       .sort({
         createdAt: -1,
       })
       .limit(5);
 
     const recentUsers = await User.find()
-      .select("name email createdAt")
+      .select("name email isGuest anonymousId createdAt")
       .sort({
         createdAt: -1,
       })

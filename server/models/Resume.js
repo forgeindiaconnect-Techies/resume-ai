@@ -6,6 +6,11 @@ const ResumeSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  resumeId: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   title: {
     type: String,
     default: 'Untitled Resume'
@@ -14,52 +19,31 @@ const ResumeSchema = new mongoose.Schema({
     type: String,
     default: 'modern'
   },
-  personalInfo: {
-    name: { type: String, default: '' },
-    email: { type: String, default: '' },
-    phone: { type: String, default: '' },
-    location: { type: String, default: '' },
-    summary: { type: String, default: '' },
-    profileImage: { type: String, default: '' },
-    title: { type: String, default: '' }
-  },
-  experience: [{
-    role: { type: String, default: '' },
-    company: { type: String, default: '' },
-    location: { type: String, default: '' },
-    duration: { type: String, default: '' },
-    desc: { type: String, default: '' }
-  }],
-  education: [{
-    degree: { type: String, default: '' },
-    school: { type: String, default: '' },
-    location: { type: String, default: '' },
-    year: { type: String, default: '' },
-    desc: { type: String, default: '' },
-    department: { type: String, default: '' },
-    cgpa: { type: String, default: '' }
-  }],
-  projects: [{
-    name: { type: String, default: '' },
-    role: { type: String, default: '' },
-    duration: { type: String, default: '' },
-    desc: { type: String, default: '' },
-    link: { type: String, default: '' },
-    github: { type: String, default: '' },
-    liveDemo: { type: String, default: '' },
-    technology: { type: String, default: '' }
-  }],
-  skills: [{ type: String }],
-  languages: [{ type: String }],
-  certificates: [{
-    name: { type: String, default: '' },
-    organization: { type: String, default: '' },
-    year: { type: String, default: '' }
-  }],
+  personalInfo: { type: mongoose.Schema.Types.Mixed, default: {} },
+  experience: { type: mongoose.Schema.Types.Mixed, default: [] },
+  education: { type: mongoose.Schema.Types.Mixed, default: [] },
+  projects: { type: mongoose.Schema.Types.Mixed, default: [] },
+  skills: { type: mongoose.Schema.Types.Mixed, default: [] },
+  languages: { type: mongoose.Schema.Types.Mixed, default: [] },
+  certificates: { type: mongoose.Schema.Types.Mixed, default: [] },
+  customSections: { type: mongoose.Schema.Types.Mixed, default: [] },
   premium: { type: Boolean, default: false },
   layout: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ResumeLayout'
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['unpaid', 'paid'],
+    default: 'unpaid'
+  },
+  downloadAllowed: {
+    type: Boolean,
+    default: false
+  },
+  downloadCount: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true
