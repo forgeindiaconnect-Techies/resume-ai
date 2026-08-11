@@ -33,16 +33,7 @@ const AdminSidebar = () => {
       icon: CreditCard,
       path: "/admin/payments",
     },
-    {
-      name: "Templates",
-      icon: Palette,
-      path: "/admin/templates",
-    },
-    {
-      name: "Resume Examples",
-      icon: FileText,
-      path: "/admin/resume-examples",
-    },
+
     {
       name: "Plans",
       icon: Wallet,
