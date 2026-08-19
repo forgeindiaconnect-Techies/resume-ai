@@ -4,8 +4,8 @@ import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Briefcase, GraduationCap, Award, Code, Save, 
-  Download, Sparkles, Plus, Trash2, X, ChevronRight, ChevronLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2,
-  AlertTriangle, Eye, Settings2, ShieldCheck, FileText, CheckCircle2, CreditCard
+  Download, Sparkles, Plus, Trash2, ChevronRight, ChevronLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2,
+  AlertTriangle, Eye, Settings2, ShieldCheck, FileText, CheckCircle2
 } from 'lucide-react';
 import ModernResumeTemplate from '../components/builder/ModernResumeTemplate';
 import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
@@ -34,10 +34,8 @@ import DragDropSections from '../components/DragDropSections';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { generateResumeAI } from '../services/aiService';
 
-import PaymentModal from '../components/common/PaymentModal';
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
 import PhotoEditorModal from '../components/common/PhotoEditorModal';
-import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
 import { RESUME_PRICING } from '../config/pricing';
 
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
@@ -47,14 +45,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const [saveStatus, setSaveStatus] = useState('Auto Saved ✔');
   const [resumeSessionId, setResumeSessionId] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [userEmailInput, setUserEmailInput] = useState('');
-  const [paymentReason, setPaymentReason] = useState('download'); // Default
   const [showFullPreviewModal, setShowFullPreviewModal] = useState(false);
   const [showDownloadWorkflowModal, setShowDownloadWorkflowModal] = useState(false);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [email, setEmail] = useState("");
-  const [selectedPlan, setSelectedPlan] = useState("watermarked");
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
   
   // AI Assistant States
@@ -371,7 +363,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             
             if (rData.templateId) {
               try {
-                const resTpl = await fetch(`${API_BASE_URL}/template/${rData.templateId}`);
+                const resTpl = await fetch(`${API_BASE_URL}/templates/${rData.templateId}`);
                 const dataTpl = await resTpl.json();
                 if (dataTpl.success && dataTpl.sections) {
                   const mapped = dataTpl.sections.map(s => {
@@ -401,7 +393,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         // 1. Fetch Dynamic Sections list from sitemap/template slug
         if (templateSlug) {
           try {
-            const resTpl = await fetch(`${API_BASE_URL}/template/${templateSlug}`);
+            const resTpl = await fetch(`${API_BASE_URL}/templates/${templateSlug}`);
             const dataTpl = await resTpl.json();
             if (dataTpl.success && dataTpl.sections) {
               const mapped = dataTpl.sections.map(s => {
@@ -546,49 +538,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const currentPricing = RESUME_PRICING[formData?.source] || RESUME_PRICING['create'];
 
   const handleDownload = () => {
-    setShowDownloadModal(true);
-  };
-
-  const handleContinueToPayment = async () => {
-    if (!email.trim()) {
-      alert("Please enter your email ID.");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      alert("Please enter a valid email ID.");
-      return;
-    }
-
-    if (!selectedPlan) {
-      alert("Please select a payment plan.");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:5000/api/payments/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          resumeId: formData.resumeId || 'RESUME_001',
-          plan: selectedPlan,
-        })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Unable to start payment.");
-      }
-
-      console.log("Razorpay order:", data);
-
-      // Step 44 will open Razorpay using this order.
-    } catch (error) {
-      console.error("Create payment order error:", error);
-      alert(error.message || "Unable to start payment.");
-    }
+    setShowDownloadWorkflowModal(true);
   };
 
   // Handlers for personal details
@@ -909,28 +859,69 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     label
   }));
 
+  const getLayoutDummyData = (layoutName) => {
+    switch(layoutName.toLowerCase()) {
+      case 'creative': return {
+        name: 'AVA JOHNSON', role: 'Actor | Character Development | Film & TV',
+        objective: 'Dynamic and versatile actor with 5+ years of experience in independent films and stage productions. Recognized for deep character immersion and collaborative spirit.',
+        education: [{ degree: 'B.F.A. in Acting', institution: 'Tisch School of the Arts', tenure: '2015 - 2019' }],
+        experience: [{ title: 'Lead Actor', company: 'Indie Film Co', duration: '2020 - Present', desc: '• Starred in 3 award-winning short films.\n• Collaborated closely with directors to refine character arcs.' }]
+      };
+      case 'modern': return {
+        name: 'Violet Rodriguez', role: 'Business Analyst | Data Insights',
+        objective: 'Detail-oriented Business Analyst with a knack for translating complex data sets into actionable strategies. Proven track record of improving operational efficiency by 20%.',
+        education: [{ degree: 'M.S. in Data Analytics', institution: 'Boston University', tenure: '2018 - 2020' }],
+        experience: [{ title: 'Senior Analyst', company: 'FinTech Solutions', duration: '2021 - Present', desc: '• Led data migration project saving $50k annually.\n• Designed interactive Tableau dashboards for executive team.' }]
+      };
+      case 'executive': return {
+        name: 'Marcus Sterling', role: 'Chief Financial Officer',
+        objective: 'Strategic CFO with 15+ years driving financial growth, M&A, and operational excellence in Fortune 500 companies. Adept at steering corporate financial strategy and mitigating risk.',
+        education: [{ degree: 'MBA in Finance', institution: 'Wharton School of Business', tenure: '2005 - 2007' }],
+        experience: [{ title: 'VP of Finance', company: 'Global Enterprises', duration: '2015 - 2023', desc: '• Directed $200M budget across 5 global divisions.\n• Successfully executed 3 major corporate acquisitions.' }]
+      };
+      case 'minimal': 
+      case 'minimalist': return {
+        name: 'Elena Rostova', role: 'Product Designer',
+        objective: 'Minimalist product designer focused on creating intuitive, human-centered digital experiences. Expert in design systems and rapid prototyping.',
+        education: [{ degree: 'B.A. in Interaction Design', institution: 'Parsons School of Design', tenure: '2017 - 2021' }],
+        experience: [{ title: 'UI/UX Designer', company: 'Creative Agency', duration: '2021 - Present', desc: '• Redesigned core mobile app, increasing user retention by 40%.\n• Established company-wide design system in Figma.' }]
+      };
+      case 'professional':
+      default: return {
+        name: 'Alexander Wright', role: 'Frontend Developer',
+        objective: 'Results-driven developer specialized in building modern web applications. Passionate about driving business efficiency and cross-functional team collaboration.',
+        education: [{ degree: 'B.S. in Computer Science', institution: 'University of Washington', tenure: '2016 - 2020' }],
+        experience: [{ title: 'Senior Developer', company: 'Apex Tech Solutions', duration: '2022 - Present', desc: '• Spearheaded development of scalable cloud orchestration system.\n• Optimized CI/CD build cycles by 35%.' }]
+      };
+    }
+  };
+
+  const isGeneric = (val, genericVal) => (!val || val === genericVal);
+  const layoutKey = (formData.templateId || 'professional').toLowerCase();
+  const dummy = getLayoutDummyData(layoutKey);
+
   const templatePreviewData = {
-    name: formData.personalInfo?.name || 'Your Name',
-    role: formData.personalInfo?.role || formData.department || '',
+    name: isGeneric(formData.personalInfo?.name, 'Your Name') ? dummy.name : formData.personalInfo.name,
+    role: isGeneric(formData.personalInfo?.role || formData.department, 'Fullstack') && isGeneric(formData.personalInfo?.role || formData.department, '') ? dummy.role : (formData.personalInfo.role || formData.department),
     profilePhoto: formData.personalInfo?.profilePhoto || '',
     photoData: formData.personalInfo?.profilePhoto || null,
     contact: {
-      email: formData.personalInfo?.email || '',
-      phone: formData.personalInfo?.phone || '',
-      location: formData.personalInfo?.location || '',
-      linkedin: formData.personalInfo?.linkedin || '',
-      github: formData.personalInfo?.github || '',
-      portfolio: formData.personalInfo?.portfolio || ''
+      email: isGeneric(formData.personalInfo?.email, 'your.email@example.com') ? '' : formData.personalInfo.email,
+      phone: isGeneric(formData.personalInfo?.phone, '+1 123 456 7890') ? '' : formData.personalInfo.phone,
+      location: isGeneric(formData.personalInfo?.location, 'New York, NY') ? '' : formData.personalInfo.location,
+      linkedin: isGeneric(formData.personalInfo?.linkedin, 'linkedin.com/in/username') ? '' : formData.personalInfo.linkedin,
+      github: isGeneric(formData.personalInfo?.github, 'github.com/username') ? '' : formData.personalInfo.github,
+      portfolio: isGeneric(formData.personalInfo?.portfolio, 'portfolio.dev') ? '' : formData.personalInfo.portfolio
     },
-    objective: formData.personalInfo?.summary || '',
-    education: formData.education.map(e => ({
+    objective: isGeneric(formData.personalInfo?.summary, 'Experienced software developer specialized in building modern web applications.') ? dummy.objective : formData.personalInfo.summary,
+    education: formData.education.length === 0 ? dummy.education : formData.education.map(e => ({
       degree: e.degree || 'Degree',
       institution: e.school || 'School',
       department: e.department || '',
       cgpa: e.cgpa || '',
       tenure: e.year || ''
     })),
-    experience: formData.experience.map(e => ({
+    experience: formData.experience.length === 0 ? dummy.experience : formData.experience.map(e => ({
       title: e.role || 'Role',
       company: e.company || 'Company',
       duration: e.duration || '',
@@ -942,7 +933,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       frameworks: (formData.skills.frameworks || []).join(', '),
       tools: (formData.skills.databases || []).join(', ')
     },
-    projects: formData.projects.map(p => ({
+    projects: formData.projects.length === 0 ? [] : formData.projects.map(p => ({
       title: p.name || 'Project',
       technology: p.technology || '',
       desc: p.desc || '',
@@ -1654,7 +1645,9 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                 transition: 'transform 0.15s ease-out',
                 background: 'white',
                 marginBottom: '4rem',
-                position: 'relative'
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
               {renderLayout()}
@@ -1984,7 +1977,9 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                   boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
                   borderRadius: '4px',
                   overflow: 'hidden',
-                  position: 'relative'
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}
               >
                 {renderLayout()}
@@ -2003,78 +1998,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         onNavigateHome={() => navigate('/')}
       />
 
-      <AnimatePresence>
-        {showDownloadModal && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '500px', boxShadow: '0 25px 60px rgba(0,0,0,0.3)', overflow: 'hidden', border: '1px solid #e2e8f0', padding: '2rem' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Download Your Resume</h3>
-                <button onClick={() => setShowDownloadModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}><X size={20} /></button>
-              </div>
-              
-              <p style={{ margin: '0 0 1.5rem', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>
-                Enter your email address and select your preferred download option to continue.
-              </p>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="john@example.com"
-                  style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>Select your plan</label>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                  {/* Basic Plan */}
-                  <div 
-                    onClick={() => setSelectedPlan("watermarked")}
-                    style={{ cursor: 'pointer', padding: '1.25rem', border: selectedPlan === "watermarked" ? '2px solid #0284c7' : '2px solid #cbd5e1', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s', background: selectedPlan === "watermarked" ? '#f0f9ff' : '#f8fafc' }}
-                  >
-                    <div>
-                      <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.05rem', color: selectedPlan === "watermarked" ? '#0284c7' : '#334155', fontWeight: 800 }}>Resume Download</h4>
-                      <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Watermark</p>
-                    </div>
-                    <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === "watermarked" ? '#0284c7' : '#475569' }}>₹99</div>
-                  </div>
-
-                  {/* Premium Plan */}
-                  <div 
-                    onClick={() => setSelectedPlan("no_watermark")}
-                    style={{ position: 'relative', cursor: 'pointer', padding: '1.25rem', border: selectedPlan === "no_watermark" ? '2px solid #0ea5e9' : '2px solid #cbd5e1', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s', background: selectedPlan === "no_watermark" ? '#f0f9ff' : 'white' }}
-                  >
-                    <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0ea5e9', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
-                    <div>
-                      <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.05rem', color: selectedPlan === "no_watermark" ? '#0ea5e9' : '#334155', fontWeight: 800 }}>Download + Remove Watermark</h4>
-                      <p style={{ margin: 0, fontSize: '0.85rem', color: selectedPlan === "no_watermark" ? '#0284c7' : '#64748b', fontWeight: 500 }}>High-res PDF, No Watermark</p>
-                    </div>
-                    <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === "no_watermark" ? '#0ea5e9' : '#475569' }}>₹199</div>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={handleContinueToPayment}
-                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontWeight: 900, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-              >
-                <CreditCard size={20} />
-                Continue to Payment
-              </button>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* (Old download modal removed - using DownloadWorkflowModal instead) */}
 
       {/* Profile Photo Editor Modal */}
       <PhotoEditorModal

@@ -399,7 +399,9 @@ const CreativeLayout = ({data, customColor, customFont,
                   fontWeight: 500,
                   padding: '0.2rem 0.55rem',
                   borderRadius: '4px',
-                  border: '1px solid #e2e8f0'
+                  border: '1px solid #e2e8f0',
+                  display: 'inline-block',
+                  lineHeight: 1
                 }}>
                   {typeof lang === 'string' ? lang : lang.name}
                   {typeof lang === 'object' && lang.level ? ` (${lang.level})` : ''}

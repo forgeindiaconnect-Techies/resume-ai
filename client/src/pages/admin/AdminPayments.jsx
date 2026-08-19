@@ -104,12 +104,13 @@ const AdminPayments = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>User</th>
+                  <th>User Email</th>
+                  <th>Resume</th>
                   <th>Plan</th>
                   <th>Amount</th>
-                  <th>Payment ID</th>
-                  <th>Watermark</th>
-                  <th>Status</th>
+                  <th>Payment</th>
+                  <th>Download Type</th>
+                  <th>Downloaded</th>
                   <th>Date</th>
                 </tr>
               </thead>
@@ -118,41 +119,31 @@ const AdminPayments = () => {
                   <tr key={payment._id}>
                     <td>
                       <div className="payment-user">
-                        <strong>
-                          {payment.userId?.name || "Unknown User"}
-                        </strong>
                         <span>
-                          {payment.userId?.email || "-"}
+                          {payment.userId?.email || payment.email || "-"}
                         </span>
                       </div>
                     </td>
                     <td>
-                      {payment.planId?.name || "Unknown Plan"}
+                      {payment.resumeId?.title || "My Resume"}
                     </td>
                     <td>
-                      ₹{payment.amount?.toLocaleString("en-IN")}
+                      {payment.plan === 'no_watermark' ? 'No Watermark' : 'Watermarked'}
                     </td>
                     <td>
-                      <span className="payment-id">
-                        {payment.razorpayPaymentId ||
-                          payment.razorpayOrderId ||
-                          "-"}
-                      </span>
+                      ₹{payment.amount || 0}
                     </td>
                     <td>
-                      {payment.watermarkRemoval ? (
-                        <span style={{color: '#059669', fontWeight: 600}}>Removed</span>
-                      ) : (
-                        <span style={{color: '#64748b', fontWeight: 600}}>Retained</span>
-                      )}
-                    </td>
-                    <td>
-                      <span
-                        className={`payment-status payment-${payment.status}`}
-                      >
+                      <span className={`payment-status payment-${payment.status}`}>
                         {getStatusIcon(payment.status)}
-                        {payment.status}
+                        {payment.status === 'paid' ? 'Paid' : payment.status}
                       </span>
+                    </td>
+                    <td>
+                      {payment.watermarkRemoval ? "Without Watermark" : "With Watermark"}
+                    </td>
+                    <td>
+                      {payment.downloadUsed ? "Yes" : "No"}
                     </td>
                     <td>
                       {new Date(payment.createdAt).toLocaleDateString("en-IN", {

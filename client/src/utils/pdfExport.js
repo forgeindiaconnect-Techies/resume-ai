@@ -36,6 +36,7 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
   const origOverflow = element.style.overflow;
 
   let watermarkStyleEl = null;
+
   if (isPremium) {
     watermarkStyleEl = document.createElement('style');
     watermarkStyleEl.innerHTML = '.resume-footer-container { display: none !important; }';

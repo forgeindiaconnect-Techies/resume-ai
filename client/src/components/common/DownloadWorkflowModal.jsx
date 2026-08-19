@@ -23,14 +23,14 @@ const DownloadWorkflowModal = ({
   // New State for Wizard
   const [email, setEmail] = useState('');
   const [loadingPayment, setLoadingPayment] = useState(false);
-  const [watermarkRemoval, setWatermarkRemoval] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('no_watermark');
 
   useEffect(() => {
     if (isOpen) {
       setStep('review');
       setProgress(0);
       setLoadingPayment(false);
-      setWatermarkRemoval(false);
+      setSelectedPlan('no_watermark');
       const generated = generateProfessionalFilename(formData?.personalInfo?.name, formData?.department || formData?.personalInfo?.role);
       setCustomFilename(generated);
       
@@ -68,104 +68,12 @@ const DownloadWorkflowModal = ({
     });
   };
 
-  const handleFreeDownload = () => {
-    setWatermarkRemoval(false);
-    executeDownloadFlow(false, null);
-  };
-
-  const handlePaidDownload = async () => {
-    setLoadingPayment(true);
-    const loaded = await loadRazorpay();
-    if (!loaded) {
-      alert("Failed to load payment gateway. Please check your connection.");
-      setLoadingPayment(false);
-      return;
-    }
-
-    try {
-      const activeSessionId = localStorage.getItem('activeResumeSessionId') || 'local_session';
-      const token = localStorage.getItem('token');
-      
-      const resOrder = await fetch(`${API_BASE_URL}/payments/create-order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          resumeId: activeSessionId,
-          amount: 79,
-          watermarkRemoval: true
-        })
-      });
-      
-      const orderData = await resOrder.json();
-      if (!orderData.success) {
-        alert('Failed to initialize payment.');
-        setLoadingPayment(false);
-        return;
-      }
-
-      const options = {
-        key: orderData.keyId || orderData.razorpayKey,
-        amount: orderData.order.amount,
-        currency: orderData.order.currency || "INR",
-        name: "Forge India Connect",
-        description: `Clean PDF Download without Watermark`,
-        order_id: orderData.order.id || orderData.order.razorpayOrderId,
-        handler: async function (response) {
-          try {
-            const verifyRes = await fetch(`${API_BASE_URL}/payments/verify`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-              },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                resumeId: activeSessionId
-              })
-            });
-            const verifyData = await verifyRes.json();
-            
-            if (verifyData.success) {
-              setWatermarkRemoval(true);
-              executeDownloadFlow(true, verifyData.payment.paymentId);
-            } else {
-              alert('Payment verification failed.');
-              setLoadingPayment(false);
-            }
-          } catch (e) {
-            console.error(e);
-            alert('Error verifying payment.');
-            setLoadingPayment(false);
-          }
-        },
-        modal: {
-          ondismiss: function() {
-            setLoadingPayment(false);
-          }
-        },
-        prefill: {
-          email: email.trim(),
-        },
-        theme: { color: "#0284c7" }
-      };
-
-      const rzp1 = new window.Razorpay(options);
-      rzp1.on('payment.failed', function (response){
-        alert('Payment Failed: ' + response.error.description);
-        setLoadingPayment(false);
-      });
-      rzp1.open();
-
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Could not start checkout process.');
-      setLoadingPayment(false);
+  const handleContinueToPayment = async () => {
+    // For now, bypass Razorpay and simulate payment like in ResumeBuilder.jsx
+    if (selectedPlan === "watermarked") {
+      executeDownloadFlow(false, "mock_pay_99");
+    } else {
+      executeDownloadFlow(true, "mock_pay_199");
     }
   };
 
@@ -350,55 +258,68 @@ const DownloadWorkflowModal = ({
           {/* STEP 3: SELECT PLAN */}
           {step === 'plan' && (
             <div style={{ padding: '2rem' }}>
-              <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Select Download Option</h3>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Choose how you want to download your resume.</p>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Download Your Resume</h3>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Enter your email address and select your preferred download option to continue.</p>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>EMAIL ADDRESS</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="john@example.com"
+                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
+                />
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-                {/* Free Option */}
+                <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '-0.5rem' }}>SELECT YOUR PLAN</label>
+                {/* 99 Plan */}
                 <div 
-                  onClick={handleFreeDownload}
-                  style={{ cursor: 'pointer', padding: '1.25rem', border: '2px solid #cbd5e1', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s', background: '#f8fafc' }}
+                  onClick={() => setSelectedPlan('watermarked')}
+                  style={{ 
+                    cursor: 'pointer', padding: '1.25rem', 
+                    border: selectedPlan === 'watermarked' ? '2px solid #0284c7' : '1px solid #cbd5e1', 
+                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                    transition: 'all 0.2s', background: selectedPlan === 'watermarked' ? '#f0f9ff' : '#f8fafc' 
+                  }}
                 >
                   <div>
-                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: '#334155', fontWeight: 800 }}>Free Download</h4>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Forge India Watermark</p>
+                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#334155', fontWeight: 800 }}>Resume Download</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Watermark</p>
                   </div>
-                  <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#475569' }}>₹0</div>
+                  <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#475569' }}>₹99</div>
                 </div>
 
-                {/* Paid Option */}
+                {/* 199 Plan */}
                 <div 
-                  style={{ position: 'relative', padding: '1.25rem', border: '2px solid #0284c7', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0f9ff' }}
+                  onClick={() => setSelectedPlan('no_watermark')}
+                  style={{ 
+                    cursor: 'pointer', position: 'relative', padding: '1.25rem', 
+                    border: selectedPlan === 'no_watermark' ? '2px solid #0ea5e9' : '1px solid #cbd5e1', 
+                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                    background: selectedPlan === 'no_watermark' ? '#f0f9ff' : '#f8fafc', transition: 'all 0.2s' 
+                  }}
                 >
-                  <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0284c7', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
+                  <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0ea5e9', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
                   <div>
-                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: '#0284c7', fontWeight: 800 }}>Clean PDF Export</h4>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#0369a1', fontWeight: 500 }}>High-resolution, ATS-friendly, No Watermark</p>
+                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#334155', fontWeight: 800 }}>Download + Remove Watermark</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: selectedPlan === 'no_watermark' ? '#0284c7' : '#64748b', fontWeight: 500 }}>High-res PDF, No Watermark</p>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 900, fontSize: '1.3rem', color: '#0f172a' }}>₹79</div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b', textDecoration: 'line-through' }}>₹149</div>
-                  </div>
+                  <div style={{ fontWeight: 900, fontSize: '1.3rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#0f172a' }}>₹199</div>
                 </div>
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button
-                  onClick={() => setStep('email')}
-                  style={{ flex: 1, padding: '0.9rem', borderRadius: '12px', border: '1.5px solid #cbd5e1', background: 'white', color: '#334155', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer' }}
+                  onClick={handleContinueToPayment}
                   disabled={loadingPayment}
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handlePaidDownload}
-                  disabled={loadingPayment}
-                  style={{ flex: 1.4, padding: '0.9rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontWeight: 900, fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  style={{ width: '100%', padding: '0.9rem', borderRadius: '12px', border: 'none', background: '#0ea5e9', color: 'white', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(14, 165, 233, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
                   {loadingPayment ? <RefreshCw size={18} className="animate-spin" /> : <CreditCard size={18} />}
-                  Pay ₹79 & Download
+                  Continue to Payment
                 </button>
               </div>
             </div>
@@ -422,15 +343,40 @@ const DownloadWorkflowModal = ({
 
           {/* STEP 5: SUCCESS SCREEN */}
           {step === 'success' && (
-            <div style={{ padding: '2.5rem 2rem', textAlign: 'center' }}>
+            <div style={{ padding: '2.5rem 2rem' }}>
               <div style={{ width: 65, height: 65, borderRadius: '50%', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                 <CheckCircle2 size={36} />
               </div>
-              <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Resume Downloaded Successfully! 🎉</h3>
-              <p style={{ margin: '0 0 1.5rem', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Saved to your device as:</p>
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Payment & Download Successful! 🎉</h3>
+              </div>
 
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '0.85rem 1.25rem', borderRadius: '12px', fontWeight: 800, color: '#0284c7', fontSize: '0.9rem', marginBottom: '2rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FileText size={18} /> {customFilename}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem', textAlign: 'left' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Company Name</span>
+                    <span style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 900 }}>Forge India Connect</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Customer Name</span>
+                    <span style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 900 }}>{formData?.personalInfo?.name && formData.personalInfo.name !== 'Your Name' ? formData.personalInfo.name : 'Valued Customer'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Subject</span>
+                    <span style={{ fontSize: '0.95rem', color: '#059669', fontWeight: 900 }}>ATS-Friendly Resume Generation</span>
+                  </div>
+                  <div style={{ paddingTop: '0.5rem' }}>
+                    <p style={{ margin: '0 0 1rem', fontSize: '0.9rem', color: '#334155', lineHeight: 1.6, fontWeight: 500 }}>
+                      Thank you for choosing Forge India Connect to build your professional profile. We are thrilled to be part of your career journey.
+                    </p>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#334155', lineHeight: 1.6, fontWeight: 500 }}>
+                      Your high-resolution PDF has been downloaded as:
+                    </p>
+                    <div style={{ background: 'white', border: '1px solid #cbd5e1', padding: '0.65rem 1rem', borderRadius: '8px', fontWeight: 800, color: '#0284c7', fontSize: '0.85rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <FileText size={16} /> {customFilename}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>

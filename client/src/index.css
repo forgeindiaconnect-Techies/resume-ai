@@ -1446,7 +1446,7 @@
 
   font-size: 12px;
 }
-.exporting-pdf .resume-footer-container { display: none !important; }
+/* Removed .exporting-pdf .resume-footer-container { display: none !important; } to allow dynamic watermark control */
 
 .admin-sidebar {
   width: 250px;

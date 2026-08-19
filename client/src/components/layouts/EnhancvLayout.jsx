@@ -112,6 +112,8 @@ const EnhancvLayout = ({data, customColor,
   return (
     <div style={{
       minHeight: '297mm',
+      height: '100%',
+      flex: 1,
       width: '100%',
       fontFamily: fontFamily,
       background: '#ffffff',

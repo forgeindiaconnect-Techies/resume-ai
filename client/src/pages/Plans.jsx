@@ -84,9 +84,30 @@ const Plans = () => {
     }
   };
 
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePayment = async () => {
     setLoadingPayment(true);
     try {
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded) {
+        alert("Failed to load payment gateway. Check your connection.");
+        setLoadingPayment(false);
+        return;
+      }
+
       const planObj = PRICING_PLANS.find(p => p.key === selectedPlan) || PRICING_PLANS[1];
       const token = localStorage.getItem('token');
       const activeSessionId = localStorage.getItem('activeResumeSessionId') || 'local_session';

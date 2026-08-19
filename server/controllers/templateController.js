@@ -65,7 +65,12 @@ exports.getTemplateById = async (req, res) => {
     const templateId = req.params.id;
 
     if (isDBConnected()) {
-      const template = await Template.findById(templateId).populate("layout");
+      let template;
+      if (mongoose.isValidObjectId(templateId)) {
+        template = await Template.findById(templateId).populate("layout");
+      } else {
+        template = await Template.findOne({ name: { $regex: new RegExp(templateId.replace('-', ' '), 'i') } }).populate("layout");
+      }
 
       if (!template) {
         return res.status(404).json({

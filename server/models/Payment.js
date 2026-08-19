@@ -5,7 +5,6 @@ const paymentSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     planId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -65,6 +64,9 @@ const paymentSchema = new mongoose.Schema(
     watermarkRemoval: {
       type: Boolean,
       default: false,
+    },
+    downloadedAt: {
+      type: Date,
     },
   },
   {

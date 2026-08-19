@@ -72,7 +72,7 @@ exports.createOrder = async (req, res) => {
     const options = {
       amount: selectedPlan.amount * 100,
       currency: "INR",
-      receipt: `resume_${resumeId}_${Date.now()}`,
+      receipt: `rcpt_${Date.now()}`,
     };
 
     const order = await razorpay.orders.create(options);
@@ -219,6 +219,7 @@ exports.getAllPayments = async (req, res) => {
     const payments = await Payment.find()
       .populate("userId", "name email")
       .populate("planId", "name price")
+      .populate("resumeId", "title")
       .sort({ createdAt: -1 });
 
     res.json({
@@ -230,6 +231,92 @@ exports.getAllPayments = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch payments",
+    });
+  }
+};
+
+exports.markDownloaded = async (req, res) => {
+  try {
+    const payment = await Payment.findOne({ razorpayPaymentId: req.params.paymentId });
+    if (!payment) {
+      return res.status(404).json({ success: false, message: "Payment not found" });
+    }
+
+    payment.downloadUsed = true;
+    payment.downloadedAt = new Date();
+    await payment.save();
+
+    res.status(200).json({ success: true, message: "Download marked" });
+  } catch (error) {
+    console.error("Mark downloaded error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+exports.mockPayment = async (req, res) => {
+  try {
+    const { email, resumeId, plan } = req.body;
+
+    const plans = {
+      watermarked: { amount: 99, watermarkRemoval: false },
+      no_watermark: { amount: 199, watermarkRemoval: true },
+    };
+
+    const selectedPlan = plans[plan];
+    if (!selectedPlan) {
+      return res.status(400).json({ success: false, message: "Invalid plan" });
+    }
+
+    const User = require("../models/User");
+    const normalizedEmail = email.trim().toLowerCase();
+
+    let user = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    if (!user) {
+      user = await User.create({
+        userId: `USR_${Date.now()}`,
+        email: normalizedEmail,
+        isGuest: false,
+      });
+    }
+
+    const payment = await Payment.create({
+      userId: user._id,
+      resumeReference: resumeId,
+      email: normalizedEmail,
+      plan,
+      amount: selectedPlan.amount,
+      razorpayOrderId: `mock_order_${Date.now()}`,
+      razorpayPaymentId: `mock_pay_${Date.now()}`,
+      status: "paid",
+      watermarkRemoval: selectedPlan.watermarkRemoval,
+      downloadAllowed: true,
+      // PDF has NOT downloaded yet
+      downloadUsed: false,
+      downloadedAt: null,
+    });
+
+    return res.status(200).json({
+      success: true,
+      payment: {
+        id: payment._id,
+        paymentId: payment.razorpayPaymentId,
+        email: payment.email,
+        plan: payment.plan,
+        amount: payment.amount,
+        watermarkRemoval: payment.watermarkRemoval,
+        downloadAllowed: payment.downloadAllowed,
+        downloadUsed: payment.downloadUsed,
+      },
+    });
+  } catch (error) {
+    console.error("Mock payment error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
     });
   }
 };

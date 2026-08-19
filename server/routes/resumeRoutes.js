@@ -146,13 +146,13 @@ router.post('/download', authMiddleware, async (req, res) => {
   }
 });
 
-router.post('/resume-session/use-template/:id', authMiddleware, resumeController.createResumeFromTemplate);
-router.post('/resume-session', authMiddleware, resumeController.createResume);
+router.post('/resume-session/use-template/:id', authMiddleware.optionalAuth, resumeController.createResumeFromTemplate);
+router.post('/resume-session', authMiddleware.optionalAuth, resumeController.createResume);
 router.post('/resumes', resumeController.createResume);
 router.put('/resumes/:resumeId/attach-user', resumeController.attachUserToResume);
 router.put('/:resumeId/attach-user', resumeController.attachUserToResume);
 router.route('/resume-session/:id')
-  .get(authMiddleware, resumeController.getResumeById)
-  .put(authMiddleware, resumeController.updateResume);
+  .get(authMiddleware.optionalAuth, resumeController.getResumeById)
+  .put(authMiddleware.optionalAuth, resumeController.updateResume);
 
 module.exports = router;

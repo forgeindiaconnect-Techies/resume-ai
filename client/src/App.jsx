@@ -76,6 +76,7 @@ function App() {
         }
       } catch (error) {
         console.error("Subscription check failed:", error);
+        localStorage.removeItem("token");
         localStorage.setItem("user_premium", "false");
       }
     };

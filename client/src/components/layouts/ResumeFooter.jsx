@@ -87,8 +87,7 @@ const ResumeFooter = () => {
           color: '#94a3b8',
           fontWeight: 500,
           letterSpacing: '0.02em',
-          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
-          textShadow: '0 0 6px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)'
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
         }}>
           www.forgeindiaconnect.com
         </span>
@@ -101,8 +100,7 @@ const ResumeFooter = () => {
           fontSize: '0.68rem',
           color: '#94a3b8',
           fontWeight: 500,
-          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
-          textShadow: '0 0 6px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)'
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif"
         }}>
           Powered by
           <ForgeLogo />

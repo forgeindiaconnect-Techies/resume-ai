@@ -117,6 +117,8 @@ const ModernLayout = ({
       display: 'flex',
       flexDirection: 'column',
       minHeight: '297mm',
+      height: '100%',
+      flex: 1,
       width: '100%',
       fontFamily: fontFamily,
       background: '#f8fafc',
@@ -318,7 +320,9 @@ const ModernLayout = ({
                             fontSize: `${0.72 * fScale}rem`,
                             fontWeight: 500,
                             padding: '0.2rem 0.6rem',
-                            borderRadius: '16px'
+                            borderRadius: '16px',
+                            display: 'inline-block',
+                            lineHeight: 1
                           }}>
                             {skill}
                           </span>
@@ -331,7 +335,7 @@ const ModernLayout = ({
                             <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#93c5fd', marginBottom: '0.25rem', textTransform: 'uppercase' }}>Programming Languages</div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
                               {skillsCat.languages.map((skill, idx) => (
-                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px' }}>{skill}</span>
+                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
                               ))}
                             </div>
                           </div>
@@ -341,7 +345,7 @@ const ModernLayout = ({
                             <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#93c5fd', marginBottom: '0.25rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
                               {skillsCat.frameworks.map((skill, idx) => (
-                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px' }}>{skill}</span>
+                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
                               ))}
                             </div>
                           </div>
@@ -351,7 +355,7 @@ const ModernLayout = ({
                             <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#93c5fd', marginBottom: '0.25rem', textTransform: 'uppercase' }}>Databases & Tools</div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
                               {skillsCat.tools.map((skill, idx) => (
-                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px' }}>{skill}</span>
+                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
                               ))}
                             </div>
                           </div>

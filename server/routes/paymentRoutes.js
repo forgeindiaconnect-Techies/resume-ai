@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.post("/create-order", optionalAuth, paymentController.createOrder);
 router.post("/verify", optionalAuth, paymentController.verifyPayment);
+router.post("/mock-payment", optionalAuth, paymentController.mockPayment);
+router.post("/:paymentId/download", optionalAuth, paymentController.markDownloaded);
 router.get("/admin", adminAuthMiddleware, paymentController.getAllPayments);
 
 module.exports = router;

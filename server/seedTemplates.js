@@ -12,6 +12,14 @@ const DB_PATH = path.join(__dirname, 'database.json');
 (async () => {
   const templatesData = [
     {
+      name: "Modern Blue",
+      industry: "General",
+      category: "Professional",
+      description: "Modern professional blue resume template.",
+      thumbnail: "/templates/software.jpg",
+      atsScore: 98,
+    },
+    {
       name: "Software Engineer",
       industry: "Software Engineering",
       category: "Technology",
