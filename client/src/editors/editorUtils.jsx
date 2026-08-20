@@ -294,23 +294,26 @@ export const EditorShell = ({
     }
 
     const handleOpenPayment = (e) => {
+      setPaymentReason(e.detail?.reason || 'download');
       setShowPaymentModal(true);
     };
+    const handleOpenDownload = () => {
+      setShowDownloadWorkflowModal(true);
+    };
+    
     window.addEventListener('open-payment-modal', handleOpenPayment);
-    return () => window.removeEventListener('open-payment-modal', handleOpenPayment);
+    window.addEventListener('open-download-workflow', handleOpenDownload);
+    return () => {
+      window.removeEventListener('open-payment-modal', handleOpenPayment);
+      window.removeEventListener('open-download-workflow', handleOpenDownload);
+    };
   }, []);
 
   const source = localStorage.getItem('source') || 'create';
   console.log("Resume source:", source);
 
   const handleDownloadAction = () => {
-    const isPremium = localStorage.getItem('user_premium') === 'true';
-    if (!isPremium) {
-      const sessionId = window.location.pathname.split('/').pop();
-      navigate(`/plans?resumeId=${sessionId}`);
-    } else {
-      setShowDownloadWorkflowModal(true);
-    }
+    setShowDownloadWorkflowModal(true);
   };
 
   const handleTemplateSwitch = (tpl) => {

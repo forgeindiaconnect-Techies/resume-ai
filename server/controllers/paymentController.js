@@ -8,27 +8,29 @@ const Resume = require("../models/Resume");
 
 exports.createOrder = async (req, res) => {
   try {
-    const { email, resumeId, plan } = req.body;
+    const { email, resumeId, plan, planKey, resumeSessionId } = req.body;
 
-    if (!email || !resumeId || !plan) {
+    const actualPlanKey = planKey || plan;
+    const actualResumeId = resumeSessionId || resumeId;
+    const actualEmail = email || (req.user?.email) || `guest_${Date.now()}@example.com`;
+
+    if (!actualResumeId || !actualPlanKey) {
       return res.status(400).json({
         success: false,
-        message: "Email, resumeId and plan are required",
+        message: "resumeId and plan are required",
       });
     }
 
     const plans = {
-      watermarked: {
-        amount: 99,
-        watermarkRemoval: false,
-      },
-      no_watermark: {
-        amount: 199,
-        watermarkRemoval: true,
-      },
+      watermarked: { amount: 99, watermarkRemoval: false },
+      no_watermark: { amount: 199, watermarkRemoval: true },
+      Single: { amount: 1, watermarkRemoval: false },
+      Monthly: { amount: 199, watermarkRemoval: true },
+      Quarterly: { amount: 399, watermarkRemoval: true },
+      Yearly: { amount: 999, watermarkRemoval: true }
     };
 
-    const selectedPlan = plans[plan];
+    const selectedPlan = plans[actualPlanKey];
 
     if (!selectedPlan) {
       return res.status(400).json({
@@ -38,7 +40,7 @@ exports.createOrder = async (req, res) => {
     }
 
     const User = require("../models/User");
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = actualEmail.trim().toLowerCase();
 
     let user = await User.findOne({
       email: normalizedEmail,
@@ -53,15 +55,13 @@ exports.createOrder = async (req, res) => {
     }
 
     let resume = await Resume.findOne({
-      resumeId,
+      resumeId: actualResumeId,
     });
 
     if (!resume) {
-      // The tutorial expected a 404 here, but because users can click Download
-      // before explicitly saving, we must auto-create the Resume record in the DB!
       resume = await Resume.create({
         userId: user._id,
-        resumeId: resumeId.startsWith("RESUME_") ? resumeId : `RESUME_${Date.now()}`,
+        resumeId: actualResumeId.startsWith("RESUME_") ? actualResumeId : `RESUME_${Date.now()}`,
         title: "My Resume"
       });
     }
@@ -80,9 +80,9 @@ exports.createOrder = async (req, res) => {
     const payment = await Payment.create({
       userId: user._id,
       resumeId: resume._id,
-      resumeReference: resumeId,
+      resumeReference: actualResumeId,
       email: normalizedEmail,
-      plan: plan,
+      plan: actualPlanKey,
       amount: selectedPlan.amount,
       razorpayOrderId: order.id,
       status: "created",
@@ -93,6 +93,7 @@ exports.createOrder = async (req, res) => {
 
     return res.status(201).json({
       success: true,
+      razorpayKey: process.env.RAZORPAY_KEY_ID,
       order: {
         id: order.id,
         amount: order.amount,

@@ -69,11 +69,58 @@ const DownloadWorkflowModal = ({
   };
 
   const handleContinueToPayment = async () => {
-    // For now, bypass Razorpay and simulate payment like in ResumeBuilder.jsx
-    if (selectedPlan === "watermarked") {
-      executeDownloadFlow(false, "mock_pay_99");
-    } else {
-      executeDownloadFlow(true, "mock_pay_199");
+    if (!email.trim() || !email.includes("@")) {
+      alert("Please enter a valid email ID.");
+      return;
+    }
+
+    if (!selectedPlan) {
+      alert("Please select a download option.");
+      return;
+    }
+
+    try {
+      const sheet = document.getElementById("resume-preview-sheet");
+
+      if (!sheet) {
+        alert("Resume preview not found.");
+        return;
+      }
+
+      const filename = generateProfessionalFilename(
+        formData.personalInfo?.name || "Resume",
+        formData.department || "Professional"
+      );
+
+      // OPTION 1:
+      // Download + Watermark
+      if (selectedPlan === "watermarked") {
+        console.log("Downloading WITH watermark");
+
+        await exportResumeToPdf(
+          sheet,
+          filename,
+          false
+        );
+      }
+
+      // OPTION 2:
+      // Download + Watermark Remove
+      else if (selectedPlan === "no_watermark") {
+        console.log("Downloading WITHOUT watermark");
+
+        await exportResumeToPdf(
+          sheet,
+          filename,
+          true
+        );
+      }
+
+      onClose(); // Replacing setShowDownloadModal(false)
+
+    } catch (error) {
+      console.error("Resume download error:", error);
+      alert("Unable to download resume.");
     }
   };
 

@@ -23,8 +23,9 @@ const ResumeFooter = () => {
   const navigate = useNavigate();
 
   const handleRemoveClick = () => {
-    const activeSessionId = localStorage.getItem('activeResumeSessionId') || window.location.pathname.split('/').pop();
-    navigate(`/plans?resumeId=${activeSessionId}`);
+    // Trigger download workflow modal via custom event instead of navigating to /plans
+    const event = new CustomEvent('open-download-workflow');
+    window.dispatchEvent(event);
   };
 
   const appSettingsString = localStorage.getItem('app_settings');

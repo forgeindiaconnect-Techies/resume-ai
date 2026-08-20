@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api';
 import { 
   Check, ShieldCheck, Download, CreditCard, 
@@ -53,6 +53,7 @@ const Plans = () => {
   const [selectedPlan, setSelectedPlan] = useState('Monthly');
   const [loadingPayment, setLoadingPayment] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // Load Razorpay Script Dynamically
   const loadRazorpayScript = () => {
@@ -110,10 +111,11 @@ const Plans = () => {
 
       const planObj = PRICING_PLANS.find(p => p.key === selectedPlan) || PRICING_PLANS[1];
       const token = localStorage.getItem('token');
-      const activeSessionId = localStorage.getItem('activeResumeSessionId') || 'local_session';
+      const urlSessionId = searchParams.get('resumeId');
+      const activeSessionId = urlSessionId || localStorage.getItem('activeResumeSessionId') || 'local_session';
 
       // 1. Create order on backend
-      const resOrder = await fetch(`${API_BASE_URL}/payment/create-order`, {
+      const resOrder = await fetch(`${API_BASE_URL}/payments/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +140,7 @@ const Plans = () => {
         order_id: dataOrder.order.razorpayOrderId,
         handler: async function (response) {
           try {
-            const verifyRes = await fetch(`${API_BASE_URL}/payment/verify`, {
+            const verifyRes = await fetch(`${API_BASE_URL}/payments/verify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

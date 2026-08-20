@@ -5,7 +5,8 @@ import ForgeLogo from '../components/common/ForgeLogo';
 import ContactModal from '../components/common/ContactModal';
 import {
   Sparkles, Compass, FileText, MessageCircle, Briefcase, 
-  ArrowRight, ChevronRight, HelpCircle, Upload
+  ArrowRight, ChevronRight, HelpCircle, Upload, Layers,
+  FileSearch, X
 } from 'lucide-react';
 import { generateResumeAI } from '../services/aiService';
 import { getOrCreateUser } from '../utils/userIdentity';
@@ -13,6 +14,7 @@ import { createResume } from '../services/resumeService';
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem('token');
   const onEnterApp = (action) => {
     localStorage.setItem('builder_mode', 'manual');
     localStorage.setItem('source', 'create');
@@ -29,9 +31,7 @@ const LandingPage = () => {
   const [generatingAi, setGeneratingAi] = useState(false);
 
   // Create Resume Modal States
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [createName, setCreateName] = useState('');
-  const [createRole, setCreateRole] = useState('');
+  // States removed to navigate directly to the builder
   const [chatHistory, setChatHistory] = useState([
     {
       sender: 'advisor',
@@ -337,7 +337,7 @@ const LandingPage = () => {
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#0284c7'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => onEnterApp('create')}
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📝</div>
               <div>
@@ -950,52 +950,7 @@ const LandingPage = () => {
           </motion.div>
         )}
 
-        {/* Create Resume Modal */}
-        {showCreateModal && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}
-          >
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              style={{ background: 'white', borderRadius: '24px', maxWidth: '520px', width: '100%', padding: '2.5rem', boxShadow: '0 25px 50px rgba(0,0,0,0.3)', border: '1px solid #e2e8f0' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ background: '#f1f5f9', color: '#0f172a', padding: '0.6rem', borderRadius: '12px' }}>
-                    <FileText size={24} />
-                  </div>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#0f172a' }}>Create Blank Resume</h3>
-                  </div>
-                </div>
-                <button onClick={() => setShowCreateModal(false)} style={{ background: '#f1f5f9', border: 'none', cursor: 'pointer', color: '#64748b', padding: '0.5rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}>
-                  <X size={20} />
-                </button>
-              </div>
-
-              <form onSubmit={(e) => { e.preventDefault(); onEnterApp('create'); }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Full Name</label>
-                  <input type="text" placeholder="e.g. John Doe" value={createName} onChange={e => setCreateName(e.target.value)}
-                    style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '12px', border: '2px solid #e2e8f0', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor = '#0f172a'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Target Role</label>
-                  <input type="text" placeholder="e.g. Software Engineer" value={createRole} onChange={e => setCreateRole(e.target.value)}
-                    style={{ width: '100%', padding: '0.85rem 1rem', borderRadius: '12px', border: '2px solid #e2e8f0', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }} onFocus={e => e.target.style.borderColor = '#0f172a'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
-                </div>
-                <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', fontSize: '0.85rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
-                  <Compass size={18} style={{ color: '#0ea5e9' }} /> Start fresh with full manual control over every section.
-                </div>
-                <button type="submit"
-                  style={{ marginTop: '0.5rem', padding: '1rem', borderRadius: '12px', border: 'none', background: '#0f172a', color: 'white', fontSize: '1rem', fontWeight: 900, cursor: 'pointer', boxShadow: '0 8px 20px rgba(15, 23, 42, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                  Start Creating <ArrowRight size={18} />
-                </button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
+        {/* Create Resume Modal removed */}
 
         {/* Template Modal */}
         {/* Removed template modal as requested */}
