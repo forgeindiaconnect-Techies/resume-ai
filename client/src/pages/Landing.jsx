@@ -11,6 +11,7 @@ import {
 import { generateResumeAI } from '../services/aiService';
 import { getOrCreateUser } from '../utils/userIdentity';
 import { createResume } from '../services/resumeService';
+import { startSession, trackEvent } from '../utils/sessionTracker';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -39,6 +40,12 @@ const LandingPage = () => {
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    // Start tracking user session as soon as they hit the landing page
+    startSession("/");
+    trackEvent("Landing Page Opened", "/");
+  }, []);
 
   // Load external Playfair Display font dynamically
   useEffect(() => {
@@ -165,7 +172,7 @@ const LandingPage = () => {
       color: '#1e293b', 
       fontFamily: "'Inter', sans-serif",
       position: 'relative',
-      overflowX: 'hidden'
+      overflowX: 'clip'
     }}>
       {/* Background Decorative Blur Orbs */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>

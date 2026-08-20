@@ -2,39 +2,41 @@ const mongoose = require("mongoose");
 
 const downloadSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    resumeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Resume",
-      required: true,
-    },
-    paymentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Payment",
+    sessionId: {
+      type: String,
       default: null,
     },
-    subscriptionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subscription",
+
+    guestId: {
+      type: String,
       default: null,
     },
-    planId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Plan",
-      default: null,
-    },
+
     email: {
       type: String,
-      default: "",
+      default: null,
     },
-    watermarkApplied: {
-      type: Boolean,
-      default: true,
+
+    resumeId: {
+      type: String,
+      default: null,
     },
+    resumeName: {
+      type: String,
+      default: null,
+    },
+
+    downloadType: {
+      type: String,
+      enum: ["watermarked", "no_watermark"],
+      required: true,
+    },
+
+    amount: {
+      type: Number,
+      required: true,
+    },
+
     downloadedAt: {
       type: Date,
       default: Date.now,

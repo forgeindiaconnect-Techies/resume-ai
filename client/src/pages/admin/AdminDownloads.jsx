@@ -16,32 +16,36 @@ const AdminDownloads = () => {
 
   const fetchDownloads = async () => {
     try {
-      const token = localStorage.getItem("adminToken");
+      setLoading(true);
 
-      const response = await axios.get(
-        `${API_BASE_URL}/downloads/admin`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await fetch(
+        "http://localhost:5000/api/downloads"
       );
 
-      setDownloads(response.data.downloads || []);
+      const data = await response.json();
+
+      if (data.success) {
+        setDownloads(data.downloads || []);
+      } else {
+        setDownloads([]);
+      }
+
     } catch (error) {
       console.error("Failed to fetch downloads:", error);
+      setDownloads([]);
     } finally {
       setLoading(false);
     }
   };
 
   const filteredDownloads = downloads.filter((download) => {
-    const user = download.userId?.name || "";
-    const email = download.email || download.userId?.email || "";
-    const resume = download.resumeId?.title || "";
-    const plan = download.planId?.name || "";
+    const user = download.guestId || "";
+    const email = download.email || "";
+    const resumeName = download.resumeName || "";
+    const resume = download.resumeId || "";
+    const type = download.downloadType || "";
 
-    const searchText = `${user} ${email} ${resume} ${plan}`.toLowerCase();
+    const searchText = `${user} ${email} ${resumeName} ${resume} ${type}`.toLowerCase();
 
     return searchText.includes(search.toLowerCase());
   });
@@ -94,41 +98,28 @@ const AdminDownloads = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>User / Email</th>
-                  <th>Resume</th>
-                  <th>Watermark</th>
-                  <th>Plan</th>
-                  <th>Downloaded</th>
+                  <th>Resume Name</th>
+                  <th>Email</th>
+                  <th>Download Type</th>
+                  <th>Amount</th>
+                  <th>Downloaded Time</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredDownloads.map((download) => (
-                  <tr key={download._id}>
+                {filteredDownloads.map((item) => (
+                  <tr key={item._id}>
+                    <td>{item.resumeName || "-"}</td>
+                    <td>{item.email || "-"}</td>
                     <td>
-                      <div className="payment-user">
-                        <strong>
-                          {download.userId?.name || "Anonymous"}
-                        </strong>
-                        <span>{download.email || download.userId?.email || "-"}</span>
-                      </div>
+                      {item.downloadType === "watermarked"
+                        ? "With Watermark"
+                        : "Without Watermark"}
                     </td>
-                    <td>{download.resumeId?.title || "Resume"}</td>
+                    <td>₹{item.amount}</td>
                     <td>
-                      {download.watermarkApplied ? (
-                        <span style={{color: '#64748b', fontWeight: 600}}>Applied</span>
-                      ) : (
-                        <span style={{color: '#059669', fontWeight: 600}}>Clean</span>
-                      )}
-                    </td>
-                    <td>{download.planId?.name || "-"}</td>
-                    <td>
-                      {new Date(download.downloadedAt).toLocaleString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {item.downloadedAt
+                        ? new Date(item.downloadedAt).toLocaleString()
+                        : "-"}
                     </td>
                   </tr>
                 ))}

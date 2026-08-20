@@ -1,77 +1,59 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Plus, Edit, Trash2, Check, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
-import { API_BASE_URL } from "../../config/api";
 
 const AdminPlans = () => {
-  const navigate = useNavigate();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPlans();
-  }, []);
+  const [editingPlan, setEditingPlan] = useState(null);
+  const [editPrice, setEditPrice] = useState("");
+  const [editStatus, setEditStatus] = useState(true);
 
   const fetchPlans = async () => {
     try {
-      const token = localStorage.getItem("adminToken");
+      setLoading(true);
 
-      const response = await axios.get(`${API_BASE_URL}/admin/plans`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/download-plans"
+      );
 
-      setPlans(response.data.plans || []);
+      const data = await response.json();
+
+      console.log("PLANS API:", data);
+
+      if (data.success) {
+        setPlans(data.plans || []);
+      } else {
+        setPlans([]);
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch plans:", error);
+      setPlans([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleStatus = async (id) => {
-    try {
-      const token = localStorage.getItem("adminToken");
+  useEffect(() => {
+    fetchPlans();
+  }, []);
 
-      await axios.patch(
-        `${API_BASE_URL}/admin/plans/${id}/status`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  const totalRevenue = plans.reduce(
+    (sum, plan) => sum + Number(plan.revenue || 0),
+    0
+  );
 
-      fetchPlans();
-    } catch (error) {
-      alert("Failed to update plan");
-    }
-  };
+  const totalDownloads = plans.reduce(
+    (sum, plan) => sum + Number(plan.downloadCount || 0),
+    0
+  );
 
-  const deletePlan = async (id) => {
-    if (!window.confirm("Delete this plan?")) {
-      return;
-    }
+  const watermarkDownloads =
+    plans.find(plan => plan.key === "watermarked")?.downloadCount || 0;
 
-    try {
-      const token = localStorage.getItem("adminToken");
-
-      await axios.delete(`${API_BASE_URL}/admin/plans/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      fetchPlans();
-    } catch (error) {
-      alert("Failed to delete plan");
-    }
-  };
+  const noWatermarkDownloads =
+    plans.find(plan => plan.key === "no_watermark")?.downloadCount || 0;
 
   return (
     <div className="admin-layout">
@@ -85,14 +67,35 @@ const AdminPlans = () => {
                 <h2>Plans</h2>
                 <p>Manage your Resume Builder subscription plans.</p>
               </div>
+            </div>
 
-              <button
-                className="admin-primary-button"
-                onClick={() => navigate("/admin/plans/add")}
-              >
-                <Plus size={17} />
-                Add Plan
-              </button>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "16px",
+                marginBottom: "24px"
+              }}
+            >
+              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>Total Revenue</h4>
+                <h2 style={{ margin: 0, fontSize: "28px", color: "#0f172a" }}>₹{totalRevenue}</h2>
+              </div>
+
+              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>Total Downloads</h4>
+                <h2 style={{ margin: 0, fontSize: "28px", color: "#0f172a" }}>{totalDownloads}</h2>
+              </div>
+
+              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>With Watermark</h4>
+                <h2 style={{ margin: 0, fontSize: "28px", color: "#0ea5e9" }}>{watermarkDownloads}</h2>
+              </div>
+
+              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>Without Watermark</h4>
+                <h2 style={{ margin: 0, fontSize: "28px", color: "#0ea5e9" }}>{noWatermarkDownloads}</h2>
+              </div>
             </div>
 
             {loading ? (
@@ -103,61 +106,126 @@ const AdminPlans = () => {
                 <p>Create your first subscription plan.</p>
               </div>
             ) : (
-              <div className="admin-plans-grid">
-                {plans.map((plan) => (
-                  <div className="admin-plan-card" key={plan._id}>
-                    {plan.popular && (
-                      <div className="popular-badge">Most Popular</div>
-                    )}
+              <div className="admin-table-container">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Plan Name</th>
+                      <th>Price</th>
+                      <th>Download Type</th>
+                      <th>Status</th>
+                      <th>Downloads</th>
+                      <th>Revenue</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {plans.map((plan) => (
+                      <tr key={plan._id}>
+                        <td>{plan.name}</td>
+                        <td>₹{plan.price}</td>
+                        <td>
+                          {plan.watermarkRemoval
+                            ? "Without Watermark"
+                            : "With Watermark"}
+                        </td>
+                        <td>
+                          <span className={plan.isActive ? "status-badge active" : "status-badge inactive"}>
+                            {plan.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td>{plan.downloadCount || 0}</td>
+                        <td>₹{plan.revenue || 0}</td>
+                        <td>
+                          <button 
+                            className="admin-action-btn"
+                            onClick={() => {
+                              setEditingPlan(plan);
+                              setEditPrice(plan.price);
+                              setEditStatus(plan.isActive);
+                            }}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-                    <div className="admin-plan-header">
-                      <div>
-                        <h3>{plan.name}</h3>
-                        <p>{plan.description}</p>
-                      </div>
-
-                      <span
-                        className={
-                          plan.isActive
-                            ? "template-active"
-                            : "template-inactive"
-                        }
-                      >
-                        {plan.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-
-                    <div className="admin-plan-price">
-                      <strong>₹{plan.price}</strong>
-                      <span>/ {plan.duration} days</span>
-                    </div>
-
-                    <div className="admin-plan-features">
-                      {plan.features.map((feature, index) => (
-                        <div key={index}>
-                          <Check size={15} />
-                          {feature}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="admin-plan-actions">
-                      <button onClick={() => navigate(`/admin/plans/edit/${plan._id}`)}>
-                        <Edit size={15} />
-                        Edit
-                      </button>
-
-                      <button onClick={() => toggleStatus(plan._id)}>
-                        {plan.isActive ? "Deactivate" : "Activate"}
-                      </button>
-
-                      <button onClick={() => deletePlan(plan._id)}>
-                        <Trash2 size={15} />
-                        Delete
-                      </button>
-                    </div>
+            {editingPlan && (
+              <div style={{ marginTop: "20px", padding: "20px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                <h3 style={{ marginTop: 0, marginBottom: "15px" }}>Edit Plan: {editingPlan.name}</h3>
+                
+                <div style={{ display: "flex", gap: "15px", marginBottom: "15px" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "5px", fontSize: "14px", fontWeight: "bold" }}>Price (₹)</label>
+                    <input
+                      type="number"
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(e.target.value)}
+                      style={{ padding: "8px", borderRadius: "6px", border: "1px solid #cbd5e1", width: "100px" }}
+                    />
                   </div>
-                ))}
+                  <div>
+                    <label style={{ display: "block", marginBottom: "5px", fontSize: "14px", fontWeight: "bold" }}>Status</label>
+                    <select
+                      value={editStatus ? "active" : "inactive"}
+                      onChange={(e) => setEditStatus(e.target.value === "active")}
+                      style={{ padding: "8px", borderRadius: "6px", border: "1px solid #cbd5e1", width: "120px" }}
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button
+                    className="admin-primary-button"
+                    style={{ background: "#0ea5e9", color: "white", padding: "8px 16px", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(
+                          `http://localhost:5000/api/download-plans/${editingPlan._id}`,
+                          {
+                            method: "PUT",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              price: Number(editPrice),
+                              isActive: editStatus,
+                            }),
+                          }
+                        );
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                          alert("Plan updated successfully");
+                          setEditingPlan(null);
+                          fetchPlans();
+                        } else {
+                          alert(data.message || "Failed to update plan");
+                        }
+                      } catch (error) {
+                        console.error(error);
+                        alert("Failed to update plan");
+                      }
+                    }}
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    style={{ padding: "8px 16px", border: "1px solid #cbd5e1", borderRadius: "6px", background: "white", cursor: "pointer", fontWeight: "bold" }}
+                    onClick={() => setEditingPlan(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -7,6 +7,46 @@ const upload = require('../middleware/uploadMiddleware');
 // Admin Login Route (Unprotected)
 router.post('/auth/login', adminController.loginAdmin);
 
+// TEMPORARY ROUTE TO CLEAR DUMMY DATA
+router.get('/clear-dummy-data', async (req, res) => {
+  try {
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      return res.send("MongoDB is not connected.");
+    }
+    const User = require('../models/User');
+    const UserSession = require('../models/UserSession');
+    const Payment = require('../models/Payment');
+    const Download = require('../models/Download');
+    const Resume = require('../models/Resume');
+    const Subscription = require('../models/Subscription');
+    const bcrypt = require('bcryptjs');
+
+    await UserSession.deleteMany({});
+    await Payment.deleteMany({});
+    await Download.deleteMany({});
+    await Resume.deleteMany({});
+    await Subscription.deleteMany({});
+    
+    // Nuke all users
+    await User.deleteMany({});
+
+    // Recreate admin with requested credentials
+    const hashedPassword = await bcrypt.hash("Admin@09", 10);
+    await User.create({
+      userId: "admin_123",
+      name: "Administrator",
+      email: "admin@forgeindia.com",
+      password: hashedPassword,
+      role: "admin"
+    });
+
+    res.send("<h1>All dummy data has been successfully cleared! You can now close this tab.</h1>");
+  } catch (error) {
+    res.send("<h1>Error clearing data: " + error.message + "</h1>");
+  }
+});
+
 // Protect all admin endpoints with both JWT auth and HR/Admin role check
 router.get('/users', adminAuthMiddleware, adminController.getUsers);
 router.get('/payments', adminAuthMiddleware, adminController.getPayments);

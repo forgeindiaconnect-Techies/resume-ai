@@ -21,9 +21,11 @@ const adminReportRoutes = require("./routes/adminReportRoutes");
 const adminUserRoutes = require("./routes/adminUserRoutes");
 const adminTemplateRoutes = require("./routes/adminTemplateRoutes");
 const downloadRoutes = require("./routes/downloadRoutes");
+const downloadPlanRoutes = require("./routes/downloadPlanRoutes");
 const adminSettingsRoutes = require("./routes/adminSettingsRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
 const userRoutes = require("./routes/userRoutes");
+const sessionRoutes = require("./routes/sessionRoutes");
 
 const app = express();
 
@@ -48,6 +50,7 @@ app.use("/api/admin/settings", adminSettingsRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/templates", adminTemplateRoutes);
 app.use("/api/downloads", downloadRoutes);
+app.use("/api/download-plans", downloadPlanRoutes);
 app.use("/api", resumeRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/plans", planRoutes);
@@ -55,6 +58,7 @@ app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", industryRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 // Home Route
 app.get("/", (req, res) => {

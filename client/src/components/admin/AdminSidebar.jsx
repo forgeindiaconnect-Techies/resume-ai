@@ -30,6 +30,11 @@ const AdminSidebar = () => {
       path: "/admin/users",
     },
     {
+      name: "Activity",
+      icon: FileText,
+      path: "/admin/activity",
+    },
+    {
       name: "Payments",
       icon: CreditCard,
       path: "/admin/payments",

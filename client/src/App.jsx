@@ -27,6 +27,7 @@ import AdminReports from './pages/admin/AdminReports';
 import AdminDownloads from './pages/admin/AdminDownloads';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminUserDetails from './pages/admin/AdminUserDetails';
+import AdminSessions from './pages/admin/AdminSessions';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 import { getAnonymousId } from './utils/userIdentity';
 import { identifyUser } from './utils/identifyUser';
@@ -54,6 +55,41 @@ import { API_BASE_URL } from "./config/api";
 function App() {
   useEffect(() => {
     identifyUser().catch(err => console.error("Identity error:", err));
+  }, []);
+
+  useEffect(() => {
+    const sendHeartbeat = async () => {
+      try {
+        const sessionId = localStorage.getItem("activeResumeSessionId") || localStorage.getItem("userSessionId");
+
+        if (!sessionId) return;
+
+        await fetch(
+          `${API_BASE_URL}/sessions/track`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              sessionId,
+              action: "HEARTBEAT",
+              page: window.location.pathname
+            })
+          }
+        );
+      } catch (error) {
+        console.error("Heartbeat error:", error);
+      }
+    };
+
+    // Send immediately
+    sendHeartbeat();
+
+    // Update every 30 seconds
+    const interval = setInterval(sendHeartbeat, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -128,6 +164,7 @@ function App() {
           <Route path="/admin/payments" element={<AdminPayments />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/activity" element={<AdminSessions />} />
           <Route path="/admin/users/:id" element={<AdminUserDetails />} />
           <Route path="/admin/plans/add" element={<PlanForm />} />
           <Route path="/admin/plans/edit/:id" element={<PlanForm />} />

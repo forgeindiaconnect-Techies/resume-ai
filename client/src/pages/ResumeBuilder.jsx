@@ -33,6 +33,7 @@ import ResumeToolbar from '../components/resume/ResumeToolbar';
 import DragDropSections from '../components/DragDropSections';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { generateResumeAI } from '../services/aiService';
+import { startSession, trackEvent } from '../utils/sessionTracker';
 
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
 import PhotoEditorModal from '../components/common/PhotoEditorModal';
@@ -71,6 +72,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
     try {
       setLoadingAI(true);
+      trackEvent("AI Generator Used", "/builder");
 
       const res = await generateResumeAI({
         jobTitle: aiJobTitle,
@@ -153,6 +155,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   };
 
   useEffect(() => {
+    // Track Builder Open
+    trackEvent("Resume Builder Opened", "/builder");
     // INTELLIGENT SYNC: If the current draft hasn't been paid for yet, ensure preview isn't artificially premium
     const draft = JSON.parse(localStorage.getItem('localResumeDraft') || '{}');
     if (draft.paymentStatus !== 'paid') {
@@ -474,8 +478,9 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         setLoading(false);
       }
     };
-
     initializeResumeSession();
+    startSession('/builder');
+    trackEvent("Resume Builder Opened", "/builder");
   }, [user]);
 
   // Auto-Save Effect (1.5s Debounce)
@@ -509,6 +514,12 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         const result = await response.json();
         if (result.success) {
           setSaveStatus('Auto Saved ✔');
+          trackEvent("Resume Auto-Saved", "/builder", {
+            resumeCreated: true,
+            resumeId: resumeSessionId,
+            resumeName: formData.personalInfo?.name || null,
+            email: formData.personalInfo?.email || null
+          });
         } else {
           setSaveStatus('Error Saving');
         }

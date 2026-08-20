@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, AlertTriangle, Download, FileText, X, RefreshCw, Mail, CreditCard } from 'lucide-react';
 import { generateProfessionalFilename, exportResumeToPdf } from '../../utils/pdfExport';
+import { trackEvent } from '../../utils/sessionTracker';
 import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -24,6 +25,29 @@ const DownloadWorkflowModal = ({
   const [email, setEmail] = useState('');
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('no_watermark');
+  const [downloadPlans, setDownloadPlans] = useState([]);
+
+  useEffect(() => {
+    const fetchDownloadPlans = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/download-plans"
+        );
+        const data = await response.json();
+        if (data.success) {
+          setDownloadPlans(
+            (data.plans || []).filter(plan => plan.isActive)
+          );
+        }
+      } catch (error) {
+        console.error("Failed to load download plans:", error);
+      }
+    };
+
+    if (isOpen) {
+      fetchDownloadPlans();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,6 +61,8 @@ const DownloadWorkflowModal = ({
       if (formData?.personalInfo?.email) {
         setEmail(formData.personalInfo.email);
       }
+      
+      trackEvent("Download Popup Opened", "/builder");
     }
   }, [isOpen, formData]);
 
@@ -87,91 +113,66 @@ const DownloadWorkflowModal = ({
         return;
       }
 
-      const filename = generateProfessionalFilename(
-        formData.personalInfo?.name || "Resume",
-        formData.department || "Professional"
+      // setLoadingPayment is not defined in state? Let's check if there is a loading state. 
+      // I will just use setStep('progress') for the UI like executeDownloadFlow did.
+      setStep('progress');
+      
+      const isClean = selectedPlan === "no_watermark";
+
+      // SAVE DOWNLOAD INTO MONGODB
+      const saveResponse = await fetch(
+        "http://localhost:5000/api/downloads",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            sessionId: localStorage.getItem("userSessionId") || null,
+            guestId: localStorage.getItem("guestId") || null,
+            email: email.trim().toLowerCase(),
+            resumeId: formData?.resumeId || localStorage.getItem("activeResumeSessionId") || null,
+            resumeName: formData?.personalInfo?.name || null,
+            downloadType: selectedPlan
+          })
+        }
       );
 
-      // OPTION 1:
-      // Download + Watermark
-      if (selectedPlan === "watermarked") {
-        console.log("Downloading WITH watermark");
+      const saveData = await saveResponse.json();
+      console.log("DOWNLOAD API RESULT:", saveData);
 
-        await exportResumeToPdf(
-          sheet,
-          filename,
-          false
-        );
+      if (!saveResponse.ok || !saveData.success) {
+        throw new Error(saveData.message || "Download record could not be saved");
       }
 
-      // OPTION 2:
-      // Download + Watermark Remove
-      else if (selectedPlan === "no_watermark") {
-        console.log("Downloading WITHOUT watermark");
+      // 5. Track selected plan
+      await trackEvent(
+        isClean ? "DOWNLOAD_WITHOUT_WATERMARK" : "DOWNLOAD_WITH_WATERMARK",
+        "/builder"
+      );
 
-        await exportResumeToPdf(
-          sheet,
-          filename,
-          true
-        );
-      }
+      // 6. Generate PDF
+      const filename = generateProfessionalFilename(
+        formData?.personalInfo?.name || "Resume",
+        formData?.department || "Professional"
+      );
 
-      onClose(); // Replacing setShowDownloadModal(false)
+      await exportResumeToPdf(sheet, filename, isClean);
+
+      // 7. Track successful download
+      await trackEvent("RESUME_DOWNLOADED", "/builder");
+
+      console.log("PDF DOWNLOAD COMPLETED");
+
+      setStep('success');
+      setTimeout(() => {
+        onClose();
+      }, 2000);
 
     } catch (error) {
-      console.error("Resume download error:", error);
-      alert("Unable to download resume.");
-    }
-  };
-
-  const executeDownloadFlow = async (isClean, paymentIdStr) => {
-    setStep('progress');
-    setProgress(15);
-    
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 90;
-        }
-        return prev + 15;
-      });
-    }, 150);
-
-    try {
-      const activeSessionId = localStorage.getItem('activeResumeSessionId') || 'local_session';
-      const token = localStorage.getItem('token');
-      
-      // Log the download with backend
-      if (activeSessionId && activeSessionId !== 'local_session') {
-        try {
-          await fetch(`${API_BASE_URL}/downloads/${activeSessionId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-            },
-            body: JSON.stringify({
-              email: email.trim(),
-              paymentId: paymentIdStr,
-              watermarkApplied: !isClean
-            })
-          });
-        } catch(e) {
-          console.error("Failed to log download:", e);
-        }
-      }
-
-      const sheet = document.getElementById('resume-preview-sheet');
-      await exportResumeToPdf(sheet, customFilename, isClean);
-      clearInterval(interval);
-      setProgress(100);
-      setTimeout(() => {
-        setStep('success');
-      }, 400);
-    } catch (err) {
-      clearInterval(interval);
+      console.error("DOWNLOAD ERROR:", error);
       setStep('error');
+      alert(error.message || "Unable to download resume.");
     }
   };
 
@@ -323,40 +324,48 @@ const DownloadWorkflowModal = ({
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                 <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '-0.5rem' }}>SELECT YOUR PLAN</label>
-                {/* 99 Plan */}
-                <div 
-                  onClick={() => setSelectedPlan('watermarked')}
-                  style={{ 
-                    cursor: 'pointer', padding: '1.25rem', 
-                    border: selectedPlan === 'watermarked' ? '2px solid #0284c7' : '1px solid #cbd5e1', 
-                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                    transition: 'all 0.2s', background: selectedPlan === 'watermarked' ? '#f0f9ff' : '#f8fafc' 
-                  }}
-                >
-                  <div>
-                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#334155', fontWeight: 800 }}>Resume Download</h4>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Watermark</p>
-                  </div>
-                  <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#475569' }}>₹99</div>
-                </div>
+                {downloadPlans
+                  .filter(plan => plan.key === "watermarked")
+                  .map(plan => (
+                    <div 
+                      key={plan._id}
+                      onClick={() => setSelectedPlan(plan.key)}
+                      style={{ 
+                        cursor: 'pointer', padding: '1.25rem', 
+                        border: selectedPlan === 'watermarked' ? '2px solid #0284c7' : '1px solid #cbd5e1', 
+                        borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                        transition: 'all 0.2s', background: selectedPlan === 'watermarked' ? '#f0f9ff' : '#f8fafc' 
+                      }}
+                    >
+                      <div>
+                        <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#334155', fontWeight: 800 }}>{plan.name}</h4>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Watermark</p>
+                      </div>
+                      <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#475569' }}>₹{plan.price}</div>
+                    </div>
+                  ))}
 
-                {/* 199 Plan */}
-                <div 
-                  onClick={() => setSelectedPlan('no_watermark')}
-                  style={{ 
-                    cursor: 'pointer', position: 'relative', padding: '1.25rem', 
-                    border: selectedPlan === 'no_watermark' ? '2px solid #0ea5e9' : '1px solid #cbd5e1', 
-                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                    background: selectedPlan === 'no_watermark' ? '#f0f9ff' : '#f8fafc', transition: 'all 0.2s' 
-                  }}
-                >
-                  <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0ea5e9', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
-                  <div>
-                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#334155', fontWeight: 800 }}>Download + Remove Watermark</h4>
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: selectedPlan === 'no_watermark' ? '#0284c7' : '#64748b', fontWeight: 500 }}>High-res PDF, No Watermark</p>
-                  </div>
-                  <div style={{ fontWeight: 900, fontSize: '1.3rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#0f172a' }}>₹199</div>
-                </div>
+                {downloadPlans
+                  .filter(plan => plan.key === "no_watermark")
+                  .map(plan => (
+                    <div 
+                      key={plan._id}
+                      onClick={() => setSelectedPlan(plan.key)}
+                      style={{ 
+                        cursor: 'pointer', position: 'relative', padding: '1.25rem', 
+                        border: selectedPlan === 'no_watermark' ? '2px solid #0ea5e9' : '1px solid #cbd5e1', 
+                        borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                        background: selectedPlan === 'no_watermark' ? '#f0f9ff' : '#f8fafc', transition: 'all 0.2s' 
+                      }}
+                    >
+                      <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0ea5e9', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
+                      <div>
+                        <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#334155', fontWeight: 800 }}>{plan.name}</h4>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: selectedPlan === 'no_watermark' ? '#0284c7' : '#64748b', fontWeight: 500 }}>High-res PDF, No Watermark</p>
+                      </div>
+                      <div style={{ fontWeight: 900, fontSize: '1.3rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#0f172a' }}>₹{plan.price}</div>
+                    </div>
+                  ))}
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
@@ -460,7 +469,7 @@ const DownloadWorkflowModal = ({
                   Cancel
                 </button>
                 <button
-                  onClick={() => executeDownloadFlow(watermarkRemoval, null)}
+                  onClick={handleContinueToPayment}
                   style={{ flex: 1.2, padding: '0.9rem', borderRadius: '12px', border: 'none', background: '#dc2626', color: 'white', fontWeight: 900, fontSize: '0.88rem', cursor: 'pointer' }}
                 >
                   Retry PDF Download 🔄

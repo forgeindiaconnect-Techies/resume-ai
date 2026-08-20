@@ -11,4 +11,26 @@ router.post("/mock-payment", optionalAuth, paymentController.mockPayment);
 router.post("/:paymentId/download", optionalAuth, paymentController.markDownloaded);
 router.get("/admin", adminAuthMiddleware, paymentController.getAllPayments);
 
+router.get("/downloads", async (req, res) => {
+  try {
+    const Payment = require("../models/Payment");
+    const payments = await Payment.find({
+      downloadUsed: true
+    })
+      .populate("userId", "name email")
+      .sort({ downloadedAt: -1 });
+
+    return res.json({
+      success: true,
+      downloads: payments
+    });
+  } catch (error) {
+    console.error("Get downloads error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch downloads"
+    });
+  }
+});
+
 module.exports = router;

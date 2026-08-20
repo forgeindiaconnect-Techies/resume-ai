@@ -14,51 +14,45 @@ const AdminUsers = () => {
 
   useEffect(() => {
     fetchUsers();
+
+    const interval = setInterval(fetchUsers, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
+
       const token = localStorage.getItem("adminToken");
+      const response = await fetch(
+        "http://localhost:5000/api/sessions/admin/users-summary",
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
 
-      const response = await axios.get(`${API_BASE_URL}/admin/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const data = await response.json();
 
-      setUsers(response.data.users || []);
+      if (data.success) {
+        setUsers(data.users || []);
+      } else {
+        setUsers([]);
+      }
+
     } catch (error) {
-      console.error("Failed to fetch users:", error);
+      console.error("Users fetch error:", error);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleUserStatus = async (userId) => {
-    try {
-      const token = localStorage.getItem("adminToken");
-
-      await axios.patch(
-        `${API_BASE_URL}/admin/users/${userId}/status`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      fetchUsers();
-    } catch (error) {
-      console.error("Failed to update user:", error);
-    }
-  };
-
   const filteredUsers = users.filter((user) => {
-    const name = user.name || "";
+    const id = user.userId || user.guestId || "";
     const email = user.email || "";
 
-    return `${name} ${email}`.toLowerCase().includes(search.toLowerCase());
+    return `${id} ${email}`.toLowerCase().includes(search.toLowerCase());
   });
 
   return (
@@ -108,84 +102,47 @@ const AdminUsers = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Plan</th>
-                  <th>Subscription</th>
-                  <th>Payments</th>
+                  <th>User / Guest</th>
+                  <th>Resume Name</th>
+                  <th>Email</th>
+                  <th>First Visit</th>
+                  <th>Last Visit</th>
+                  <th>Total Sessions</th>
+                  <th>Resumes Created</th>
                   <th>Downloads</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th>Last Activity</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => {
-                  const subscription = user.subscription;
-                  const isActive = user.isActive !== false;
-
-                  return (
-                    <tr key={user._id}>
-                      {/* User */}
-                      <td>
-                        <div className="payment-user">
-                          <strong
-                            className="clickable-user"
-                            onClick={() => navigate(`/admin/users/${user._id}`)}
-                          >
-                            {user.name || "Unknown User"}
-                          </strong>
-                          <span>{user.email}</span>
-                        </div>
-                      </td>
-
-                      {/* Plan */}
-                      <td>{subscription?.planId?.name || "Free"}</td>
-
-                      {/* Subscription */}
-                      <td>
-                        {subscription ? (
-                          <span className="user-active-status">Active</span>
-                        ) : (
-                          <span className="user-free-status">No Active Plan</span>
-                        )}
-                      </td>
-
-                      {/* Payments */}
-                      <td>{user.paymentCount || 0}</td>
-
-                      {/* Downloads */}
-                      <td>{user.downloadCount || 0}</td>
-
-                      {/* Status */}
-                      <td>
-                        {isActive ? (
-                          <span className="user-active-status">Active</span>
-                        ) : (
-                          <span className="user-blocked-status">Blocked</span>
-                        )}
-                      </td>
-
-                      {/* Action */}
-                      <td>
-                        <button
-                          className="user-status-button"
-                          onClick={() => toggleUserStatus(user._id)}
-                        >
-                          {isActive ? (
-                            <>
-                              <UserX size={15} />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <UserCheck size={15} />
-                              Activate
-                            </>
-                          )}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {filteredUsers.map((item, index) => (
+                  <tr key={item.userId || item.guestId || index}>
+                    <td>
+                      <strong style={{ cursor: "pointer", color: "#0284c7" }}>
+                        {item.guestId || item.userId || "User"}
+                      </strong>
+                    </td>
+                    <td>{item.resumeName || "-"}</td>
+                    <td>{item.email || "-"}</td>
+                    <td>
+                      {item.firstVisit
+                        ? new Date(item.firstVisit).toLocaleString()
+                        : "-"}
+                    </td>
+                    <td>
+                      {item.lastVisit
+                        ? new Date(item.lastVisit).toLocaleString()
+                        : "-"}
+                    </td>
+                    <td>{item.totalSessions || 0}</td>
+                    <td>{item.resumesCreated || 0}</td>
+                    <td>{item.totalDownloads || 0}</td>
+                    <td>
+                      <span className="status-badge" style={{ background: "#f1f5f9", color: "#475569" }}>
+                        {item.lastActivity || "-"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

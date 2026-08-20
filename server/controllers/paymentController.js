@@ -40,7 +40,8 @@ exports.createOrder = async (req, res) => {
     }
 
     const User = require("../models/User");
-    const normalizedEmail = actualEmail.trim().toLowerCase();
+    const safeEmail = actualEmail || `guest_${Date.now()}@example.com`;
+    const normalizedEmail = String(safeEmail).trim().toLowerCase();
 
     let user = await User.findOne({
       email: normalizedEmail,
