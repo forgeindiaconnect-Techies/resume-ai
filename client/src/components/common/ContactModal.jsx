@@ -269,21 +269,36 @@ const ContactModal = ({ isOpen, onClose }) => {
                   <div style={iconBoxStyle}><Mail size={16} /></div>
                   <div>
                     <div style={infoLabelStyle}>Email</div>
-                    <div style={infoValueStyle}>support@yourapp.com</div>
+                    <div style={infoValueStyle}>
+                      info@forgeindiaconnect.com
+                    </div>
                   </div>
                 </div>
                 <div style={infoRowStyle}>
                   <div style={iconBoxStyle}><Phone size={16} /></div>
                   <div>
-                    <div style={infoLabelStyle}>Phone</div>
-                    <div style={infoValueStyle}>+91 XXXXX XXXXX</div>
+                    <div style={infoLabelStyle}>Call / WhatsApp</div>
+                    <div style={infoValueStyle}>
+                      +91 63694 06416
+                    </div>
                   </div>
                 </div>
                 <div style={infoRowStyle}>
                   <div style={iconBoxStyle}><MapPin size={16} /></div>
                   <div>
-                    <div style={infoLabelStyle}>Location</div>
-                    <div style={infoValueStyle}>Chennai, India</div>
+                    <div style={infoLabelStyle}>Head Office</div>
+                    <div style={{ ...infoValueStyle, fontSize: '0.85rem', lineHeight: 1.4 }}>
+                      Rayakottai Road, Opp. HP Petrol Bunk, Krishnagiri, Tamil Nadu
+                    </div>
+                  </div>
+                </div>
+                <div style={infoRowStyle}>
+                  <div style={iconBoxStyle}><Globe size={16} /></div>
+                  <div>
+                    <div style={infoLabelStyle}>Organization</div>
+                    <div style={infoValueStyle}>
+                      Forge India Connect Pvt. Ltd.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -291,33 +306,26 @@ const ContactModal = ({ isOpen, onClose }) => {
 
             {/* Quick Help */}
             <section>
-              <h4 style={sectionHeaderStyle}>Need Quick Help?</h4>
+              <h4 style={sectionHeaderStyle}>Our Services</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {['How to upload resume', 'How to schedule interview', 'How to view results'].map(help => (
-                  <button key={help} style={helpLinkStyle}>
+                {['IT & Non-IT Job Consulting', 'AI Resume Builder & Career 360°', 'Campus Placements & Corporate Training'].map(help => (
+                  <div key={help} style={helpLinkStyle}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                       <HelpCircle size={14} color="#F4C400" />
                       {help}
                     </div>
-                    <ChevronRight size={14} opacity={0.3} />
-                  </button>
+                  </div>
                 ))}
               </div>
             </section>
 
-            {/* Social Links */}
+            {/* Portal Badge */}
             <section style={{ marginTop: 'auto' }}>
-              <h4 style={sectionHeaderStyle}>Follow Us</h4>
+              <h4 style={sectionHeaderStyle}>Portal</h4>
               <div style={{ display: 'flex', gap: '1rem' }}>
-                {[
-                  { Icon: Globe, href: '#' },
-                  { Icon: Share2, href: '#' },
-                  { Icon: MessageSquare, href: '#' }
-                ].map(({ Icon, href }, i) => (
-                  <a key={i} href={href} style={socialIconStyle}>
-                    <Icon size={18} />
-                  </a>
-                ))}
+                <div style={{ ...socialIconStyle, width: 'auto', padding: '0 1rem', color: '#fff', fontSize: '0.85rem', fontWeight: 600, display: 'flex', gap: '8px' }}>
+                  <Globe size={16} /> Forge India Connect Ecosystem
+                </div>
               </div>
             </section>
             </div>

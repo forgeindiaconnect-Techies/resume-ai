@@ -10,6 +10,17 @@ router.post("/verify", optionalAuth, paymentController.verifyPayment);
 router.post("/mock-payment", optionalAuth, paymentController.mockPayment);
 router.post("/:paymentId/download", optionalAuth, paymentController.markDownloaded);
 router.get("/admin", adminAuthMiddleware, paymentController.getAllPayments);
+router.get("/", paymentController.getAllPayments);
+router.delete("/clear", async (req, res) => {
+  try {
+    const Payment = require("../models/Payment");
+    await Payment.deleteMany({});
+    return res.json({ success: true, message: "All payment records cleared successfully" });
+  } catch (error) {
+    console.error("Clear payments error:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 router.get("/downloads", async (req, res) => {
   try {

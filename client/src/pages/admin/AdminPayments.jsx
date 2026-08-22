@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import {
-  Search,
-  CreditCard,
-  CheckCircle,
-  Clock,
-  XCircle,
-} from "lucide-react";
+import { Search, CreditCard, CheckCircle, Clock, XCircle, Trash2 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { API_BASE_URL } from "../../config/api";
@@ -15,50 +8,71 @@ const AdminPayments = () => {
   const [payments, setPayments] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPayments();
-  }, []);
+  const [clearing, setClearing] = useState(false);
 
   const fetchPayments = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const response = await axios.get(
-        `${API_BASE_URL}/payments/admin`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/payments`, { headers });
+      const data = await response.json();
 
-      setPayments(response.data.payments || []);
+      console.log("PAYMENTS API:", data);
+
+      if (data.success) {
+        setPayments(data.payments || []);
+      } else {
+        setPayments([]);
+      }
     } catch (error) {
-      console.error("Failed to fetch payments:", error);
+      console.error("Payments fetch error:", error);
+      setPayments([]);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleClearAll = async () => {
+    if (!window.confirm("Are you sure you want to remove all payment records?")) return;
+    try {
+      setClearing(true);
+      const token = localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const response = await fetch(`${API_BASE_URL}/payments/clear`, {
+        method: "DELETE",
+        headers
+      });
+      const data = await response.json();
+      if (data.success) {
+        setPayments([]);
+      }
+    } catch (error) {
+      console.error("Failed to clear payments:", error);
+    } finally {
+      setClearing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
   const filteredPayments = payments.filter((payment) => {
-    const userName = payment.userId?.name || "";
-    const email = payment.userId?.email || "";
-    const planName = payment.planId?.name || "";
-    const paymentId = payment.razorpayPaymentId || "";
+    const resumeName = payment.resumeName || "";
+    const email = payment.email || payment.userId?.email || "";
+    const planName = payment.plan || "";
+    const status = payment.status || "";
 
-    const searchText = `${userName} ${email} ${planName} ${paymentId}`.toLowerCase();
-
+    const searchText = `${resumeName} ${email} ${planName} ${status}`.toLowerCase();
     return searchText.includes(search.toLowerCase());
   });
 
   const getStatusIcon = (status) => {
-    if (status === "paid") {
-      return <CheckCircle size={16} />;
-    }
-    if (status === "created") {
-      return <Clock size={16} />;
-    }
+    if (status === "paid") return <CheckCircle size={16} />;
+    if (status === "created") return <Clock size={16} />;
     return <XCircle size={16} />;
   };
 
@@ -69,97 +83,99 @@ const AdminPayments = () => {
         <AdminHeader />
         <main className="admin-content">
           <div className="admin-page">
-      <div className="admin-page-title">
-        <div>
-          <h2>Payments</h2>
-          <p>Monitor all Razorpay payments and transactions.</p>
-        </div>
-      </div>
+            <div className="admin-page-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <h2>Payments</h2>
+                <p>Monitor all Razorpay payments and transactions.</p>
+              </div>
+              {payments.length > 0 && (
+                <button
+                  onClick={handleClearAll}
+                  disabled={clearing}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "8px 16px",
+                    background: "#ef4444",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontSize: "14px"
+                  }}
+                >
+                  <Trash2 size={16} />
+                  {clearing ? "Clearing..." : "Clear All Payments"}
+                </button>
+              )}
+            </div>
 
-      {/* Search */}
-      <div className="admin-search-box">
-        <Search size={18} />
-        <input
-          type="text"
-          placeholder="Search user, email, plan or payment ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+            {/* Search */}
+            <div className="admin-search-box">
+              <Search size={18} />
+              <input
+                type="text"
+                placeholder="Search user, email, plan or payment ID..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
 
-      {/* Table */}
-      <div className="admin-table-card">
-        {loading ? (
-          <div className="admin-table-message">
-            Loading payments...
+            {/* Table */}
+            <div className="admin-table-card">
+              {loading ? (
+                <div className="admin-table-message">Loading payments...</div>
+              ) : filteredPayments.length === 0 ? (
+                <div className="admin-table-message">
+                  <CreditCard size={40} />
+                  <h3>No payments found</h3>
+                  <p>Payments will appear here after users make purchases.</p>
+                </div>
+              ) : (
+                <div className="admin-table-wrapper">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Resume Name</th>
+                        <th>Email</th>
+                        <th>Plan</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payment Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPayments.map((item) => (
+                        <tr key={item._id}>
+                          <td>{item.resumeName || "-"}</td>
+                          <td>{item.email || item.userId?.email || "-"}</td>
+                          <td>
+                            {item.plan === "watermarked"
+                              ? "With Watermark"
+                              : "Without Watermark"}
+                          </td>
+                          <td>₹{item.amount || 0}</td>
+                          <td>
+                            <span className={`payment-status payment-${item.status}`}>
+                              {getStatusIcon(item.status)}
+                              {item.status === "paid" ? "Paid/Test" : item.status}
+                            </span>
+                          </td>
+                          <td>
+                            {item.createdAt
+                              ? new Date(item.createdAt).toLocaleString()
+                              : "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
-        ) : filteredPayments.length === 0 ? (
-          <div className="admin-table-message">
-            <CreditCard size={40} />
-            <h3>No payments found</h3>
-            <p>Payments will appear here after users make purchases.</p>
-          </div>
-        ) : (
-          <div className="admin-table-wrapper">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>User Email</th>
-                  <th>Resume</th>
-                  <th>Plan</th>
-                  <th>Amount</th>
-                  <th>Payment</th>
-                  <th>Download Type</th>
-                  <th>Downloaded</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPayments.map((payment) => (
-                  <tr key={payment._id}>
-                    <td>
-                      <div className="payment-user">
-                        <span>
-                          {payment.userId?.email || payment.email || "-"}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      {payment.resumeId?.title || "My Resume"}
-                    </td>
-                    <td>
-                      {payment.plan === 'no_watermark' ? 'No Watermark' : 'Watermarked'}
-                    </td>
-                    <td>
-                      ₹{payment.amount || 0}
-                    </td>
-                    <td>
-                      <span className={`payment-status payment-${payment.status}`}>
-                        {getStatusIcon(payment.status)}
-                        {payment.status === 'paid' ? 'Paid' : payment.status}
-                      </span>
-                    </td>
-                    <td>
-                      {payment.watermarkRemoval ? "Without Watermark" : "With Watermark"}
-                    </td>
-                    <td>
-                      {payment.downloadUsed ? "Yes" : "No"}
-                    </td>
-                    <td>
-                      {new Date(payment.createdAt).toLocaleDateString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
         </main>
       </div>
     </div>

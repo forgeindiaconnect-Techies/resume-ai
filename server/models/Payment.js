@@ -19,13 +19,17 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    resumeName: {
+      type: String,
+      default: null,
+    },
     email: {
       type: String,
-      default: "",
+      default: null,
     },
     plan: {
       type: String,
-      default: "",
+      enum: ["watermarked", "no_watermark"],
     },
     razorpayOrderId: {
       type: String,
@@ -42,7 +46,7 @@ const paymentSchema = new mongoose.Schema(
     },
     amount: {
       type: Number,
-      required: true,
+      default: 0,
     },
     currency: {
       type: String,
@@ -50,8 +54,7 @@ const paymentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["created", "paid", "failed"],
-      default: "created",
+      default: "paid",
     },
     downloadAllowed: {
       type: Boolean,

@@ -32,6 +32,7 @@ import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 import { getAnonymousId } from './utils/userIdentity';
 import { identifyUser } from './utils/identifyUser';
 import { Toaster } from 'react-hot-toast';
+import { startSession, trackEvent } from "./utils/sessionTracker";
 
 // Dynamic Template Editors (lazy-loaded for performance)
 const ExecutiveEditor    = lazy(() => import('./editors/ExecutiveEditor'));
@@ -55,6 +56,14 @@ import { API_BASE_URL } from "./config/api";
 function App() {
   useEffect(() => {
     identifyUser().catch(err => console.error("Identity error:", err));
+  }, []);
+
+  useEffect(() => {
+    const initializeTracking = async () => {
+      await startSession();
+      await trackEvent("LANDING_PAGE_OPENED", window.location.pathname);
+    };
+    initializeTracking();
   }, []);
 
   useEffect(() => {
@@ -148,9 +157,8 @@ function App() {
         <Route path="/resume-examples/:id" element={<ResumeExample />} />
         <Route path="/templates" element={<Templates />} />
         <Route path="/preview/:id" element={<TemplatePreview />} />
-        <Route path="/admin/examples" element={<AdminResumeExamples />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         
         <Route element={<AdminProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -158,6 +166,7 @@ function App() {
           <Route path="/admin/templates/add" element={<AddTemplate />} />
           <Route path="/admin/templates/edit/:id" element={<EditTemplate />} />
           <Route path="/admin/resume-examples" element={<AdminResumeExamples />} />
+          <Route path="/admin/examples" element={<Navigate to="/admin/resume-examples" replace />} />
           <Route path="/admin/plans" element={<AdminPlans />} />
           <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/admin/downloads" element={<AdminDownloads />} />

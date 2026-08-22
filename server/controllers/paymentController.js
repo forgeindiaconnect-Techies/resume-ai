@@ -218,15 +218,48 @@ exports.verifyPayment = async (req, res) => {
 
 exports.getAllPayments = async (req, res) => {
   try {
-    const payments = await Payment.find()
-      .populate("userId", "name email")
-      .populate("planId", "name price")
-      .populate("resumeId", "title")
-      .sort({ createdAt: -1 });
+    const Download = require("../models/Download");
+    const [payments, downloads] = await Promise.all([
+      Payment.find()
+        .populate("userId", "name email")
+        .populate("planId", "name price")
+        .populate("resumeId", "title")
+        .lean()
+        .sort({ createdAt: -1 })
+        .catch(() => []),
+      Download.find().lean().sort({ downloadedAt: -1 }).catch(() => [])
+    ]);
+
+    const combinedPayments = [...payments];
+
+    downloads.forEach((d) => {
+      const alreadyInPayments = payments.some(
+        (p) =>
+          p.email &&
+          d.email &&
+          p.email.toLowerCase() === d.email.toLowerCase() &&
+          p.amount === d.amount
+      );
+      if (!alreadyInPayments) {
+        combinedPayments.push({
+          _id: d._id,
+          resumeName: d.resumeName || d.guestId || "Resume User",
+          email: d.email || "user@example.com",
+          plan: d.downloadType,
+          amount: d.amount || (d.downloadType === "no_watermark" ? 199 : 99),
+          status: "paid",
+          createdAt: d.downloadedAt || new Date(),
+        });
+      }
+    });
+
+    combinedPayments.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
     res.json({
       success: true,
-      payments,
+      payments: combinedPayments,
     });
   } catch (error) {
     console.error("Get all payments error:", error);
@@ -257,7 +290,7 @@ exports.markDownloaded = async (req, res) => {
 
 exports.mockPayment = async (req, res) => {
   try {
-    const { email, resumeId, plan } = req.body;
+    const { email, resumeId, plan, resumeName } = req.body;
 
     const plans = {
       watermarked: { amount: 99, watermarkRemoval: false },
@@ -287,6 +320,7 @@ exports.mockPayment = async (req, res) => {
     const payment = await Payment.create({
       userId: user._id,
       resumeReference: resumeId,
+      resumeName: resumeName || null,
       email: normalizedEmail,
       plan,
       amount: selectedPlan.amount,

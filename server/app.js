@@ -59,6 +59,7 @@ app.use("/api/settings", settingsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", industryRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/user-sessions", sessionRoutes);
 
 // Home Route
 app.get("/", (req, res) => {

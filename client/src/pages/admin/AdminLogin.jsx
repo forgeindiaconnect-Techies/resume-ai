@@ -1,11 +1,30 @@
-import React, { useState } from "react";
-import { ShieldCheck, Eye, EyeOff } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ShieldCheck, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { API_BASE_URL } from "../../config/api";
+import toast from "react-hot-toast";
+
+const isJwtValid = (token) => {
+  if (!token || typeof token !== "string" || token.trim() === "" || token === "null" || token === "undefined") {
+    return false;
+  }
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+    const payload = JSON.parse(atob(parts[1]));
+    if (payload.role !== "admin") return false;
+    if (payload.exp && Date.now() >= payload.exp * 1000) return false;
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
 
 const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [formData, setFormData] = useState({
     email: "",
@@ -13,8 +32,15 @@ const AdminLogin = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // When accessing the login page, clear any stale admin tokens to enforce fresh login
+  useEffect(() => {
+    localStorage.removeItem("adminToken");
+  }, []);
 
   const handleChange = (e) => {
+    setErrorMessage("");
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -23,6 +49,8 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+    setLoading(true);
 
     try {
       const response = await axios.post(
@@ -30,17 +58,20 @@ const AdminLogin = () => {
         formData
       );
 
-      localStorage.setItem(
-        "adminToken",
-        response.data.token
-      );
-
-      navigate("/admin/dashboard");
+      if (response.data && response.data.token) {
+        localStorage.setItem("adminToken", response.data.token);
+        toast.success("Admin login successful!");
+        const destination = location.state?.from?.pathname || "/admin/dashboard";
+        navigate(destination, { replace: true });
+      } else {
+        setErrorMessage("Login failed. No access token received.");
+      }
     } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Login failed"
-      );
+      const msg = error.response?.data?.message || "Invalid email or password";
+      setErrorMessage(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,23 +83,43 @@ const AdminLogin = () => {
           <ShieldCheck size={32} />
         </div>
 
-        <h1>Admin Login</h1>
+        <h1>Admin Portal</h1>
 
         <p className="admin-login-subtitle">
           Sign in to manage your Resume Builder
         </p>
 
+        {errorMessage && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            color: "#b91c1c",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            marginBottom: "20px",
+            fontSize: "13px",
+            lineHeight: 1.4
+          }}>
+            <AlertCircle size={18} style={{ flexShrink: 0 }} />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
 
           <div className="admin-form-group">
-            <label>Email Address</label>
+            <label>Admin Email</label>
 
             <input
               type="email"
               name="email"
-              placeholder="Enter admin email"
+              placeholder="admin@example.com"
               value={formData.email}
               onChange={handleChange}
+              disabled={loading}
               required
             />
           </div>
@@ -83,12 +134,14 @@ const AdminLogin = () => {
                 placeholder="Enter password"
                 value={formData.password}
                 onChange={handleChange}
+                disabled={loading}
                 required
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
               >
                 {showPassword ? (
                   <EyeOff size={18} />
@@ -102,8 +155,24 @@ const AdminLogin = () => {
           <button
             type="submit"
             className="admin-login-button"
+            disabled={loading}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              opacity: loading ? 0.75 : 1,
+              cursor: loading ? "not-allowed" : "pointer"
+            }}
           >
-            Sign In
+            {loading ? (
+              <>
+                <Loader2 size={18} style={{ animation: "spin 0.8s linear infinite" }} />
+                <span>Signing In...</span>
+              </>
+            ) : (
+              "Sign In to Dashboard"
+            )}
           </button>
 
         </form>
@@ -118,3 +187,4 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+

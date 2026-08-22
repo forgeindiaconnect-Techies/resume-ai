@@ -13,8 +13,23 @@ import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { API_BASE_URL } from "../../config/api";
 
+const defaultReports = {
+  overview: {
+    totalUsers: 0,
+    totalRevenue: 0,
+    paidUsers: 0,
+    activeSubscriptions: 0,
+    totalDownloads: 0,
+    successfulPayments: 0,
+    failedPayments: 0,
+    totalPayments: 0,
+  },
+  popularPlans: [],
+  monthlyRevenue: []
+};
+
 const AdminReports = () => {
-  const [reports, setReports] = useState(null);
+  const [reports, setReports] = useState(defaultReports);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,18 +38,18 @@ const AdminReports = () => {
 
   const fetchReports = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("adminToken");
 
-      const response = await axios.get(
-        `${API_BASE_URL}/admin/reports`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/admin/reports`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
 
-      setReports(response.data);
+      const data = await response.json();
+
+      if (data && data.success) {
+        setReports(data);
+      }
     } catch (error) {
       console.error("Failed to fetch reports:", error);
     } finally {
@@ -42,23 +57,7 @@ const AdminReports = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="admin-page">
-        <div className="admin-table-message">Loading reports...</div>
-      </div>
-    );
-  }
-
-  if (!reports) {
-    return (
-      <div className="admin-page">
-        <div className="admin-table-message">Failed to load reports.</div>
-      </div>
-    );
-  }
-
-  const overview = reports.overview || {};
+  const overview = reports.overview || defaultReports.overview;
 
   return (
     <div className="admin-layout">
@@ -170,7 +169,7 @@ const AdminReports = () => {
                   reports.popularPlans?.map((plan, index) => (
                     <div className="popular-plan-row" key={index}>
                       <div>
-                        <strong>Plan #{index + 1}</strong>
+                        <strong>{plan._id || `Plan #${index + 1}`}</strong>
                         <span>{plan.purchases} purchases</span>
                       </div>
                       <strong>

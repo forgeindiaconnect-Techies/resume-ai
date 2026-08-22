@@ -7,7 +7,19 @@ const Download = require("../models/Download");
 // GET ALL PLANS
 router.get("/", async (req, res) => {
   try {
-    const plans = await DownloadPlan.find().sort({ price: 1 });
+    let plans = await DownloadPlan.find().sort({ price: 1 });
+
+    if (plans.length === 0) {
+      // Auto-create default plans if they don't exist for testing
+      const defaultPlans = [
+        { name: "With Watermark", key: "watermarked", price: 99, watermarkRemoval: false, isActive: true },
+        { name: "Without Watermark", key: "no_watermark", price: 199, watermarkRemoval: true, isActive: true }
+      ];
+      for (const p of defaultPlans) {
+        await DownloadPlan.create(p);
+      }
+      plans = await DownloadPlan.find().sort({ price: 1 });
+    }
 
     const result = await Promise.all(
       plans.map(async (plan) => {

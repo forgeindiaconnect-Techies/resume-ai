@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminPlans = () => {
   const [plans, setPlans] = useState([]);
@@ -13,9 +14,12 @@ const AdminPlans = () => {
   const fetchPlans = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const response = await fetch(
-        "http://localhost:5000/api/download-plans"
+        `${API_BASE_URL}/download-plans`,
+        { headers }
       );
 
       const data = await response.json();
@@ -188,12 +192,14 @@ const AdminPlans = () => {
                     style={{ background: "#0ea5e9", color: "white", padding: "8px 16px", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}
                     onClick={async () => {
                       try {
+                        const token = localStorage.getItem("adminToken");
                         const response = await fetch(
-                          `http://localhost:5000/api/download-plans/${editingPlan._id}`,
+                          `${API_BASE_URL}/download-plans/${editingPlan._id}`,
                           {
                             method: "PUT",
                             headers: {
                               "Content-Type": "application/json",
+                              ...(token ? { Authorization: `Bearer ${token}` } : {})
                             },
                             body: JSON.stringify({
                               price: Number(editPrice),

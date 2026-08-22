@@ -259,10 +259,10 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        let guestId = localStorage.getItem('guestSessionId');
+        let guestId = localStorage.getItem('guestId');
         if (!user && !guestId) {
           guestId = 'guest_' + Math.random().toString(36).substring(2, 9);
-          localStorage.setItem('guestSessionId', guestId);
+          localStorage.setItem('guestId', guestId);
         }
 
         const savedSessionId = resumeId || localStorage.getItem('activeResumeSessionId');

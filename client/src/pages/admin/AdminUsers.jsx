@@ -25,17 +25,19 @@ const AdminUsers = () => {
       setLoading(true);
 
       const token = localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       const response = await fetch(
-        "http://localhost:5000/api/sessions/admin/users-summary",
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        `${API_BASE_URL}/user-sessions`,
+        { headers }
       );
 
       const data = await response.json();
 
+      console.log("USERS DATA:", data);
+
       if (data.success) {
-        setUsers(data.users || []);
+        setUsers(data.sessions || []);
       } else {
         setUsers([]);
       }
@@ -102,47 +104,44 @@ const AdminUsers = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>User / Guest</th>
                   <th>Resume Name</th>
                   <th>Email</th>
-                  <th>First Visit</th>
-                  <th>Last Visit</th>
-                  <th>Total Sessions</th>
-                  <th>Resumes Created</th>
-                  <th>Downloads</th>
-                  <th>Last Activity</th>
+                  <th>Resume Created</th>
+                  <th>Downloaded</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((item, index) => (
-                  <tr key={item.userId || item.guestId || index}>
-                    <td>
-                      <strong style={{ cursor: "pointer", color: "#0284c7" }}>
-                        {item.guestId || item.userId || "User"}
-                      </strong>
-                    </td>
-                    <td>{item.resumeName || "-"}</td>
-                    <td>{item.email || "-"}</td>
-                    <td>
-                      {item.firstVisit
-                        ? new Date(item.firstVisit).toLocaleString()
-                        : "-"}
-                    </td>
-                    <td>
-                      {item.lastVisit
-                        ? new Date(item.lastVisit).toLocaleString()
-                        : "-"}
-                    </td>
-                    <td>{item.totalSessions || 0}</td>
-                    <td>{item.resumesCreated || 0}</td>
-                    <td>{item.totalDownloads || 0}</td>
-                    <td>
-                      <span className="status-badge" style={{ background: "#f1f5f9", color: "#475569" }}>
-                        {item.lastActivity || "-"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {filteredUsers.map((item) => {
+                  const hasResume =
+                    item.resumeCreated === true ||
+                    (item.resumeName &&
+                      item.resumeName !== "Your Name" &&
+                      item.resumeName !== "Guest" &&
+                      item.resumeName.toLowerCase() !== "user") ||
+                    item.downloaded === true;
+                  const hasDownloaded = item.downloaded === true || item.totalDownloads > 0;
+
+                  const displayName =
+                    item.resumeName &&
+                    item.resumeName.toLowerCase() !== "user" &&
+                    item.resumeName !== "Your Name" &&
+                    item.resumeName !== "guest_user"
+                      ? item.resumeName
+                      : item.email
+                      ? item.email.split("@")[0].charAt(0).toUpperCase() + item.email.split("@")[0].slice(1)
+                      : item.guestId
+                      ? `Guest (${item.guestId.slice(-6)})`
+                      : "Guest Visitor";
+
+                  return (
+                    <tr key={item._id}>
+                      <td>{displayName}</td>
+                      <td>{item.email || "-"}</td>
+                      <td>{hasResume ? "Yes" : "No"}</td>
+                      <td>{hasDownloaded ? "Yes" : "No"}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -170,7 +170,7 @@ const AiResumeView = () => {
           {/* Right Action Controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             
-            {/* Color Palette */}
+            {/* Color Palette & Custom Picker */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f8fafc', padding: '0.35rem 0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
               <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: '3px' }}>
                 <Palette size={13} color={accentColor} /> Color:
@@ -190,11 +190,52 @@ const AiResumeView = () => {
                       border: isSel ? '2px solid #0f172a' : 'none',
                       cursor: 'pointer',
                       padding: 0,
-                      transform: isSel ? 'scale(1.15)' : 'scale(1)'
+                      transform: isSel ? 'scale(1.15)' : 'scale(1)',
+                      transition: 'all 0.15s ease'
                     }}
                   />
                 );
               })}
+
+              {/* Custom Color Input */}
+              <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, marginLeft: '2px' }} title="Choose Custom Color">
+                <input
+                  type="color"
+                  value={accentColor}
+                  onChange={(e) => setAccentColor(e.target.value)}
+                  style={{
+                    opacity: 0,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    cursor: 'pointer',
+                    zIndex: 2
+                  }}
+                />
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: '50%',
+                    background: PRESET_COLORS.some(c => c.hex.toLowerCase() === accentColor.toLowerCase())
+                      ? 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'
+                      : accentColor,
+                    border: !PRESET_COLORS.some(c => c.hex.toLowerCase() === accentColor.toLowerCase())
+                      ? '2px solid #0f172a'
+                      : '1.5px solid #cbd5e1',
+                    boxShadow: !PRESET_COLORS.some(c => c.hex.toLowerCase() === accentColor.toLowerCase())
+                      ? `0 0 0 2px ${accentColor}40`
+                      : '0 1px 3px rgba(0,0,0,0.1)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                />
+              </div>
             </div>
 
             {/* Layout Switcher */}

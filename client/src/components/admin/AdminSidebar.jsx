@@ -70,8 +70,8 @@ const AdminSidebar = () => {
   return (
     <aside className="admin-sidebar">
       {/* Logo */}
-      <div className="admin-logo" style={{ padding: "10px", display: "flex", justifyContent: "center" }}>
-        <ForgeLogo variant="sidebar" size={35} />
+      <div className="admin-logo" style={{ padding: "8px 12px 18px", display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+        <ForgeLogo variant="light" size={42} />
       </div>
 
       {/* Menu */}

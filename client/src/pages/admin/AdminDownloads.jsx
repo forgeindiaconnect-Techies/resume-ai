@@ -17,9 +17,12 @@ const AdminDownloads = () => {
   const fetchDownloads = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const response = await fetch(
-        "http://localhost:5000/api/downloads"
+        `${API_BASE_URL}/downloads`,
+        { headers }
       );
 
       const data = await response.json();

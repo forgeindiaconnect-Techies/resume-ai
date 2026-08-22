@@ -106,7 +106,16 @@ exports.trackEvent = async (req, res) => {
 
     if (isDBConnected()) {
       let session = await UserSession.findOne({ sessionId });
-      if (!session) return res.status(404).json({ success: false, message: "Session not found" });
+      if (!session) {
+        session = new UserSession({
+          sessionId,
+          guestId: null,
+          userId: null,
+          email: email || null,
+          currentPage: page || "/",
+          events: [{ action: "Session Started", page: page || "/" }]
+        });
+      }
 
       session.lastActiveTime = Date.now();
       session.currentPage = page || session.currentPage;

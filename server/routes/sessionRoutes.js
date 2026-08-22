@@ -5,7 +5,13 @@ const sessionController = require('../controllers/sessionController');
 router.post('/start', sessionController.startSession);
 router.post('/track', sessionController.trackEvent);
 router.post('/end', sessionController.endSession);
+router.get('/', sessionController.getAllSessions);
 router.get('/admin/all', sessionController.getAllSessions);
+router.get("/users-summary", async (req, res) => {
+  // redirect to the admin version
+  req.url = '/admin/users-summary';
+  router.handle(req, res);
+});
 router.get("/admin/users-summary", async (req, res) => {
   try {
     const UserSession = require("../models/UserSession");

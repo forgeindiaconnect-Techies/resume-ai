@@ -145,6 +145,26 @@ const DownloadWorkflowModal = ({
         throw new Error(saveData.message || "Download record could not be saved");
       }
 
+      // CREATE MOCK PAYMENT RECORD
+      const paymentResponse = await fetch(
+        "http://localhost:5000/api/payments/mock-payment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email.trim().toLowerCase(),
+            resumeId: formData?.resumeId || localStorage.getItem("activeResumeSessionId") || "RESUME_001",
+            resumeName: formData?.personalInfo?.name || null,
+            plan: selectedPlan
+          })
+        }
+      );
+
+      const paymentData = await paymentResponse.json();
+      console.log("MOCK PAYMENT RESULT:", paymentData);
+
       // 5. Track selected plan
       await trackEvent(
         isClean ? "DOWNLOAD_WITHOUT_WATERMARK" : "DOWNLOAD_WITH_WATERMARK",

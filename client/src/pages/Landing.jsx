@@ -6,7 +6,7 @@ import ContactModal from '../components/common/ContactModal';
 import {
   Sparkles, Compass, FileText, MessageCircle, Briefcase, 
   ArrowRight, ChevronRight, HelpCircle, Upload, Layers,
-  FileSearch, X
+  FileSearch, X, Mail, Phone, MapPin, Globe, ExternalLink
 } from 'lucide-react';
 import { generateResumeAI } from '../services/aiService';
 import { getOrCreateUser } from '../utils/userIdentity';
@@ -870,33 +870,106 @@ const LandingPage = () => {
       </main>
 
       {/* Footer */}
-      <footer style={{ background: 'linear-gradient(90deg, #0f172a, #1e3a8a)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '4rem 2rem', color: '#94a3b8', position: 'relative', zIndex: 10 }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '3rem', marginBottom: '3rem' }}>
+      <footer style={{ background: 'linear-gradient(135deg, #090e1a 0%, #0f172a 50%, #1e293b 100%)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '4.5rem 2rem 2rem', color: '#94a3b8', position: 'relative', zIndex: 10 }}>
+        <div style={{ maxWidth: '1140px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1.2fr', gap: '2.5rem', marginBottom: '3.5rem' }}>
+          
+          {/* Brand Column */}
           <div>
-            <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0284c7', display: 'block', marginBottom: '1rem' }}>
-              FORGE <span style={{ color: '#f59e0b' }}>INDIA</span> <span style={{ color: '#ffffff' }}>CONNECT</span>
-            </span>
-            <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: 1.6, margin: 0 }}>
-              AI-powered career transformation platform. Expert-driven optimization, intelligent insights, and accelerated career advancement. Powered by Forge India Connect Pvt. Ltd.
+            <div style={{ display: 'inline-block', marginBottom: '1rem' }}>
+              <span style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0284c7', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                FORGE <span style={{ color: '#f59e0b' }}>INDIA</span> <span style={{ color: '#ffffff' }}>CONNECT</span>
+              </span>
+            </div>
+            <p style={{ color: '#94a3b8', fontSize: '0.875rem', lineHeight: 1.7, margin: '0 0 1.25rem 0' }}>
+              Empowering careers and business excellence. Premier AI-driven resume builder, career placement, and digital transformation solutions.
             </p>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(2, 132, 199, 0.12)', border: '1px solid rgba(2, 132, 199, 0.25)', padding: '0.35rem 0.85rem', borderRadius: '50px', fontSize: '0.75rem', color: '#38bdf8', fontWeight: 700 }}>
+              <Globe size={13} />
+              <span>Forge India Connect Pvt. Ltd.</span>
+            </div>
           </div>
+
+          {/* Quick Links */}
           <div>
-            <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Navigation</h4>
-            <span onClick={() => navigate('/industry-examples')} style={{ fontSize: '0.85rem', color: '#94a3b8', cursor: 'pointer', display: 'block', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = 'white'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>Industry Examples</span>
+            <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Career Solutions
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
+              <span onClick={() => onEnterApp('create')} style={{ color: '#cbd5e1', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#38bdf8'} onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}>
+                AI Resume Builder
+              </span>
+              <span onClick={() => { localStorage.setItem('source', 'ai'); setShowAiModal(true); }} style={{ color: '#cbd5e1', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#38bdf8'} onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}>
+                AI Writing Assistant
+              </span>
+              <span onClick={() => navigate('/industry-examples')} style={{ color: '#cbd5e1', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#38bdf8'} onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}>
+                Industry Examples
+              </span>
+            </div>
           </div>
+
+          {/* Services & Company */}
           <div>
-            <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Company</h4>
-            <span onClick={() => setShowContactModal(true)} style={{ fontSize: '0.85rem', color: '#94a3b8', cursor: 'pointer', display: 'block', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = 'white'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>About Forge India</span>
+            <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Our Services
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
+              <span style={{ color: '#cbd5e1' }}>
+                Job Consulting & Recruitment
+              </span>
+              <span style={{ color: '#cbd5e1' }}>
+                IT & Web Development
+              </span>
+              <span style={{ color: '#cbd5e1' }}>
+                Campus Placement Programs
+              </span>
+              <span onClick={() => setShowContactModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#38bdf8'} onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}>
+                About Forge India
+              </span>
+              <span onClick={() => setShowContactModal(true)} style={{ color: '#cbd5e1', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#38bdf8'} onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}>
+                Contact Support
+              </span>
+            </div>
           </div>
+
+          {/* Contact Details */}
           <div>
-            <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Legal</h4>
-            <span style={{ fontSize: '0.85rem', color: '#94a3b8', display: 'block', marginBottom: '0.5rem' }}>Privacy</span>
-            <span style={{ fontSize: '0.85rem', color: '#94a3b8', display: 'block' }}>Terms</span>
+            <h4 style={{ color: 'white', fontSize: '0.9rem', fontWeight: 800, marginBottom: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Contact Information
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.875rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <Phone size={16} style={{ color: '#f59e0b', flexShrink: 0 }} />
+                <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+                  +91 63694 06416
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <Mail size={16} style={{ color: '#0284c7', flexShrink: 0 }} />
+                <span style={{ color: '#f8fafc', fontWeight: 600 }}>
+                  info@forgeindiaconnect.com
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', lineHeight: 1.5 }}>
+                <MapPin size={16} style={{ color: '#10b981', flexShrink: 0, marginTop: '2px' }} />
+                <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>
+                  Rayakottai Road, Opp. HP Petrol Bunk, Krishnagiri, Tamil Nadu
+                </span>
+              </div>
+              <div style={{ marginTop: '0.25rem', color: '#64748b', fontSize: '0.75rem' }}>
+                Working Hours: Mon – Sat (9:00 AM – 7:00 PM)
+              </div>
+            </div>
           </div>
+
         </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1000px', margin: '0 auto', fontSize: '0.8rem' }}>
-          <span>© 2025 FORGE INDIA CONNECT PVT. LTD. All rights reserved.</span>
-          <span style={{ color: 'white', fontWeight: 600 }}>SHAPING FUTURE</span>
+
+        {/* Bottom Bar */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1140px', margin: '0 auto', fontSize: '0.8rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <span>© 2026 FORGE INDIA CONNECT PVT. LTD. All rights reserved.</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <span style={{ color: '#94a3b8' }}>Empowering Careers & Business Solutions</span>
+            <span style={{ color: '#38bdf8', fontWeight: 800, letterSpacing: '0.08em' }}>SHAPING FUTURE</span>
+          </div>
         </div>
       </footer>
 

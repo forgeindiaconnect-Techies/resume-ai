@@ -7,6 +7,15 @@ const upload = require('../middleware/uploadMiddleware');
 // Admin Login Route (Unprotected)
 router.post('/auth/login', adminController.loginAdmin);
 
+// Admin Token Verification Route (Protected)
+router.get('/auth/verify', adminAuthMiddleware, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Admin is authenticated",
+    admin: req.admin
+  });
+});
+
 // TEMPORARY ROUTE TO CLEAR DUMMY DATA
 router.get('/clear-dummy-data', async (req, res) => {
   try {

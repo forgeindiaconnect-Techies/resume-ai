@@ -1,16 +1,16 @@
 import React from 'react';
 
 const ForgeLogo = ({ size = 40, showText = true, variant = 'light' }) => {
-  const isDark = variant === 'dark' || variant === 'sidebar';
+  const isDark = variant === 'dark';
   const blue = '#0056b8';
   const yellow = '#f59e0b';
-  const subtextColor = isDark ? '#cbd5e1' : '#475569';
+  const subtextColor = isDark ? '#94a3b8' : '#64748b';
 
   return (
     <div style={{
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '10px',
+      gap: '12px',
       userSelect: 'none',
       textDecoration: 'none'
     }}>
@@ -21,6 +21,7 @@ const ForgeLogo = ({ size = 40, showText = true, variant = 'light' }) => {
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        style={{ flexShrink: 0 }}
       >
         {/* Outer Blue Bracket (F mark) */}
         <path d="M12 12 H88 V30 H32 V88 H12 Z" fill={blue} />
@@ -33,11 +34,11 @@ const ForgeLogo = ({ size = 40, showText = true, variant = 'light' }) => {
       </svg>
 
       {showText && (
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
           {/* Main Brand Title: FORGE INDIA */}
           <div style={{
-            fontWeight: 950,
-            fontSize: `${Math.max(0.85, 1.25 * (size / 40))}rem`,
+            fontWeight: 900,
+            fontSize: `${Math.max(14, Math.round(17 * (size / 40)))}px`,
             letterSpacing: '0.04em',
             fontFamily: "'Outfit', 'Inter', sans-serif",
             textTransform: 'uppercase',
@@ -49,12 +50,12 @@ const ForgeLogo = ({ size = 40, showText = true, variant = 'light' }) => {
 
           {/* Subtitle Line 1: CONNECT PVT.LTD */}
           <div style={{
-            fontSize: `${Math.max(0.48, 0.56 * (size / 40))}rem`,
-            fontWeight: 900,
-            letterSpacing: '0.08em',
+            fontSize: `${Math.max(10, Math.round(11.5 * (size / 40)))}px`,
+            fontWeight: 800,
+            letterSpacing: '0.06em',
             color: blue,
             textTransform: 'uppercase',
-            marginTop: '1px',
+            marginTop: '2px',
             whiteSpace: 'nowrap'
           }}>
             CONNECT PVT.LTD
@@ -62,12 +63,12 @@ const ForgeLogo = ({ size = 40, showText = true, variant = 'light' }) => {
 
           {/* Subtitle Line 2: SHAPING FUTURE */}
           <div style={{
-            fontSize: `${Math.max(0.4, 0.46 * (size / 40))}rem`,
-            fontWeight: 800,
-            letterSpacing: '0.18em',
+            fontSize: `${Math.max(8.5, Math.round(9.5 * (size / 40)))}px`,
+            fontWeight: 700,
+            letterSpacing: '0.14em',
             color: subtextColor,
             textTransform: 'uppercase',
-            marginTop: '1px',
+            marginTop: '2px',
             whiteSpace: 'nowrap'
           }}>
             SHAPING FUTURE

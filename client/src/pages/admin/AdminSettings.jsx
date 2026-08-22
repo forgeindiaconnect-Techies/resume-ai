@@ -126,13 +126,20 @@ const AdminSettings = () => {
           <div className="settings-field">
             <label>Currency</label>
             <select
-              value={settings.currency}
-              onChange={(e) => handleChange("currency", e.target.value)}
+              value="INR"
+              disabled
+              style={{
+                background: "#f8fafc",
+                color: "#334155",
+                fontWeight: 600,
+                cursor: "not-allowed"
+              }}
             >
-              <option value="INR">INR - ₹</option>
-              <option value="USD">USD - $</option>
-              <option value="EUR">EUR - €</option>
+              <option value="INR">INR - Indian Rupee (₹)</option>
             </select>
+            <span style={{ fontSize: "12px", color: "#6b7280" }}>
+              🔒 Default currency configured with Razorpay Payment Gateway
+            </span>
           </div>
         </div>
       </div>
