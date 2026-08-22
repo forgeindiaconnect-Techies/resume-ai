@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config/api';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Briefcase, GraduationCap, Award, Code, Save, 
@@ -41,6 +41,7 @@ import { RESUME_PRICING } from '../config/pricing';
 
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
   const { resumeId } = useParams();
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('Auto Saved ✔');

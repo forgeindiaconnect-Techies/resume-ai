@@ -5,7 +5,7 @@ import { generateProfessionalFilename, exportResumeToPdf } from '../../utils/pdf
 import { trackEvent } from '../../utils/sessionTracker';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_BASE_URL } from '../../config/api';
 
 const DownloadWorkflowModal = ({
   isOpen,
@@ -31,7 +31,7 @@ const DownloadWorkflowModal = ({
     const fetchDownloadPlans = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/download-plans"
+          `${API_BASE_URL}/download-plans`
         );
         const data = await response.json();
         if (data.success) {
@@ -113,15 +113,13 @@ const DownloadWorkflowModal = ({
         return;
       }
 
-      // setLoadingPayment is not defined in state? Let's check if there is a loading state. 
-      // I will just use setStep('progress') for the UI like executeDownloadFlow did.
       setStep('progress');
       
       const isClean = selectedPlan === "no_watermark";
 
       // SAVE DOWNLOAD INTO MONGODB
       const saveResponse = await fetch(
-        "http://localhost:5000/api/downloads",
+        `${API_BASE_URL}/downloads`,
         {
           method: "POST",
           headers: {
@@ -147,7 +145,7 @@ const DownloadWorkflowModal = ({
 
       // CREATE MOCK PAYMENT RECORD
       const paymentResponse = await fetch(
-        "http://localhost:5000/api/payments/mock-payment",
+        `${API_BASE_URL}/payments/mock-payment`,
         {
           method: "POST",
           headers: {
