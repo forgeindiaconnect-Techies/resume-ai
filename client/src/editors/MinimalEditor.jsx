@@ -129,6 +129,7 @@ const MinimalEditor = () => {
       templateEmoji="🪶"
       onDownload={() => window.print()}
       saveStatus={saveStatus}
+      formData={data}
       preview={<MinimalLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
     >
       <SectionReorderControl

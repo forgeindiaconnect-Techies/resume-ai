@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { Search, UserCheck, UserX, Users } from "lucide-react";
+import { Search, Users, RefreshCw } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { API_BASE_URL } from "../../config/api";
@@ -13,48 +12,82 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchUsers();
-
-    const interval = setInterval(fetchUsers, 5000);
-
+    fetchUsers(true);
+    const interval = setInterval(() => fetchUsers(false), 10000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (showLoader = false) => {
     try {
-      setLoading(true);
+      if (showLoader) {
+        setLoading(true);
+      }
 
       const token = localStorage.getItem("adminToken");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const response = await fetch(
-        `${API_BASE_URL}/user-sessions`,
-        { headers }
-      );
-
+      const response = await fetch(`${API_BASE_URL}/user-sessions`, { headers });
       const data = await response.json();
-
-      console.log("USERS DATA:", data);
 
       if (data.success) {
         setUsers(data.sessions || []);
-      } else {
-        setUsers([]);
       }
-
     } catch (error) {
       console.error("Users fetch error:", error);
-      setUsers([]);
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   };
 
-  const filteredUsers = users.filter((user) => {
-    const id = user.userId || user.guestId || "";
-    const email = user.email || "";
+  // Group sessions into unique user records
+  const uniqueUserMap = new Map();
 
-    return `${id} ${email}`.toLowerCase().includes(search.toLowerCase());
+  users.forEach((item) => {
+    const key = (item.email && item.email.toLowerCase()) || item.userId || item.guestId || item.sessionId;
+    if (!key) return;
+
+    const hasResume =
+      item.resumeCreated === true ||
+      (item.resumeName &&
+        item.resumeName !== "Your Name" &&
+        item.resumeName !== "Guest" &&
+        item.resumeName.toLowerCase() !== "user") ||
+      item.downloaded === true;
+    const hasDownloaded = item.downloaded === true || (item.totalDownloads && item.totalDownloads > 0);
+
+    const existing = uniqueUserMap.get(key);
+    if (!existing) {
+      uniqueUserMap.set(key, {
+        ...item,
+        resumeCreated: hasResume,
+        downloaded: hasDownloaded,
+        totalSessions: 1,
+        latestActivity: item.lastActiveTime || item.entryTime || new Date()
+      });
+    } else {
+      if (item.resumeName && (!existing.resumeName || existing.resumeName === "Customer" || existing.resumeName === "Guest Visitor")) {
+        existing.resumeName = item.resumeName;
+      }
+      if (item.email && !existing.email) existing.email = item.email;
+      if (hasResume) existing.resumeCreated = true;
+      if (hasDownloaded) existing.downloaded = true;
+      existing.totalSessions = (existing.totalSessions || 1) + 1;
+      if (new Date(item.lastActiveTime || item.entryTime || 0) > new Date(existing.latestActivity || 0)) {
+        existing.latestActivity = item.lastActiveTime || item.entryTime;
+      }
+    }
+  });
+
+  const uniqueUsersList = Array.from(uniqueUserMap.values());
+
+  const filteredUsers = uniqueUsersList.filter((user) => {
+    const id = user.userId || user.guestId || user.sessionId || "";
+    const email = user.email || "";
+    const resumeName = user.resumeName || "";
+
+    return `${id} ${email} ${resumeName}`.toLowerCase().includes(search.toLowerCase());
   });
 
   return (
@@ -64,90 +97,155 @@ const AdminUsers = () => {
         <AdminHeader />
         <main className="admin-content">
           <div className="admin-page">
-      {/* Header */}
-      <div className="admin-page-title">
-        <div>
-          <h2>Users</h2>
-          <p>Manage your resume builder users.</p>
-        </div>
+            {/* Header */}
+            <div className="admin-page-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <h2>Users</h2>
+                <p>Manage your resume builder users.</p>
+              </div>
 
-        <div className="download-count">
-          <Users size={18} />
-          <strong>{users.length}</strong>
-          <span>Total Users</span>
-        </div>
-      </div>
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <button
+                  onClick={() => fetchUsers(true)}
+                  style={{
+                    padding: "8px 14px",
+                    background: "#0284c7",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.85rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  <RefreshCw size={14} /> Refresh
+                </button>
+                <div className="download-count">
+                  <Users size={18} />
+                  <strong>{uniqueUsersList.length}</strong>
+                  <span>Total Users</span>
+                </div>
+              </div>
+            </div>
 
-      {/* Search */}
-      <div className="admin-search-box">
-        <Search size={18} />
-        <input
-          type="text"
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+            {/* Search */}
+            <div className="admin-search-box">
+              <Search size={18} />
+              <input
+                type="text"
+                placeholder="Search by name, email, or guest ID..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
 
-      {/* Users Table */}
-      <div className="admin-table-card">
-        {loading ? (
-          <div className="admin-table-message">Loading users...</div>
-        ) : filteredUsers.length === 0 ? (
-          <div className="admin-table-message">
-            <Users size={40} />
-            <h3>No users found</h3>
-            <p>Registered users will appear here.</p>
+            {/* Users Table */}
+            <div className="admin-table-card">
+              {loading ? (
+                <div className="admin-table-message">Loading users...</div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="admin-table-message">
+                  <Users size={40} />
+                  <h3>No users found</h3>
+                  <p>Registered users and visitor activities will appear here.</p>
+                </div>
+              ) : (
+                <div className="admin-table-wrapper">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Resume Name</th>
+                        <th>Email</th>
+                        <th>Resume Created</th>
+                        <th>Downloaded</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredUsers.map((item) => {
+                        const hasResume =
+                          item.resumeCreated === true ||
+                          (item.resumeName &&
+                            item.resumeName !== "Your Name" &&
+                            item.resumeName !== "Guest" &&
+                            item.resumeName.toLowerCase() !== "user") ||
+                          item.downloaded === true;
+                        const hasDownloaded = item.downloaded === true || item.totalDownloads > 0;
+
+                        const displayName =
+                          item.resumeName &&
+                          item.resumeName.toLowerCase() !== "user" &&
+                          item.resumeName !== "Your Name" &&
+                          item.resumeName !== "guest_user"
+                            ? item.resumeName
+                            : item.email
+                            ? item.email.split("@")[0].charAt(0).toUpperCase() + item.email.split("@")[0].slice(1)
+                            : item.guestId
+                            ? `Guest (${item.guestId.slice(-6)})`
+                            : item.sessionId
+                            ? `Guest (${item.sessionId.slice(-6)})`
+                            : "Guest Visitor";
+
+                        return (
+                          <tr key={item._id || item.sessionId}>
+                            <td>
+                              <div style={{ fontWeight: 600, color: "#0f172a" }}>
+                                {displayName}
+                              </div>
+                              {item.guestId && displayName !== item.guestId && (
+                                <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>
+                                  ID: {item.guestId.slice(-8)}
+                                </div>
+                              )}
+                            </td>
+                            <td>
+                              {item.email ? (
+                                <span style={{ color: "#0f172a", fontWeight: 500 }}>
+                                  {item.email}
+                                </span>
+                              ) : (
+                                <span style={{ color: "#94a3b8" }}>-</span>
+                              )}
+                            </td>
+                            <td>
+                              <span
+                                style={{
+                                  padding: "3px 8px",
+                                  borderRadius: "12px",
+                                  fontSize: "0.78rem",
+                                  fontWeight: 700,
+                                  background: hasResume ? "#ecfdf5" : "#f1f5f9",
+                                  color: hasResume ? "#059669" : "#64748b",
+                                }}
+                              >
+                                {hasResume ? "Yes" : "No"}
+                              </span>
+                            </td>
+                            <td>
+                              <span
+                                style={{
+                                  padding: "3px 8px",
+                                  borderRadius: "12px",
+                                  fontSize: "0.78rem",
+                                  fontWeight: 700,
+                                  background: hasDownloaded ? "#eff6ff" : "#f1f5f9",
+                                  color: hasDownloaded ? "#2563eb" : "#64748b",
+                                }}
+                              >
+                                {hasDownloaded ? "Yes" : "No"}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="admin-table-wrapper">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Resume Name</th>
-                  <th>Email</th>
-                  <th>Resume Created</th>
-                  <th>Downloaded</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map((item) => {
-                  const hasResume =
-                    item.resumeCreated === true ||
-                    (item.resumeName &&
-                      item.resumeName !== "Your Name" &&
-                      item.resumeName !== "Guest" &&
-                      item.resumeName.toLowerCase() !== "user") ||
-                    item.downloaded === true;
-                  const hasDownloaded = item.downloaded === true || item.totalDownloads > 0;
-
-                  const displayName =
-                    item.resumeName &&
-                    item.resumeName.toLowerCase() !== "user" &&
-                    item.resumeName !== "Your Name" &&
-                    item.resumeName !== "guest_user"
-                      ? item.resumeName
-                      : item.email
-                      ? item.email.split("@")[0].charAt(0).toUpperCase() + item.email.split("@")[0].slice(1)
-                      : item.guestId
-                      ? `Guest (${item.guestId.slice(-6)})`
-                      : "Guest Visitor";
-
-                  return (
-                    <tr key={item._id}>
-                      <td>{displayName}</td>
-                      <td>{item.email || "-"}</td>
-                      <td>{hasResume ? "Yes" : "No"}</td>
-                      <td>{hasDownloaded ? "Yes" : "No"}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
         </main>
       </div>
     </div>

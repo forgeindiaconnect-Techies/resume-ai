@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import PaymentModal from '../components/common/PaymentModal';
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
 import PhotoEditorModal from '../components/common/PhotoEditorModal';
+import JobDescriptionMatcherModal from '../components/common/JobDescriptionMatcherModal';
 import { exportResumeToPdf, generateProfessionalFilename } from '../utils/pdfExport';
+import { trackEvent } from '../utils/sessionTracker';
 
 import ModernLayout from '../components/layouts/ModernLayout';
 import ExecutiveLayout from '../components/layouts/ExecutiveLayout';
@@ -59,9 +61,32 @@ export const Field = ({ label, name, value, onChange, type = 'text', placeholder
 );
 
 // ─── Textarea Field ───────────────────────────────────────────────────────
-export const TextArea = ({ label, name, value, onChange, placeholder = '', rows = 4, accent = '#0284c7' }) => (
+export const TextArea = ({ label, name, value, onChange, placeholder = '', rows = 4, accent = '#0284c7', onPolish, showAi = false }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-    {label && <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>}
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {label && <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>}
+      {(showAi || onPolish) && (
+        <button
+          type="button"
+          onClick={onPolish}
+          style={{
+            border: 'none',
+            background: '#faf5ff',
+            color: '#7c3aed',
+            fontSize: '0.68rem',
+            fontWeight: 800,
+            padding: '0.15rem 0.5rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2px'
+          }}
+        >
+          <span>✨</span> Polish with AI
+        </button>
+      )}
+    </div>
     <textarea
       name={name}
       value={value || ''}
@@ -166,31 +191,53 @@ export const DeleteBtn = ({ onClick }) => (
 // ─── Skill Tag Input ─────────────────────────────────────────────────────
 export const SkillTagInput = ({ label, skills = [], onAdd, onRemove, accent, placeholder = 'Type and press Enter' }) => {
   const [input, setInput] = useState('');
+
+  const commitInput = () => {
+    if (!input.trim()) return;
+    const items = input.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+    items.forEach(item => {
+      if (item && onAdd) onAdd(item);
+    });
+    setInput('');
+  };
+
   const handleKey = (e) => {
-    if ((e.key === 'Enter' || e.key === ',') && input.trim()) {
+    if (['Enter', ',', ';', 'Tab'].includes(e.key) && input.trim()) {
       e.preventDefault();
-      onAdd(input.trim().replace(/,$/, ''));
-      setInput('');
+      commitInput();
     }
   };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       {label && <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</label>}
-      <div style={{ minHeight: 36, display: 'flex', flexWrap: 'wrap', gap: '0.35rem', background: '#fafafa', border: '1.5px solid #e2e8f0', borderRadius: '8px', padding: '0.4rem 0.6rem', alignItems: 'center' }}>
+      <div style={{ minHeight: 38, display: 'flex', flexWrap: 'wrap', gap: '0.4rem', background: '#fafafa', border: '1.5px solid #e2e8f0', borderRadius: '8px', padding: '0.4rem 0.6rem', alignItems: 'center' }}>
         {skills.map((sk, i) => (
           <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: `${accent}15`, color: accent, border: `1px solid ${accent}30`, padding: '0.15rem 0.55rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
-            {sk}<span onClick={() => onRemove(i)} style={{ cursor: 'pointer', fontWeight: 900, marginLeft: '0.1rem', opacity: 0.7 }}>×</span>
+            {sk}<span onClick={() => onRemove(i)} style={{ cursor: 'pointer', fontWeight: 900, marginLeft: '0.2rem', opacity: 0.7 }} title="Remove">×</span>
           </span>
         ))}
-        <input
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKey}
-          placeholder={skills.length === 0 ? placeholder : '+Add more'}
-          style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '0.82rem', minWidth: 80, flex: 1, fontFamily: 'inherit' }}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 140, gap: '0.35rem' }}>
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKey}
+            onBlur={commitInput}
+            placeholder={skills.length === 0 ? placeholder : '+ Add more...'}
+            style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '0.82rem', width: '100%', fontFamily: 'inherit' }}
+          />
+          {input.trim() && (
+            <button
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); commitInput(); }}
+              style={{ background: accent, color: '#ffffff', border: 'none', borderRadius: '4px', padding: '0.2rem 0.55rem', fontSize: '0.7rem', fontWeight: 800, cursor: 'pointer', flexShrink: 0 }}
+            >
+              + Add
+            </button>
+          )}
+        </div>
       </div>
-      <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Press Enter or comma to add</span>
+      <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Type any skill and press Enter, comma, or click outside to add</span>
     </div>
   );
 };
@@ -225,6 +272,8 @@ export const EditorShell = ({
   templateEmoji = '💻', 
   onDownload, 
   saveStatus = 'All changes saved ✔', 
+  formData,
+  onUpdateSkills,
   children, 
   preview 
 }) => {
@@ -273,6 +322,7 @@ export const EditorShell = ({
 
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [showPhotoEditor, setShowPhotoEditor] = useState(false);
+  const [showJdMatcher, setShowJdMatcher] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(0.82); // 0.50, 0.75, 0.82, 1.00, 1.25, 1.50
 
   const TEMPLATES = [
@@ -402,6 +452,42 @@ export const EditorShell = ({
               }}
             >
               <RefreshCw size={9} /> Reset Payment Test
+            </button>
+            <button
+              onClick={() => {
+                if (onSettingsChange) {
+                  const isCompact = spacingDensity === 'compact';
+                  onSettingsChange({
+                    ...settings,
+                    bodySize: isCompact ? 14 : 11.5,
+                    headingSize: isCompact ? 24 : 19,
+                    spacingDensity: isCompact ? 'normal' : 'compact'
+                  });
+                }
+              }}
+              title="Auto-adjust font size & margins to fit on 1 Page"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '3px', padding: '0.25rem 0.5rem', borderRadius: '6px',
+                border: spacingDensity === 'compact' ? '1.5px solid #10b981' : '1px solid #cbd5e1',
+                background: spacingDensity === 'compact' ? '#ecfdf5' : '#ffffff',
+                color: spacingDensity === 'compact' ? '#059669' : '#334155',
+                fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap'
+              }}
+            >
+              <span>📄</span>
+              <span>{spacingDensity === 'compact' ? '1 Page Active ✔' : 'Fit to 1 Page'}</span>
+            </button>
+            <button
+              onClick={() => setShowJdMatcher(true)}
+              title="Match your resume against any Job Description (JD)"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '3px', padding: '0.25rem 0.5rem', borderRadius: '6px',
+                border: '1px solid #bfdbfe', background: '#eff6ff', color: '#1d4ed8',
+                fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap'
+              }}
+            >
+              <span>🎯</span>
+              <span>Match JD</span>
             </button>
             {TEMPLATES.map(t => (
               <button
@@ -913,7 +999,15 @@ export const EditorShell = ({
       <DownloadWorkflowModal
         isOpen={showDownloadWorkflowModal}
         onClose={() => setShowDownloadWorkflowModal(false)}
-        formData={{ templateId: currentTplObj.name }}
+        formData={formData || {
+          personalInfo: preview?.props?.data?.contact ? {
+            ...preview.props.data.contact,
+            name: preview.props.data.name,
+            summary: preview.props.data.objective,
+            role: preview.props.data.role
+          } : {},
+          templateId: currentTplObj.name
+        }}
         atsScore={92}
         onEdit={() => setShowDownloadWorkflowModal(false)}
         onNavigateHome={() => navigate('/')}
@@ -938,6 +1032,13 @@ export const EditorShell = ({
           setShowPhotoEditor(false);
         }}
         themeColor={primaryColor}
+      />
+
+      <JobDescriptionMatcherModal
+        isOpen={showJdMatcher}
+        onClose={() => setShowJdMatcher(false)}
+        formData={formData}
+        onUpdateSkills={onUpdateSkills}
       />
     </div>
   );
@@ -978,6 +1079,19 @@ export const saveSession = (sessionId, data) => {
     
     if (sessionId) localStorage.setItem(`resume_draft_${sessionId}`, JSON.stringify(data));
     localStorage.setItem('localResumeDraft', JSON.stringify(data));
+
+    const name = data?.personalInfo?.name || data?.name;
+    const email = data?.personalInfo?.email || data?.email;
+
+    if (name) localStorage.setItem("userName", name);
+    if (email) localStorage.setItem("userEmail", email);
+
+    trackEvent("Resume Auto-Saved", window.location.pathname, {
+      resumeCreated: true,
+      resumeId: sessionId,
+      resumeName: name && name !== "Your Name" ? name : undefined,
+      email: email && !email.includes("example.com") && !email.includes("forgeindiaconnect.app") ? email : undefined
+    });
   } catch (e) {}
 };
 

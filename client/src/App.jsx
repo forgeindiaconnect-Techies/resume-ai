@@ -69,24 +69,7 @@ function App() {
   useEffect(() => {
     const sendHeartbeat = async () => {
       try {
-        const sessionId = localStorage.getItem("activeResumeSessionId") || localStorage.getItem("userSessionId");
-
-        if (!sessionId) return;
-
-        await fetch(
-          `${API_BASE_URL}/sessions/track`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              sessionId,
-              action: "HEARTBEAT",
-              page: window.location.pathname
-            })
-          }
-        );
+        await trackEvent("HEARTBEAT", window.location.pathname);
       } catch (error) {
         console.error("Heartbeat error:", error);
       }

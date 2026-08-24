@@ -1,6 +1,8 @@
 import React from 'react';
 import ResumeFooter from './ResumeFooter';
 import SignatureBlock from '../common/SignatureBlock';
+import ResumeQRCode from '../common/ResumeQRCode';
+import RecruiterBadges from '../common/RecruiterBadges';
 
 /**
  * ModernLayout - Exact Replica of Enhancv Business Analyst & Data Scientist Template
@@ -41,7 +43,7 @@ const ModernLayout = ({
   const isRightSidebar = layoutMode === 'right-sidebar';
   const isSingleColumn = layoutMode === 'single';
 
-  const { name = 'Violet Rodriguez', role = 'Business Analyst | Data Insights & Visualization', contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data;
+  const { name = 'Pooja Verma', role = 'Lead Business Analyst | Data Science & Analytics', contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [] } = data;
   
   // Handle complex photo object or legacy string
   const photoObj = profilePhoto || data.photoData || (typeof data.profilePhoto === 'object' ? data.profilePhoto : null);
@@ -139,39 +141,53 @@ const ModernLayout = ({
         textAlign: pos
       }}>
         {/* Name Header with Optional Profile Photo */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '1.5rem', 
-          marginBottom: '0.35rem', 
-          justifyContent: pos === 'center' ? 'center' : pos === 'right' ? 'flex-end' : 'flex-start' 
-        }}>
-          {photoUrl && (
-            <img 
-              src={photoUrl} 
-              alt="Profile" 
-              style={{ 
-                width: photoSize, 
-                height: photoSize, 
-                borderRadius: getBorderRadius(), 
-                objectFit: 'cover', 
-                border: getBorderValue(),
-                boxShadow: getShadowValue()
-              }} 
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexDirection: pos === 'right' ? 'row-reverse' : 'row' }}>
+            {photoUrl && (
+              <img 
+                src={photoUrl} 
+                alt="Profile" 
+                style={{ 
+                  width: photoSize, 
+                  height: photoSize, 
+                  borderRadius: getBorderRadius(), 
+                  objectFit: 'cover', 
+                  border: getBorderValue(),
+                  boxShadow: getShadowValue()
+                }} 
+              />
+            )}
+            <h1 style={{
+              fontSize: headingSize ? `${headingSize}px` : `${1.95 * fScale}rem`,
+              fontWeight: 700,
+              color: '#ffffff',
+              margin: 0,
+              lineHeight: lineH,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase'
+            }}>
+              {formattedName}
+            </h1>
+          </div>
+          {data?.showQrCode !== false && (
+            <ResumeQRCode 
+              url={
+                contact.customQrImage || data.customQrImage || 
+                (contact.qrTarget === 'github' ? (contact.github || contact.linkedin) :
+                 contact.qrTarget === 'portfolio' ? (contact.portfolio || contact.linkedin) :
+                 (contact.linkedin || contact.portfolio || contact.github || 'linkedin.com'))
+              }
+              customQrImage={contact.customQrImage || data.customQrImage}
+              label={
+                (contact.customQrImage || data.customQrImage) ? 'Scan Profile' :
+                contact.qrTarget === 'github' ? 'Scan GitHub' :
+                contact.qrTarget === 'portfolio' ? 'Scan Portfolio' : 
+                'Scan LinkedIn'
+              }
+              size={46}
+              accentColor="#0284c7"
             />
           )}
-          <h1 style={{
-            fontSize: headingSize ? `${headingSize}px` : `${1.95 * fScale}rem`,
-            fontWeight: 700,
-            
-            color: '#ffffff',
-            margin: 0,
-            lineHeight: lineH,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase'
-          }}>
-            {formattedName}
-          </h1>
         </div>
 
         {/* Role Subtitle in Light Blue Accent */}
@@ -179,12 +195,24 @@ const ModernLayout = ({
           fontSize: `${0.92 * fScale}rem`,
           fontWeight: 600,
           color: '#93c5fd',
-          marginBottom: '0.85rem',
-          
+          marginBottom: '0.45rem',
           letterSpacing: '0.02em'
         }}>
           {role}
         </div>
+
+        {/* Optional Recruiter Quick-Info Badges */}
+        {(data?.showRecruiterBadges || contact?.showRecruiterBadges) && (
+          <div style={{ marginBottom: '0.6rem' }}>
+            <RecruiterBadges 
+              theme="dark"
+              noticePeriod={data.noticePeriod || contact.noticePeriod || 'Immediate Joiner'}
+              totalExp={data.totalExp || contact.totalExp || '5+ Years'}
+              workPreference={data.workPreference || contact.workPreference || 'Hybrid'}
+              location={contact.location}
+            />
+          </div>
+        )}
 
         {/* Horizontal Contact Row with Light Blue Icons */}
         <div style={{

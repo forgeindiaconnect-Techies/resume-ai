@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Activity } from "lucide-react";
+import { Activity, RefreshCw } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { API_BASE_URL } from "../../config/api";
@@ -9,33 +9,31 @@ const AdminSessions = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSessions();
+    fetchSessions(true);
+    const interval = setInterval(() => fetchSessions(false), 10000);
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchSessions = async () => {
+  const fetchSessions = async (showLoader = false) => {
     try {
-      setLoading(true);
+      if (showLoader) {
+        setLoading(true);
+      }
       const token = localStorage.getItem("adminToken");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const response = await fetch(
-        `${API_BASE_URL}/user-sessions`,
-        { headers }
-      );
-
+      const response = await fetch(`${API_BASE_URL}/user-sessions`, { headers });
       const data = await response.json();
-
-      console.log("ACTIVITY DATA:", data);
 
       if (data.success) {
         setSessions(data.sessions || []);
-      } else {
-        setSessions([]);
       }
     } catch (err) {
       console.error("Error fetching sessions:", err);
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   };
 
@@ -55,18 +53,22 @@ const AdminSessions = () => {
                 <p>Track visitor sessions from landing page to download.</p>
               </div>
               <button
-                onClick={fetchSessions}
+                onClick={() => fetchSessions(true)}
                 style={{
-                  padding: "10px 16px",
+                  padding: "8px 14px",
                   background: "#0284c7",
                   color: "white",
                   border: "none",
                   borderRadius: "6px",
                   cursor: "pointer",
-                  fontWeight: "500",
+                  fontWeight: "600",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px"
                 }}
               >
-                Refresh Data
+                <RefreshCw size={14} /> Refresh Data
               </button>
             </div>
 
@@ -85,6 +87,7 @@ const AdminSessions = () => {
                     <thead>
                       <tr>
                         <th>Resume Name / Guest</th>
+                        <th>Date</th>
                         <th>Entry Time</th>
                         <th>Exit Time</th>
                         <th>Time Spent</th>
@@ -92,9 +95,38 @@ const AdminSessions = () => {
                     </thead>
                     <tbody>
                       {sessions.map((session) => {
-                        const getTimeSpent = (session) => {
-                          if (!session.entryTime) return "-";
+                        const isSessionActive = () => {
+                          if (session.status === "exited" || session.exitTime) return false;
+                          const lastActive = new Date(session.lastActiveTime || session.entryTime || Date.now());
+                          return Date.now() - lastActive.getTime() < 5 * 60 * 1000;
+                        };
 
+                        const active = isSessionActive();
+
+                        const formatDate = (dateStr) => {
+                          if (!dateStr) return "-";
+                          const d = new Date(dateStr);
+                          if (isNaN(d.getTime())) return "-";
+                          return d.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric"
+                          });
+                        };
+
+                        const formatTime = (dateStr) => {
+                          if (!dateStr) return "-";
+                          const d = new Date(dateStr);
+                          if (isNaN(d.getTime())) return "-";
+                          return d.toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true
+                          });
+                        };
+
+                        const getTimeSpent = () => {
+                          if (!session.entryTime) return "-";
                           const start = new Date(session.entryTime);
                           const end = session.exitTime
                             ? new Date(session.exitTime)
@@ -105,9 +137,9 @@ const AdminSessions = () => {
                             Math.round((end - start) / 60000)
                           );
 
-                          return session.exitTime
-                            ? `${minutes} min`
-                            : "Active";
+                          if (active) return "Active";
+                          if (minutes === 0) return "< 1 min";
+                          return `${minutes} min`;
                         };
 
                         const getDisplayName = (s) => {
@@ -131,33 +163,72 @@ const AdminSessions = () => {
                           }
                           return s.guestId
                             ? `Guest (${s.guestId.slice(-6)})`
+                            : s.sessionId
+                            ? `Guest (${s.sessionId.slice(-6)})`
                             : "Guest Visitor";
                         };
 
+                        const getExitTimeDisplay = () => {
+                          if (session.exitTime) {
+                            return (
+                              <span style={{ color: "#475569", fontWeight: 600 }}>
+                                {formatTime(session.exitTime)}
+                              </span>
+                            );
+                          }
+                          if (active) {
+                            return (
+                              <span style={{ color: "#059669", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
+                                Active
+                              </span>
+                            );
+                          }
+                          return session.lastActiveTime ? (
+                            <span style={{ color: "#64748b", fontWeight: 500 }}>
+                              {formatTime(session.lastActiveTime)}
+                            </span>
+                          ) : "-";
+                        };
+
                         return (
-                          <tr key={session._id}>
+                          <tr key={session._id || session.sessionId}>
                             <td>
                               <div style={{ fontWeight: 600, color: "#0f172a" }}>
                                 {getDisplayName(session)}
                               </div>
                               {session.email && (
-                                <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                                <div style={{ fontSize: "0.75rem", color: "#0284c7", fontWeight: 500 }}>
                                   {session.email}
                                 </div>
                               )}
                             </td>
                             <td>
-                              {session.entryTime
-                                ? new Date(session.entryTime).toLocaleString()
-                                : "-"}
+                              <span style={{ fontWeight: 600, color: "#334155" }}>
+                                {formatDate(session.entryTime || session.createdAt)}
+                              </span>
                             </td>
                             <td>
-                              {session.exitTime
-                                ? new Date(session.exitTime).toLocaleString()
-                                : "Active"}
+                              <span style={{ color: "#0284c7", fontWeight: 600 }}>
+                                {formatTime(session.entryTime)}
+                              </span>
                             </td>
                             <td>
-                              {getTimeSpent(session)}
+                              {getExitTimeDisplay()}
+                            </td>
+                            <td>
+                              <span
+                                style={{
+                                  padding: "3px 8px",
+                                  borderRadius: "12px",
+                                  fontSize: "0.78rem",
+                                  fontWeight: 700,
+                                  background: active ? "#ecfdf5" : "#f1f5f9",
+                                  color: active ? "#059669" : "#475569",
+                                }}
+                              >
+                                {getTimeSpent()}
+                              </span>
                             </td>
                           </tr>
                         );

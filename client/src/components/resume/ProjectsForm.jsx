@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 
-const ProjectsForm = ({ projects = [], onAdd, onUpdate, onDelete, onRunAi }) => {
+const ProjectsForm = ({ projects = [], onAdd, onUpdate, onDelete, onRunAi, onOpenPolish }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -47,10 +47,10 @@ const ProjectsForm = ({ projects = [], onAdd, onUpdate, onDelete, onRunAi }) => 
             <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b' }}>Description</label>
             <button 
               type="button" 
-              onClick={() => onRunAi('AI Improve Project', proj.id)} 
-              style={{ border: 'none', background: '#eff6ff', color: '#2563eb', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '6px', cursor: 'pointer' }}
+              onClick={() => onOpenPolish ? onOpenPolish({ id: proj.id, text: proj.desc, role: proj.name, company: proj.technology, isProject: true }) : onRunAi('AI Improve Project', proj.id)} 
+              style={{ border: 'none', background: '#faf5ff', color: '#7c3aed', fontSize: '0.72rem', fontWeight: 800, padding: '0.25rem 0.6rem', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
             >
-              ✨ AI Improve Project
+              <span>✨</span> Polish with AI
             </button>
           </div>
           

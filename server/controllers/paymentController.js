@@ -334,6 +334,25 @@ exports.mockPayment = async (req, res) => {
       downloadedAt: null,
     });
 
+    try {
+      const UserSession = require("../models/UserSession");
+      await UserSession.updateMany(
+        {
+          $or: [
+            { email: normalizedEmail },
+            { resumeId: resumeId }
+          ]
+        },
+        {
+          $set: {
+            ...(resumeName ? { resumeName } : {}),
+            email: normalizedEmail,
+            resumeCreated: true
+          }
+        }
+      );
+    } catch (sErr) {}
+
     return res.status(200).json({
       success: true,
       payment: {

@@ -2,6 +2,8 @@ import React from 'react';
 
 import SignatureBlock from '../common/SignatureBlock';
 import ResumeFooter from './ResumeFooter';
+import ResumeQRCode from '../common/ResumeQRCode';
+import RecruiterBadges from '../common/RecruiterBadges';
 
 /**
  * EnhancvLayout - 100% Exact Pixel-Perfect Replica of Enhancv Project Manager Flagship Template
@@ -51,8 +53,8 @@ const EnhancvLayout = ({data, customColor,
   );
   
   const {
-    name = 'Joshua Nelson',
-    role = 'Project Manager | Renewable Energy | Agile | PMP',
+    name = 'Rohan Sharma',
+    role = 'Senior Technical Project Manager | Agile Scrum | PMP',
     contact = {},
     objective,
     education = [],
@@ -153,11 +155,22 @@ const EnhancvLayout = ({data, customColor,
             fontSize: `${0.92 * fScale}rem`,
             fontWeight: 500,
             color: '#4b5563',
-            marginBottom: '0.65rem',
+            marginBottom: '0.45rem',
             letterSpacing: '0.01em'
           }}>
             {role}
           </div>
+
+          {/* Optional Recruiter Quick-Info Badges */}
+          {(data?.showRecruiterBadges || contact?.showRecruiterBadges) && (
+            <RecruiterBadges 
+              noticePeriod={data.noticePeriod || contact.noticePeriod || 'Immediate Joiner'}
+              totalExp={data.totalExp || contact.totalExp || '5+ Years'}
+              workPreference={data.workPreference || contact.workPreference || 'Hybrid'}
+              location={contact.location}
+              accentColor={primaryAccent}
+            />
+          )}
 
           {/* Contact Row with SVG Icons */}
           <div style={{
@@ -207,21 +220,42 @@ const EnhancvLayout = ({data, customColor,
             )}
           </div>
           </div>
-          {photoUrl && (
-            <img 
-              src={photoUrl} 
-              alt="Profile" 
-              style={{ 
-                width: photoObj?.size ? `${photoObj.size}px` : '100px', 
-                height: photoObj?.size ? `${photoObj.size}px` : '100px', 
-                borderRadius: photoObj?.shape === 'square' ? '0px' : photoObj?.shape === 'rounded' ? '16px' : '50%', 
-                objectFit: 'cover',
-                border: getPhotoBorder(),
-                boxShadow: getPhotoShadow(),
-                flexShrink: 0
-              }} 
-            />
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+            {photoUrl && (
+              <img 
+                src={photoUrl} 
+                alt="Profile" 
+                style={{ 
+                  width: photoObj?.size ? `${photoObj.size}px` : '100px', 
+                  height: photoObj?.size ? `${photoObj.size}px` : '100px', 
+                  borderRadius: photoObj?.shape === 'square' ? '0px' : photoObj?.shape === 'rounded' ? '16px' : '50%', 
+                  objectFit: 'cover',
+                  border: getPhotoBorder(),
+                  boxShadow: getPhotoShadow(),
+                  flexShrink: 0
+                }} 
+              />
+            )}
+            {data.showQrCode !== false && (
+              <ResumeQRCode 
+                url={
+                  contact.customQrImage || data.customQrImage || 
+                  (contact.qrTarget === 'github' ? (contact.github || contact.linkedin) :
+                   contact.qrTarget === 'portfolio' ? (contact.portfolio || contact.linkedin) :
+                   (contact.linkedin || contact.portfolio || contact.github || 'linkedin.com'))
+                }
+                customQrImage={contact.customQrImage || data.customQrImage}
+                label={
+                  (contact.customQrImage || data.customQrImage) ? 'Scan Profile' :
+                  contact.qrTarget === 'github' ? 'Scan GitHub' :
+                  contact.qrTarget === 'portfolio' ? 'Scan Portfolio' : 
+                  'Scan LinkedIn'
+                }
+                size={48}
+                accentColor={primaryAccent}
+              />
+            )}
+          </div>
         </div>
 
         {/* === DYNAMIC SECTIONS === */}

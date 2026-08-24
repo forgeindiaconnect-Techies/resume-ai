@@ -40,8 +40,8 @@ const CreativeLayout = ({data, customColor, customFont,
   const fontFamily = customFont || "'Inter', sans-serif";
 
   const {
-    name = 'AVA JOHNSON',
-    role = 'Actor | Character Development | Film & TV',
+    name = 'ANANYA IYER',
+    role = 'Creative Director | Brand Identity & UI/UX Design',
     contact = {},
     objective,
     education = [],

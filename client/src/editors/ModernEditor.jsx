@@ -6,30 +6,31 @@ import {
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
 import SignatureModal from '../components/common/SignatureModal';
+import QrScanUploadSection from '../components/common/QrScanUploadSection';
 
 const buildFromSession = (session) => ({
   title: session.title || 'Modern Resume',
   templateId: 'modern',
   personalInfo: {
-    name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Alexander Wright',
-    role: session.personalInfo?.role || session.role || 'Business Professional',
-    email: session.personalInfo?.email || session.email || 'user@forgeindiaconnect.app',
-    phone: session.personalInfo?.phone || session.phone || '+1 (555) 000-0000',
-    location: session.personalInfo?.location || session.location || 'New York, NY',
-    linkedin: session.personalInfo?.linkedin || session.linkedin || '',
-    github: session.personalInfo?.github || session.github || '',
+    name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Pooja Verma',
+    role: session.personalInfo?.role || session.role || 'Lead Business Analyst | Data Science',
+    email: session.personalInfo?.email || session.email || 'pooja.verma@forgeindiaconnect.com',
+    phone: session.personalInfo?.phone || session.phone || '+91 98450 12345',
+    location: session.personalInfo?.location || session.location || 'Gurugram, Delhi NCR',
+    linkedin: session.personalInfo?.linkedin || session.linkedin || 'linkedin.com/in/pooja-verma-analytics',
+    github: session.personalInfo?.github || session.github || 'github.com/pooja-verma',
   },
   summary: session.personalInfo?.summary || session.summary || session.objective || '',
   skills: {
     languages: Array.isArray(session.skills?.programming)
       ? session.skills.programming
-      : (typeof session.skills?.languages === 'string' ? session.skills.languages.split(',').map(s => s.trim()) : []),
+      : (typeof session.skills?.languages === 'string' ? session.skills.languages.split(',').map(s => s.trim()) : ['SQL', 'Python', 'Power BI']),
     frameworks: Array.isArray(session.skills?.frameworks)
       ? session.skills.frameworks
-      : (typeof session.skills?.frameworks === 'string' ? session.skills.frameworks.split(',').map(s => s.trim()) : []),
+      : (typeof session.skills?.frameworks === 'string' ? session.skills.frameworks.split(',').map(s => s.trim()) : ['ETL Pipelines', 'Statistical Modeling']),
     tools: Array.isArray(session.skills?.databases)
       ? session.skills.databases
-      : (typeof session.skills?.tools === 'string' ? session.skills.tools.split(',').map(s => s.trim()) : []),
+      : (typeof session.skills?.tools === 'string' ? session.skills.tools.split(',').map(s => s.trim()) : ['PostgreSQL', 'Snowflake', 'Tableau']),
   },
   projects: (session.projects || []).map((p, i) => ({
     id: i + 1,
@@ -40,7 +41,7 @@ const buildFromSession = (session) => ({
   })),
   experience: (session.experience || []).map((e, i) => ({
     id: i + 1,
-    title: e.title || e.role || '',
+    title: e.role || e.title || '',
     company: e.company || '',
     duration: e.duration || '',
     desc: e.desc || '',
@@ -49,19 +50,14 @@ const buildFromSession = (session) => ({
     id: i + 1,
     degree: e.degree || '',
     institution: e.institution || e.school || '',
-    tenure: e.tenure || '',
+    tenure: e.tenure || e.year || '',
     cgpa: e.cgpa || '',
   })),
-  certificates: (session.certificates || []).map((c, i) => ({
+  certifications: (session.certificates || []).map((c, i) => ({
     id: i + 1,
     name: c.name || c.title || '',
-    organization: c.organization || c.org || '',
+    org: c.organization || c.org || '',
     year: c.year || '',
-  })),
-  achievements: (session.achievements || []).map((a, i) => ({
-    id: i + 1,
-    title: a.title || '',
-    desc: a.desc || a.description || '',
   })),
   languagesList: (session.languagesList || []).map((l, i) => ({
     id: i + 1,
@@ -75,28 +71,28 @@ const defaultData = () => ({
   title: 'Modern Resume',
   templateId: 'modern',
   personalInfo: {
-    name: 'Alexander Wright',
-    role: 'Software Engineer',
-    email: 'dev@email.com',
-    phone: '+1 (555) 000-0000',
-    location: 'San Francisco, CA',
-    linkedin: 'linkedin.com/in/yourname',
-    github: 'github.com/yourname',
+    name: 'Pooja Verma',
+    role: 'Lead Business Analyst | Data Science',
+    email: 'pooja.verma@forgeindiaconnect.com',
+    phone: '+91 98450 12345',
+    location: 'Gurugram, Delhi NCR',
+    linkedin: 'linkedin.com/in/pooja-verma-analytics',
+    github: 'github.com/pooja-verma',
   },
-  summary: 'Performance-driven Software Engineer with 4+ years of experience building high-throughput web applications and REST APIs. Passionate about clean code and scalable architecture.',
+  summary: 'Data-driven Lead Business Analyst with 7+ years of experience transforming complex datasets into executive strategies. Architected automated business intelligence dashboards unlocking ₹18 Cr in annual operational efficiencies.',
   skills: {
-    languages: ['JavaScript', 'TypeScript', 'Python'],
-    frameworks: ['React', 'Node.js', 'Express', 'Next.js'],
-    tools: ['Docker', 'AWS', 'PostgreSQL', 'Git'],
+    languages: ['SQL', 'Python (Pandas)', 'Power BI', 'Tableau'],
+    frameworks: ['Statistical Modeling', 'A/B Testing', 'ETL Pipelines'],
+    tools: ['PostgreSQL', 'Snowflake', 'BigQuery', 'Apache Spark'],
   },
   projects: [
-    { id: 1, title: 'Real-Time Collaboration Engine', technology: 'React, WebSockets, Node.js', github: 'github.com/yourname/project', desc: 'Engineered multi-user document editor supporting concurrent edits.' }
+    { id: 1, title: 'Real-Time Dynamic Pricing Engine', technology: 'Python, SQL, Tableau', github: 'github.com/pooja-verma/pricing', desc: 'Created real-time dynamic pricing model deployed across 45 Indian metro cities, increasing gross margins by 4.8%.' }
   ],
   experience: [
-    { id: 1, title: 'Software Engineer', company: 'CloudScale Technologies', duration: '2020 – Present', desc: 'Architected microservices handling 2M+ daily requests with 99.99% uptime.' }
+    { id: 1, title: 'Lead Business Analyst', company: 'Flipkart Internet Pvt. Ltd.', duration: '2021 – Present', desc: '• Developed automated demand forecasting models cutting inventory holding costs by ₹8.5 Cr during Big Billion Days.\n• Designed executive Power BI & Tableau dashboards tracking 120+ KPI metrics across 14 fulfilment hubs.' }
   ],
   education: [
-    { id: 1, degree: 'B.S. in Computer Science', institution: 'University of Washington', tenure: '2016 – 2020', cgpa: '3.9' }
+    { id: 1, degree: 'M.Sc. in Data Science & Business Analytics', institution: 'Indian Institute of Technology (IIT) Delhi', tenure: '2016 – 2018', cgpa: '9.1 / 10' }
   ],
   certificates: [],
   achievements: [],
@@ -181,7 +177,27 @@ const ModernEditor = () => {
   const previewData = {
     name: data.personalInfo.name,
     role: data.personalInfo.role,
-    contact: { email: data.personalInfo.email, phone: data.personalInfo.phone, location: data.personalInfo.location, linkedin: data.personalInfo.linkedin, github: data.personalInfo.github },
+    showQrCode: data.personalInfo.showQrCode !== false,
+    qrTarget: data.personalInfo.qrTarget || 'linkedin',
+    customQrImage: data.personalInfo.customQrImage || null,
+    showRecruiterBadges: data.personalInfo.showRecruiterBadges === true,
+    noticePeriod: data.personalInfo.noticePeriod || 'Immediate Joiner',
+    totalExp: data.personalInfo.totalExp || '5+ Years',
+    workPreference: data.personalInfo.workPreference || 'Hybrid',
+    contact: { 
+      email: data.personalInfo.email, 
+      phone: data.personalInfo.phone, 
+      location: data.personalInfo.location, 
+      linkedin: data.personalInfo.linkedin, 
+      github: data.personalInfo.github,
+      showQrCode: data.personalInfo.showQrCode !== false,
+      qrTarget: data.personalInfo.qrTarget || 'linkedin',
+      customQrImage: data.personalInfo.customQrImage || null,
+      showRecruiterBadges: data.personalInfo.showRecruiterBadges === true,
+      noticePeriod: data.personalInfo.noticePeriod || 'Immediate Joiner',
+      totalExp: data.personalInfo.totalExp || '5+ Years',
+      workPreference: data.personalInfo.workPreference || 'Hybrid'
+    },
     objective: data.summary,
     skills: { languages: data.skills.languages.join(', '), frameworks: data.skills.frameworks.join(', '), tools: data.skills.tools.join(', ') },
     experience: data.experience.map(e => ({ title: e.title, company: e.company, duration: e.duration, desc: e.desc })),
@@ -203,6 +219,18 @@ const ModernEditor = () => {
       templateEmoji="💻" 
       onDownload={() => window.print()} 
       saveStatus={saveStatus}
+      formData={data}
+      onUpdateSkills={(newSkill) => {
+        setData(d => ({
+          ...d,
+          skills: {
+            ...d.skills,
+            languages: Array.isArray(d.skills?.languages)
+              ? (d.skills.languages.some(s => s.toLowerCase() === newSkill.toLowerCase()) ? d.skills.languages : [...d.skills.languages, newSkill])
+              : [newSkill]
+          }
+        }));
+      }}
       preview={<ModernLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
     >
       <SectionReorderControl
@@ -224,6 +252,9 @@ const ModernEditor = () => {
         <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={accentColor} placeholder="linkedin.com/in/name" />
         <Field label="GitHub" name="github" value={data.personalInfo.github} onChange={setPersonal} accent={accentColor} placeholder="github.com/yourname" />
       </Grid2>
+
+      {/* ─── Profile QR Code & Custom Image Upload ─── */}
+      <QrScanUploadSection personalInfo={data.personalInfo} onChange={setPersonal} accentColor={accentColor} />
 
       <SectionHeader icon="📝" title="Professional Summary" accent={accentColor} />
       <TextArea label="Summary" value={data.summary} rows={5}

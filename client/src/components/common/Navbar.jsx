@@ -26,8 +26,7 @@ const Navbar = () => {
         {[
           { label: 'Home', to: '/', isAnchor: false },
           { label: 'Features', to: '/#features', isAnchor: true },
-          { label: 'Examples', to: '/industry-examples' },
-          { label: 'Pricing', to: '/#pricing', isAnchor: true }
+          { label: 'Examples', to: '/industry-examples' }
         ].map((item) => (
           item.isAnchor ? (
             <a

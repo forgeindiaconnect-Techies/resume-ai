@@ -6,35 +6,44 @@ import {
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
 import SignatureModal from '../components/common/SignatureModal';
+import QrScanUploadSection from '../components/common/QrScanUploadSection';
 
 const defaultData = () => ({
   title: 'Professional Resume',
   templateId: 'professional',
   personalInfo: {
-    name: 'Alexander Wright',
-    role: 'Project Manager',
-    email: 'name@company.com',
-    phone: '+1 (555) 000-0000',
-    location: 'Chicago, IL',
-    linkedin: 'linkedin.com/in/yourname',
+    name: 'Arjun Mehta',
+    role: 'Senior Full Stack & Cloud Architect',
+    email: 'arjun.mehta@forgeindiaconnect.com',
+    phone: '+91 98201 88776',
+    location: 'Hyderabad, Telangana',
+    linkedin: 'linkedin.com/in/arjun-mehta-dev',
   },
-  summary: 'Results-oriented Project Manager with 7+ years of experience delivering cross-functional projects on time and within budget using Agile and Waterfall methodologies.',
-  skills: ['Agile', 'Scrum', 'Risk Management', 'Stakeholder Communication', 'PMP', 'Jira', 'Confluence'],
+  summary: 'Senior Full Stack & Cloud Architect with 8+ years developing distributed microservices, scalable React applications, and high-concurrency cloud infrastructure for top Indian enterprises.',
+  skills: ['React.js', 'Node.js', 'TypeScript', 'AWS Cloud', 'Kubernetes', 'Microservices', 'Docker', 'PostgreSQL'],
   experience: [
-    { id: 1, role: 'Senior Project Manager', company: 'Enterprise Solutions Ltd.', duration: '2018 – Present', desc: 'Managed a portfolio of 12 concurrent projects valued at $8M+.' }
+    { id: 1, role: 'Senior Cloud Architect', company: 'Reliance Jio Platforms', duration: '2021 – Present', desc: '• Architected resilient 5G core telemetry microservices handling 250k events/second with 99.999% uptime.\n• Decreased cloud computing costs by ₹65 Lakhs annually via Kubernetes auto-scaling.' },
+    { id: 2, role: 'Senior Full Stack Engineer', company: 'Infosys Limited', duration: '2017 – 2021', desc: '• Led 14 engineers building cloud-native banking portals in React, Node.js, and TypeScript.\n• Optimized API response latency from 420ms to 65ms.' }
   ],
   education: [
-    { id: 1, degree: 'B.B.A – Business Management', institution: 'University of Illinois', tenure: '2012 – 2016' }
+    { id: 1, degree: 'B.Tech in Computer Science & Engineering', institution: 'Indian Institute of Technology (IIT) Bombay', tenure: '2013 – 2017' }
   ],
   certifications: [
-    { id: 1, name: 'PMP – Project Management Professional', org: 'PMI', year: '2019' }
+    { id: 1, name: 'AWS Certified Solutions Architect – Professional', org: 'Amazon Web Services', year: '2023' },
+    { id: 2, name: 'Certified Kubernetes Administrator (CKA)', org: 'Linux Foundation', year: '2022' }
   ],
-  languages: ['English (Native)', 'Spanish (Professional)'],
-  languagesList: [],
-  achievements: [],
+  languages: ['English (Fluent)', 'Hindi (Native)', 'Telugu (Conversational)'],
+  languagesList: [
+    { id: 1, name: 'English', level: 'Fluent' },
+    { id: 2, name: 'Hindi', level: 'Native' },
+    { id: 3, name: 'Telugu', level: 'Conversational' }
+  ],
+  achievements: [
+    { id: 1, title: 'National Tech Excellence Award', desc: 'Recognized for building sub-second UPI microservice scaling to 10M daily active users.' }
+  ],
   signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
   settings: {
-    color: '#0369a1',
+    color: '#14532d',
     fontFamily: "'Inter', sans-serif",
     headingSize: 24,
     bodySize: 14,
@@ -64,12 +73,12 @@ const ProfessionalEditor = () => {
         title: session.title || 'Professional Resume',
         templateId: 'professional',
         personalInfo: {
-          name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Alexander Wright',
-          role: session.personalInfo?.role || session.role || 'Project Manager',
-          email: session.personalInfo?.email || session.email || 'user@forgeindiaconnect.app',
-          phone: session.personalInfo?.phone || session.phone || '+1 (555) 000-0000',
-          location: session.personalInfo?.location || session.location || 'Chicago, IL',
-          linkedin: session.personalInfo?.linkedin || session.linkedin || '',
+          name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Arjun Mehta',
+          role: session.personalInfo?.role || session.role || 'Senior Full Stack & Cloud Architect',
+          email: session.personalInfo?.email || session.email || 'arjun.mehta@forgeindiaconnect.com',
+          phone: session.personalInfo?.phone || session.phone || '+91 98201 88776',
+          location: session.personalInfo?.location || session.location || 'Hyderabad, Telangana',
+          linkedin: session.personalInfo?.linkedin || session.linkedin || 'linkedin.com/in/arjun-mehta-dev',
         },
         summary: session.personalInfo?.summary || session.summary || session.objective || '',
         skills: [
@@ -133,7 +142,26 @@ const ProfessionalEditor = () => {
   const previewData = {
     name: data.personalInfo.name,
     role: data.personalInfo.role,
-    contact: { email: data.personalInfo.email, phone: data.personalInfo.phone, location: data.personalInfo.location, linkedin: data.personalInfo.linkedin },
+    showQrCode: data.personalInfo.showQrCode !== false,
+    qrTarget: data.personalInfo.qrTarget || 'linkedin',
+    customQrImage: data.personalInfo.customQrImage || null,
+    showRecruiterBadges: data.personalInfo.showRecruiterBadges === true,
+    noticePeriod: data.personalInfo.noticePeriod || 'Immediate Joiner',
+    totalExp: data.personalInfo.totalExp || '5+ Years',
+    workPreference: data.personalInfo.workPreference || 'Hybrid',
+    contact: { 
+      email: data.personalInfo.email, 
+      phone: data.personalInfo.phone, 
+      location: data.personalInfo.location, 
+      linkedin: data.personalInfo.linkedin,
+      showQrCode: data.personalInfo.showQrCode !== false,
+      qrTarget: data.personalInfo.qrTarget || 'linkedin',
+      customQrImage: data.personalInfo.customQrImage || null,
+      showRecruiterBadges: data.personalInfo.showRecruiterBadges === true,
+      noticePeriod: data.personalInfo.noticePeriod || 'Immediate Joiner',
+      totalExp: data.personalInfo.totalExp || '5+ Years',
+      workPreference: data.personalInfo.workPreference || 'Hybrid'
+    },
     objective: data.summary,
     skills: data.skills,
     experience: data.experience.map(e => ({ title: e.role, company: e.company, duration: e.duration, desc: e.desc })),
@@ -163,6 +191,15 @@ const ProfessionalEditor = () => {
       templateEmoji="📋" 
       onDownload={() => window.print()} 
       saveStatus={saveStatus}
+      formData={data}
+      onUpdateSkills={(newSkill) => {
+        setData(d => ({
+          ...d,
+          skills: Array.isArray(d.skills) 
+            ? (d.skills.some(s => s.toLowerCase() === newSkill.toLowerCase()) ? d.skills : [...d.skills, newSkill])
+            : [newSkill]
+        }));
+      }}
       preview={
         <ProfessionalLayout 
           data={previewData} 
@@ -195,6 +232,9 @@ const ProfessionalEditor = () => {
         <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={accentColor} />
         <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={accentColor} />
       </Grid2>
+
+      {/* ─── Profile QR Code & Custom Image Upload ─── */}
+      <QrScanUploadSection personalInfo={data.personalInfo} onChange={setPersonal} accentColor={accentColor} />
 
       <SectionHeader icon="📝" title="Professional Summary" accent={accentColor} />
       <TextArea label="Summary" value={data.summary} rows={5}

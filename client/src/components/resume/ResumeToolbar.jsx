@@ -1,5 +1,4 @@
 import React from 'react';
-import { Download, Sparkles } from 'lucide-react';
 
 const ResumeToolbar = ({
   selectedColor,
@@ -8,13 +7,23 @@ const ResumeToolbar = ({
   onChangeTemplate,
   selectedFont,
   onChangeFont,
+  fontSize = 13,
+  onChangeFontSize,
   zoomLevel,
   onChangeZoom,
   isPremiumUser,
-  onDownloadAction
+  onDownloadAction,
+  onFitToOnePage,
+  isOnePageActive
 }) => {
   const colors = ['#7c3aed', '#10b981', '#2563eb', '#f59e0b', '#dc2626', '#000000'];
   const zoomLevels = [0.5, 0.6, 0.8, 1.0];
+  const fontSizes = [
+    { label: 'Small (11px)', value: 11 },
+    { label: 'Normal (13px)', value: 13 },
+    { label: 'Medium (15px)', value: 15 },
+    { label: 'Large (17px)', value: 17 }
+  ];
 
   return (
     <div className="no-print" style={{ 
@@ -123,6 +132,48 @@ const ResumeToolbar = ({
           </select>
         </div>
 
+        {/* Font Size Selector */}
+        {onChangeFontSize && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Size</span>
+            <select 
+              value={fontSize} 
+              onChange={(e) => onChangeFontSize(Number(e.target.value))}
+              style={{ border: '1px solid #cbd5e1', background: 'white', padding: '0.25rem 0.4rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, outline: 'none', cursor: 'pointer' }}
+            >
+              {fontSizes.map(fs => (
+                <option key={fs.value} value={fs.value}>{fs.label}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Fit to 1 Page Button */}
+        {onFitToOnePage && (
+          <button
+            onClick={onFitToOnePage}
+            title="Automatically adjust font size, line spacing and margins to fit on 1 Page"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              background: isOnePageActive ? '#ecfdf5' : '#f8fafc',
+              border: isOnePageActive ? '1.5px solid #10b981' : '1px solid #cbd5e1',
+              color: isOnePageActive ? '#059669' : '#334155',
+              padding: '0.3rem 0.65rem',
+              borderRadius: '6px',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <span>📄</span>
+            <span>{isOnePageActive ? 'Fit to 1 Page ✔' : 'Fit to 1 Page'}</span>
+          </button>
+        )}
+
         {/* Zoom Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
           {zoomLevels.map(val => (
@@ -145,30 +196,6 @@ const ResumeToolbar = ({
             </button>
           ))}
         </div>
-
-        {/* Download / Unlock CTA */}
-        <button 
-          onClick={onDownloadAction}
-          style={{
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.35rem', 
-            padding: '0.4rem 0.85rem', 
-            background: isPremiumUser ? '#10b981' : 'linear-gradient(135deg, #7c3aed, #4f46e5)', 
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px', 
-            fontSize: '0.75rem', 
-            fontWeight: 900, 
-            cursor: 'pointer',
-            boxShadow: isPremiumUser ? '0 4px 10px rgba(16, 185, 129, 0.2)' : '0 4px 10px rgba(124, 58, 237, 0.25)',
-            transition: 'all 0.2s',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {isPremiumUser ? <Download size={14} /> : <Sparkles size={14} />} 
-          {isPremiumUser ? 'Download PDF' : 'Unlock Premium'}
-        </button>
       </div>
     </div>
   );

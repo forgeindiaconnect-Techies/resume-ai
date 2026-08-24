@@ -6,17 +6,18 @@ import {
   SkillTagInput, EditorShell, SectionReorderControl, loadSession, saveSession
 } from './editorUtils';
 import SignatureModal from '../components/common/SignatureModal';
+import QrScanUploadSection from '../components/common/QrScanUploadSection';
 
 const buildFromSession = (session) => ({
   title: session.title || 'Executive Resume',
   templateId: 'executive',
   personalInfo: {
-    name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Alexander Wright',
-    role: session.personalInfo?.role || session.role || 'Executive Leader',
-    email: session.personalInfo?.email || session.email || 'user@forgeindiaconnect.app',
-    phone: session.personalInfo?.phone || session.phone || '+1 (555) 000-0000',
-    location: session.personalInfo?.location || session.location || 'New York, NY',
-    linkedin: session.personalInfo?.linkedin || session.linkedin || '',
+    name: session.personalInfo?.name || session.personalInfo?.fullName || session.name || 'Vikramaditya Singhania',
+    role: session.personalInfo?.role || session.role || 'Chief Financial Officer (CFO)',
+    email: session.personalInfo?.email || session.email || 'v.singhania@forgeindiaconnect.com',
+    phone: session.personalInfo?.phone || session.phone || '+91 99100 55443',
+    location: session.personalInfo?.location || session.location || 'Mumbai, Maharashtra',
+    linkedin: session.personalInfo?.linkedin || session.linkedin || 'linkedin.com/in/vikramaditya-singhania-cfo',
   },
   summary: session.personalInfo?.summary || session.summary || session.objective || '',
   competencies: [
@@ -48,15 +49,15 @@ const defaultData = () => ({
   title: 'Executive Resume',
   templateId: 'executive',
   personalInfo: {
-    name: 'Alexander Wright',
-    role: 'Chief Executive Officer',
-    email: 'name@company.com',
-    phone: '+1 (555) 000-0000',
-    location: 'New York, NY',
-    linkedin: 'linkedin.com/in/yourname',
+    name: 'Vikramaditya Singhania',
+    role: 'Chief Financial Officer (CFO)',
+    email: 'v.singhania@forgeindiaconnect.com',
+    phone: '+91 99100 55443',
+    location: 'Mumbai, Maharashtra',
+    linkedin: 'linkedin.com/in/vikramaditya-singhania-cfo',
   },
-  summary: 'Visionary executive leader with 15+ years of experience driving organisational growth, strategic transformation, and high-performance team leadership across global enterprises.',
-  competencies: ['Strategic Leadership', 'P&L Management', 'Organisational Change', 'Board Communication', 'M&A Strategy'],
+  summary: 'Senior Finance Executive and Chartered Accountant (FCA) with 17+ years leading corporate finance, investor relations, and multi-hundred-crore M&A transactions. Guided enterprise growth from ₹80 Cr to ₹950 Cr annual revenue.',
+  competencies: ['Corporate Finance', 'M&A Strategy', 'P&L Management', 'SEBI / RBI Compliance', 'Treasury & Risk'],
   experience: [
     { id: 1, title: 'Chief Executive Officer', company: 'Global Enterprises Inc.', duration: '2019 – Present', desc: 'Drove 40% revenue growth in 3 years.\nLed global expansion into 5 new markets.\nBuilt and scaled executive leadership team from 8 to 24.' }
   ],
@@ -120,17 +121,33 @@ const ExecutiveEditor = () => {
   const previewData = {
     name: data.personalInfo.name,
     role: data.personalInfo.role,
-    contact: { email: data.personalInfo.email, phone: data.personalInfo.phone, location: data.personalInfo.location, linkedin: data.personalInfo.linkedin },
-    objective: data.summary,
-    skills: {
-      languages: data.competencies.slice(0, 4).join(', '),
-      frameworks: data.competencies.slice(4).join(', '),
-      tools: data.certifications.join(', '),
+    showQrCode: data.personalInfo.showQrCode !== false,
+    qrTarget: data.personalInfo.qrTarget || 'linkedin',
+    customQrImage: data.personalInfo.customQrImage || null,
+    showRecruiterBadges: data.personalInfo.showRecruiterBadges === true,
+    noticePeriod: data.personalInfo.noticePeriod || 'Immediate Joiner',
+    totalExp: data.personalInfo.totalExp || '5+ Years',
+    workPreference: data.personalInfo.workPreference || 'Hybrid',
+    contact: { 
+      email: data.personalInfo.email, 
+      phone: data.personalInfo.phone, 
+      location: data.personalInfo.location, 
+      linkedin: data.personalInfo.linkedin,
+      showQrCode: data.personalInfo.showQrCode !== false,
+      qrTarget: data.personalInfo.qrTarget || 'linkedin',
+      customQrImage: data.personalInfo.customQrImage || null,
+      showRecruiterBadges: data.personalInfo.showRecruiterBadges === true,
+      noticePeriod: data.personalInfo.noticePeriod || 'Immediate Joiner',
+      totalExp: data.personalInfo.totalExp || '5+ Years',
+      workPreference: data.personalInfo.workPreference || 'Hybrid'
     },
+    objective: data.summary,
+    skills: data.competencies,
     experience: data.experience.map(e => ({ title: e.title, company: e.company, duration: e.duration, desc: e.desc })),
     education: data.education.map(e => ({ degree: e.degree, institution: e.institution, tenure: e.tenure })),
     projects: [],
-    training: data.certifications.map(c => ({ title: c })).filter(c => c.title),
+    training: data.certifications.map(c => ({ title: typeof c === 'string' ? c : c.name, org: c.org || '', year: c.year || '' })),
+    certifications: data.certifications,
     languagesList: data.languagesList || [],
     achievements: data.achievements || [],
     signature: data.signature,
@@ -147,6 +164,15 @@ const ExecutiveEditor = () => {
       templateEmoji="🏛" 
       onDownload={() => window.print()} 
       saveStatus={saveStatus}
+      formData={data}
+      onUpdateSkills={(newSkill) => {
+        setData(d => ({
+          ...d,
+          competencies: Array.isArray(d.competencies)
+            ? (d.competencies.some(s => s.toLowerCase() === newSkill.toLowerCase()) ? d.competencies : [...d.competencies, newSkill])
+            : [newSkill]
+        }));
+      }}
       preview={<ExecutiveLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
     >
       <SectionReorderControl
@@ -167,6 +193,9 @@ const ExecutiveEditor = () => {
         <Field label="Location" name="location" value={data.personalInfo.location} onChange={setPersonal} accent={accentColor} />
         <Field label="LinkedIn" name="linkedin" value={data.personalInfo.linkedin} onChange={setPersonal} accent={accentColor} />
       </Grid2>
+
+      {/* ─── Profile QR Code & Custom Image Upload ─── */}
+      <QrScanUploadSection personalInfo={data.personalInfo} onChange={setPersonal} accentColor={accentColor} />
 
       <SectionHeader icon="📝" title="Executive Summary" accent={accentColor} />
       <TextArea label="Summary" value={data.summary} rows={6}

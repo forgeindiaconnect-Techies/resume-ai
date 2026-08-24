@@ -117,6 +117,10 @@ const DownloadWorkflowModal = ({
       
       const isClean = selectedPlan === "no_watermark";
 
+      const resName = formData?.personalInfo?.name || formData?.name || localStorage.getItem("userName") || null;
+      if (email) localStorage.setItem("userEmail", email.trim().toLowerCase());
+      if (resName) localStorage.setItem("userName", resName);
+
       // SAVE DOWNLOAD INTO MONGODB
       const saveResponse = await fetch(
         `${API_BASE_URL}/downloads`,
@@ -130,7 +134,7 @@ const DownloadWorkflowModal = ({
             guestId: localStorage.getItem("guestId") || null,
             email: email.trim().toLowerCase(),
             resumeId: formData?.resumeId || localStorage.getItem("activeResumeSessionId") || null,
-            resumeName: formData?.personalInfo?.name || null,
+            resumeName: resName,
             downloadType: selectedPlan
           })
         }
@@ -154,7 +158,7 @@ const DownloadWorkflowModal = ({
           body: JSON.stringify({
             email: email.trim().toLowerCase(),
             resumeId: formData?.resumeId || localStorage.getItem("activeResumeSessionId") || "RESUME_001",
-            resumeName: formData?.personalInfo?.name || null,
+            resumeName: resName,
             plan: selectedPlan
           })
         }
@@ -166,19 +170,30 @@ const DownloadWorkflowModal = ({
       // 5. Track selected plan
       await trackEvent(
         isClean ? "DOWNLOAD_WITHOUT_WATERMARK" : "DOWNLOAD_WITH_WATERMARK",
-        "/builder"
+        "/builder",
+        {
+          resumeName: resName,
+          email: email.trim().toLowerCase(),
+          downloaded: true,
+          downloadType: selectedPlan
+        }
       );
 
       // 6. Generate PDF
       const filename = generateProfessionalFilename(
-        formData?.personalInfo?.name || "Resume",
+        resName || "Resume",
         formData?.department || "Professional"
       );
 
       await exportResumeToPdf(sheet, filename, isClean);
 
       // 7. Track successful download
-      await trackEvent("RESUME_DOWNLOADED", "/builder");
+      await trackEvent("RESUME_DOWNLOADED", "/builder", {
+        resumeName: resName,
+        email: email.trim().toLowerCase(),
+        downloaded: true,
+        downloadType: selectedPlan
+      });
 
       console.log("PDF DOWNLOAD COMPLETED");
 

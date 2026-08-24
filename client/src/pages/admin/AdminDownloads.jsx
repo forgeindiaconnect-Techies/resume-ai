@@ -105,7 +105,8 @@ const AdminDownloads = () => {
                   <th>Email</th>
                   <th>Download Type</th>
                   <th>Amount</th>
-                  <th>Downloaded Time</th>
+                  <th>Date</th>
+                  <th>Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,9 +121,18 @@ const AdminDownloads = () => {
                     </td>
                     <td>₹{item.amount}</td>
                     <td>
-                      {item.downloadedAt
-                        ? new Date(item.downloadedAt).toLocaleString()
-                        : "-"}
+                      <span style={{ fontWeight: 600, color: "#334155" }}>
+                        {item.downloadedAt
+                          ? new Date(item.downloadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                          : "-"}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ color: "#0284c7", fontWeight: 600 }}>
+                        {item.downloadedAt
+                          ? new Date(item.downloadedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+                          : "-"}
+                      </span>
                     </td>
                   </tr>
                 ))}

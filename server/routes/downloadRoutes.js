@@ -73,6 +73,34 @@ router.post("/", async (req, res) => {
       downloadedAt: new Date()
     });
 
+    // Also update UserSession to keep admin users/activity in sync
+    try {
+      const UserSession = require("../models/UserSession");
+      const sessionQuery = [];
+      if (sessionId) sessionQuery.push({ sessionId });
+      if (guestId) sessionQuery.push({ guestId });
+      if (email) sessionQuery.push({ email: email.trim().toLowerCase() });
+
+      if (sessionQuery.length > 0) {
+        await UserSession.updateMany(
+          { $or: sessionQuery },
+          {
+            $set: {
+              ...(resumeName ? { resumeName } : {}),
+              ...(email ? { email: email.trim().toLowerCase() } : {}),
+              downloaded: true,
+              downloadType: plan.key,
+              downloadedAt: new Date(),
+              resumeCreated: true,
+              ...(resumeId ? { resumeId } : {})
+            }
+          }
+        );
+      }
+    } catch (sessionErr) {
+      console.warn("UserSession sync warning on download:", sessionErr.message);
+    }
+
     // Also record in Payment collection for Admin Payments sync
     try {
       const Payment = require("../models/Payment");

@@ -107,13 +107,13 @@ const LandingPage = () => {
         price: 99,
         paymentStatus: 'pending',
         personalInfo: {
-          name: aiData?.personalInfo?.fullName || aiData?.name || 'Alexander Wright',
+          name: aiData?.personalInfo?.fullName || aiData?.name || 'Rohan Sharma',
           role: aiJobTitle,
-          email: 'user@forgeindiaconnect.app',
-          phone: '+1 (555) 000-0000',
-          location: 'New York, NY',
-          linkedin: 'linkedin.com/in/alexander-wright',
-          github: 'github.com/alexander-wright',
+          email: 'rohan.sharma@forgeindiaconnect.com',
+          phone: '+91 98765 43210',
+          location: 'Bengaluru, Karnataka',
+          linkedin: 'linkedin.com/in/rohansharma',
+          github: 'github.com/rohansharma',
           summary: aiData?.summary || `Dedicated and performance-driven ${aiJobTitle} with proven results and technical expertise.`
         },
         skills: {
@@ -205,9 +205,7 @@ const LandingPage = () => {
           {[
             { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
             { label: 'Features', href: '#features' },
-            { label: 'Examples', onClick: () => navigate('/industry-examples') },
-            { label: 'Pricing', href: '#pricing' },
-            { label: 'Contact', onClick: () => setShowContactModal(true) }
+            { label: 'Examples', onClick: () => navigate('/industry-examples') }
           ].map((item, idx) => (
             <span
               key={idx}
@@ -269,9 +267,9 @@ const LandingPage = () => {
       <main style={{ position: 'relative', zIndex: 10 }}>
         
         {/* Hero Section */}
-        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '6rem 2rem 4rem', textAlign: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem', marginBottom: '2.5rem' }}>
-            <p style={{ fontSize: '1.35rem', color: '#334155', fontWeight: 500, margin: 0 }}>
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 2rem 4rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', marginBottom: '2.2rem' }}>
+            <p style={{ fontSize: '1.25rem', color: '#334155', fontWeight: 500, margin: 0 }}>
               Thinking about your next career move — not sure where to start?
             </p>
             <p style={{ 
@@ -940,7 +938,7 @@ const LandingPage = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <Phone size={16} style={{ color: '#f59e0b', flexShrink: 0 }} />
                 <span style={{ color: '#f8fafc', fontWeight: 600 }}>
-                  +91 63694 06416
+                  +91 98765 43210
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>

@@ -96,7 +96,7 @@ const ExecutiveLayout = ({data, customColor, customFont,
         color: '#0f172a',
         margin: '0 0 0.35rem'
       }}>
-        {name || 'JOSHUA NELSON'}
+        {name || 'VIKRAMADITYA SINGHANIA'}
       </h1>
 
       {/* Subheader Role Title */}
@@ -107,7 +107,7 @@ const ExecutiveLayout = ({data, customColor, customFont,
         margin: '0 0 0.5rem',
         letterSpacing: '0.02em'
       }}>
-        {role || 'Project Manager | Renewable Energy | Agile | PMP'}
+        {role || 'Chief Financial Officer (CFO) | M&A & Capital Markets'}
       </h2>
 
       {/* Centered Contact Info Row */}

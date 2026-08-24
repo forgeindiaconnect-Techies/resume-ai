@@ -191,6 +191,7 @@ const CreativeEditor = () => {
       templateEmoji="🎨"
       onDownload={() => window.print()}
       saveStatus={saveStatus}
+      formData={data}
       preview={<CreativeLayout data={previewData} sections={sections} role={data.personalInfo.role} customColor={accentColor} customFont={fontFamily} />}
     >
       {/* ── Drag & Drop Section Reordering Control ── */}

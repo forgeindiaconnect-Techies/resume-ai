@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 
-const ExperienceForm = ({ experience = [], onAdd, onUpdate, onDelete, onRunAi }) => {
+const ExperienceForm = ({ experience = [], onAdd, onUpdate, onDelete, onRunAi, onOpenPolish }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -26,7 +26,7 @@ const ExperienceForm = ({ experience = [], onAdd, onUpdate, onDelete, onRunAi })
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Company</label>
               <input 
-                placeholder="Company" 
+                placeholder="e.g. Razorpay / Infosys / TCS" 
                 value={exp.company || ''} 
                 onChange={(e) => onUpdate(exp.id, 'company', e.target.value)} 
                 style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} 
@@ -35,7 +35,7 @@ const ExperienceForm = ({ experience = [], onAdd, onUpdate, onDelete, onRunAi })
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Role</label>
               <input 
-                placeholder="Role" 
+                placeholder="e.g. Senior Software Engineer" 
                 value={exp.role || ''} 
                 onChange={(e) => onUpdate(exp.id, 'role', e.target.value)} 
                 style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} 
@@ -46,7 +46,7 @@ const ExperienceForm = ({ experience = [], onAdd, onUpdate, onDelete, onRunAi })
           <div className="input-group" style={{ marginBottom: '0.75rem' }}>
             <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Duration</label>
             <input 
-              placeholder="Duration (e.g. 2023 - Present)" 
+              placeholder="e.g. 2021 - Present" 
               value={exp.duration || ''} 
               onChange={(e) => onUpdate(exp.id, 'duration', e.target.value)} 
               style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} 
@@ -57,10 +57,10 @@ const ExperienceForm = ({ experience = [], onAdd, onUpdate, onDelete, onRunAi })
             <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b' }}>Description</label>
             <button 
               type="button" 
-              onClick={() => onRunAi('AI Generate Description', exp.id)} 
-              style={{ border: 'none', background: '#eff6ff', color: '#2563eb', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '6px', cursor: 'pointer' }}
+              onClick={() => onOpenPolish ? onOpenPolish({ id: exp.id, text: exp.desc, role: exp.role, company: exp.company }) : onRunAi('AI Generate Description', exp.id)} 
+              style={{ border: 'none', background: '#faf5ff', color: '#7c3aed', fontSize: '0.72rem', fontWeight: 800, padding: '0.25rem 0.6rem', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
             >
-              ✨ AI Generate Description
+              <span>✨</span> Polish with AI
             </button>
           </div>
           <textarea 

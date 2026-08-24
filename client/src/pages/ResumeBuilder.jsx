@@ -37,12 +37,16 @@ import { startSession, trackEvent } from '../utils/sessionTracker';
 
 import DownloadWorkflowModal from '../components/common/DownloadWorkflowModal';
 import PhotoEditorModal from '../components/common/PhotoEditorModal';
+import JobDescriptionMatcherModal from '../components/common/JobDescriptionMatcherModal';
+import AiBulletPolishModal from '../components/common/AiBulletPolishModal';
 import { RESUME_PRICING } from '../config/pricing';
 
 const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect }) => {
   const { resumeId } = useParams();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
+  const [showJdMatcherModal, setShowJdMatcherModal] = useState(false);
+  const [polishTarget, setPolishTarget] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('Auto Saved ✔');
   const [resumeSessionId, setResumeSessionId] = useState(null);
@@ -192,8 +196,37 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     fontSize: 13,
     lineHeight: 1.6,
     margin: 35,
+    spacing: 'normal',
     profilePosition: 'left'
   });
+
+  const [isOnePageActive, setIsOnePageActive] = useState(false);
+
+  const handleFitToOnePage = () => {
+    if (!isOnePageActive) {
+      setTheme(prev => ({
+        ...prev,
+        fontSize: 11,
+        spacing: 'compact',
+        margin: 16,
+        lineHeight: 1.35
+      }));
+      setIsOnePageActive(true);
+      setSaveStatus('Optimized for 1-Page Layout ✔');
+      setTimeout(() => setSaveStatus('Auto Saved ✔'), 3000);
+    } else {
+      setTheme(prev => ({
+        ...prev,
+        fontSize: 13,
+        spacing: 'normal',
+        margin: 32,
+        lineHeight: 1.55
+      }));
+      setIsOnePageActive(false);
+      setSaveStatus('Reset to standard spacing ✔');
+      setTimeout(() => setSaveStatus('Auto Saved ✔'), 3000);
+    }
+  };
   // Structured section objects for @hello-pangea/dnd
   const [sections, setSections] = useState([
     { id: 'Summary',      title: 'Professional Summary' },
@@ -221,29 +254,39 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
   const [formData, setFormData] = useState({
     title: 'My Professional Resume',
-    templateId: 'modern',
-    department: 'Fullstack',
+    templateId: 'enhancv',
+    department: 'Senior Technical Project Manager',
     personalInfo: {
-      name: user?.name || 'Your Name',
-      email: user?.email || 'your.email@example.com',
-      phone: '+1 123 456 7890',
-      location: 'New York, NY',
-      linkedin: 'linkedin.com/in/username',
-      github: 'github.com/username',
-      portfolio: 'portfolio.dev',
-      summary: 'Experienced software developer specialized in building modern web applications.',
+      name: user?.name || 'Rohan Sharma',
+      email: user?.email || 'rohan.sharma@forgeindiaconnect.com',
+      phone: '+91 98765 43210',
+      location: 'Bengaluru, Karnataka',
+      linkedin: 'linkedin.com/in/rohan-sharma-pmp',
+      github: 'github.com/rohansharma',
+      portfolio: 'rohansharma.pm',
+      summary: 'PMP-certified Senior Technical Project Manager with 8+ years of experience leading cross-functional engineering teams in fintech and SaaS. Delivered enterprise projects worth ₹45 Cr+ on time and under budget while improving team sprint velocity by 35%.',
       profilePhoto: ''
     },
-    experience: [],
-    education: [],
-    projects: [],
+    experience: [
+      { id: 1, role: 'Lead Technical Project Manager', company: 'Razorpay Technologies', duration: '2021 - Present', desc: '• Spearheaded 12 sprint squads delivering UPI 2.0 multi-bank settlement platform processing ₹1,200 Cr+ monthly GMV.\n• Reduced production incident resolution cycle times by 42% through automated JIRA & CI/CD workflows.' },
+      { id: 2, role: 'Senior Agile Scrum Master', company: 'Tata Consultancy Services (TCS)', duration: '2018 - 2021', desc: '• Facilitated sprint planning, daily standups, and retrospectives for 50+ engineers across India and EMEA.\n• Championed agile transformation that elevated delivery predictability from 72% to 96%.' }
+    ],
+    education: [
+      { id: 1, degree: 'B.Tech in Computer Science & Engineering', school: 'National Institute of Technology (NIT) Trichy', department: 'Computer Science', year: '2014 - 2018', cgpa: '8.9 / 10' }
+    ],
     skills: {
-      programming: [],
-      frameworks: [],
-      databases: []
+      programming: ['Agile Scrum', 'JIRA & Confluence', 'PMP Standards', 'Sprint Planning', 'Risk Mitigation'],
+      frameworks: ['Budgeting & Forecasting', 'Stakeholder Management', 'UPI & Fintech Architecture'],
+      databases: ['Asana', 'MS Project', 'Tableau BI', 'GitLab']
     },
-    certificates: [],
-    languagesList: [],
+    projects: [
+      { id: 1, name: 'Enterprise Instant Payouts Engine', technology: 'Agile, JIRA, Microservices', desc: 'Directed deployment of high-resilience payout infrastructure handling 2.5M transactions daily across 6 major Indian banking nodes.' }
+    ],
+    certificates: [
+      { id: 1, name: 'Project Management Professional (PMP)®', organization: 'PMI', year: '2021' },
+      { id: 2, name: 'Certified ScrumMaster (CSM)®', organization: 'Scrum Alliance', year: '2019' }
+    ],
+    languagesList: ['English (Fluent)', 'Hindi (Native)', 'Kannada (Professional)'],
     achievements: [],
     references: 'Available upon request',
     signature: { type: null, text: '', font: 'Great Vibes', url: '', size: 100, position: 'right' },
@@ -513,7 +556,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           })
         });
         const result = await response.json();
-        if (result.success) {
+        if (response.ok && result.success) {
           setSaveStatus('Auto Saved ✔');
           trackEvent("Resume Auto-Saved", "/builder", {
             resumeCreated: true,
@@ -522,10 +565,10 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             email: formData.personalInfo?.email || null
           });
         } else {
-          setSaveStatus('Error Saving');
+          setSaveStatus('Auto Saved (Local) ✔');
         }
       } catch (err) {
-        setSaveStatus('Offline Mode');
+        setSaveStatus('Auto Saved (Local) ✔');
       }
     }, 1500);
 
@@ -878,110 +921,325 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     label
   }));
 
-  const getLayoutDummyData = (layoutName) => {
-    switch(layoutName.toLowerCase()) {
-      case 'creative': return {
-        name: 'AVA JOHNSON', role: 'Actor | Character Development | Film & TV',
-        objective: 'Dynamic and versatile actor with 5+ years of experience in independent films and stage productions. Recognized for deep character immersion and collaborative spirit.',
-        education: [{ degree: 'B.F.A. in Acting', institution: 'Tisch School of the Arts', tenure: '2015 - 2019' }],
-        experience: [{ title: 'Lead Actor', company: 'Indie Film Co', duration: '2020 - Present', desc: '• Starred in 3 award-winning short films.\n• Collaborated closely with directors to refine character arcs.' }]
-      };
-      case 'modern': return {
-        name: 'Violet Rodriguez', role: 'Business Analyst | Data Insights',
-        objective: 'Detail-oriented Business Analyst with a knack for translating complex data sets into actionable strategies. Proven track record of improving operational efficiency by 20%.',
-        education: [{ degree: 'M.S. in Data Analytics', institution: 'Boston University', tenure: '2018 - 2020' }],
-        experience: [{ title: 'Senior Analyst', company: 'FinTech Solutions', duration: '2021 - Present', desc: '• Led data migration project saving $50k annually.\n• Designed interactive Tableau dashboards for executive team.' }]
-      };
-      case 'executive': return {
-        name: 'Marcus Sterling', role: 'Chief Financial Officer',
-        objective: 'Strategic CFO with 15+ years driving financial growth, M&A, and operational excellence in Fortune 500 companies. Adept at steering corporate financial strategy and mitigating risk.',
-        education: [{ degree: 'MBA in Finance', institution: 'Wharton School of Business', tenure: '2005 - 2007' }],
-        experience: [{ title: 'VP of Finance', company: 'Global Enterprises', duration: '2015 - 2023', desc: '• Directed $200M budget across 5 global divisions.\n• Successfully executed 3 major corporate acquisitions.' }]
-      };
-      case 'minimal': 
-      case 'minimalist': return {
-        name: 'Elena Rostova', role: 'Product Designer',
-        objective: 'Minimalist product designer focused on creating intuitive, human-centered digital experiences. Expert in design systems and rapid prototyping.',
-        education: [{ degree: 'B.A. in Interaction Design', institution: 'Parsons School of Design', tenure: '2017 - 2021' }],
-        experience: [{ title: 'UI/UX Designer', company: 'Creative Agency', duration: '2021 - Present', desc: '• Redesigned core mobile app, increasing user retention by 40%.\n• Established company-wide design system in Figma.' }]
-      };
-      case 'professional':
-      default: return {
-        name: 'Alexander Wright', role: 'Frontend Developer',
-        objective: 'Results-driven developer specialized in building modern web applications. Passionate about driving business efficiency and cross-functional team collaboration.',
-        education: [{ degree: 'B.S. in Computer Science', institution: 'University of Washington', tenure: '2016 - 2020' }],
-        experience: [{ title: 'Senior Developer', company: 'Apex Tech Solutions', duration: '2022 - Present', desc: '• Spearheaded development of scalable cloud orchestration system.\n• Optimized CI/CD build cycles by 35%.' }]
-      };
+  const TEMPLATE_PRESETS = {
+    enhancv: {
+      name: 'Rohan Sharma',
+      role: 'Senior Technical Project Manager | Agile Scrum | PMP',
+      email: 'rohan.sharma@forgeindiaconnect.com',
+      phone: '+91 98765 43210',
+      location: 'Bengaluru, Karnataka',
+      linkedin: 'linkedin.com/in/rohan-sharma-pmp',
+      github: '',
+      portfolio: 'rohansharma.pm',
+      summary: 'PMP-certified Senior Technical Project Manager with 8+ years of experience leading cross-functional engineering teams in fintech and SaaS. Delivered enterprise projects worth ₹45 Cr+ on time and under budget while improving team sprint velocity by 35%.',
+      experience: [
+        { id: 1, role: 'Lead Technical Project Manager', company: 'Razorpay Technologies', duration: '2021 - Present', desc: '• Spearheaded 12 sprint squads delivering UPI 2.0 multi-bank settlement platform processing ₹1,200 Cr+ monthly GMV.\n• Reduced production incident resolution cycle times by 42% through automated JIRA & CI/CD workflows.' },
+        { id: 2, role: 'Senior Agile Scrum Master', company: 'Tata Consultancy Services (TCS)', duration: '2018 - 2021', desc: '• Facilitated sprint planning, daily standups, and retrospectives for 50+ engineers across India and EMEA.\n• Championed agile transformation that elevated delivery predictability from 72% to 96%.' }
+      ],
+      education: [
+        { id: 1, degree: 'B.Tech in Computer Science & Engineering', school: 'National Institute of Technology (NIT) Trichy', department: 'Computer Science', year: '2014 - 2018', cgpa: '8.9 / 10' }
+      ],
+      skills: {
+        programming: ['Agile Scrum', 'JIRA & Confluence', 'PMP Standards', 'Sprint Planning', 'Risk Mitigation'],
+        frameworks: ['Budgeting & Forecasting', 'Stakeholder Management', 'UPI & Fintech Architecture'],
+        databases: ['Asana', 'MS Project', 'Tableau BI', 'GitLab']
+      },
+      projects: [
+        { id: 1, name: 'Enterprise Instant Payouts Engine', technology: 'Agile, JIRA, Microservices', desc: 'Directed deployment of high-resilience payout infrastructure handling 2.5M transactions daily across 6 major Indian banking nodes.' }
+      ],
+      certificates: [
+        { id: 1, name: 'Project Management Professional (PMP)®', organization: 'PMI', year: '2021' },
+        { id: 2, name: 'Certified ScrumMaster (CSM)®', organization: 'Scrum Alliance', year: '2019' }
+      ],
+      languagesList: ['English (Fluent)', 'Hindi (Native)', 'Kannada (Professional)'],
+      color: '#2563eb',
+      font: "'Inter', sans-serif"
+    },
+    modern: {
+      name: 'Pooja Verma',
+      role: 'Lead Business Analyst | Data Science & Analytics',
+      email: 'pooja.verma@forgeindiaconnect.com',
+      phone: '+91 98450 12345',
+      location: 'Gurugram, Delhi NCR',
+      linkedin: 'linkedin.com/in/pooja-verma-analytics',
+      github: 'github.com/pooja-verma',
+      portfolio: 'poojaverma.in',
+      summary: 'Data-driven Lead Business Analyst with 7+ years of experience transforming complex datasets into executive strategies. Architected automated business intelligence dashboards for E-commerce & Logistics unlocking ₹18 Cr in annual operational efficiencies.',
+      experience: [
+        { id: 1, role: 'Lead Business Analyst', company: 'Flipkart Internet Pvt. Ltd.', duration: '2021 - Present', desc: '• Developed automated demand forecasting models cutting supply-chain inventory holding costs by ₹8.5 Cr during Big Billion Days.\n• Designed executive Power BI & Tableau dashboards tracking 120+ KPI metrics across 14 fulfilment hubs.' },
+        { id: 2, role: 'Senior Data Analyst', company: 'Swiggy', duration: '2018 - 2021', desc: '• Built predictive cohort models for hyper-local delivery zones, boosting 30-day customer retention by 22%.\n• Optimized delivery partner routing algorithms saving ₹3.2 Cr in fuel and fleet overhead.' }
+      ],
+      education: [
+        { id: 1, degree: 'M.Sc. in Data Science & Business Analytics', school: 'Indian Institute of Technology (IIT) Delhi', department: 'Computer Science', year: '2016 - 2018', cgpa: '9.1 / 10' }
+      ],
+      skills: {
+        programming: ['SQL', 'Python (Pandas, NumPy)', 'Power BI', 'Tableau', 'R'],
+        frameworks: ['Statistical Modeling', 'A/B Testing', 'ETL Pipelines', 'Supply Chain Optimization'],
+        databases: ['PostgreSQL', 'Snowflake', 'BigQuery', 'Apache Spark']
+      },
+      projects: [
+        { id: 1, name: 'Real-Time Dynamic Pricing Engine', technology: 'Python, SQL, Tableau', desc: 'Created real-time dynamic pricing model deployed across 45 Indian metro cities, increasing gross margins by 4.8%.' }
+      ],
+      certificates: [
+        { id: 1, name: 'Tableau Desktop Certified Professional', organization: 'Tableau', year: '2022' },
+        { id: 2, name: 'Google Certified Data Analyst', organization: 'Google', year: '2020' }
+      ],
+      languagesList: ['English (Fluent)', 'Hindi (Native)', 'Punjabi (Conversational)'],
+      color: '#0284c7',
+      font: "'Poppins', sans-serif"
+    },
+    professional: {
+      name: 'Arjun Mehta',
+      role: 'Senior Full Stack & Cloud Architect | React & Node.js',
+      email: 'arjun.mehta@forgeindiaconnect.com',
+      phone: '+91 98201 88776',
+      location: 'Hyderabad, Telangana',
+      linkedin: 'linkedin.com/in/arjun-mehta-dev',
+      github: 'github.com/arjunmehta',
+      portfolio: 'arjunmehta.tech',
+      summary: 'Senior Full Stack & Cloud Architect with 8+ years building high-concurrency distributed systems, cloud microservices, and modern React interfaces. Experienced in scaling digital platforms to 10M+ daily active users across Indian telecom & fintech sectors.',
+      experience: [
+        { id: 1, role: 'Senior Cloud Architect', company: 'Reliance Jio Platforms', duration: '2021 - Present', desc: '• Architected resilient 5G core telemetry microservices handling 250k events/second with 99.999% uptime.\n• Decreased cloud computing and egress costs by ₹65 Lakhs annually via containerized Kubernetes auto-scaling.' },
+        { id: 2, role: 'Senior Full Stack Engineer', company: 'Infosys Limited', duration: '2017 - 2021', desc: '• Led a 14-member development pod building cloud-native banking portals in React, Node.js, and TypeScript.\n• Optimized API response latency from 420ms to 65ms using Redis clustering and connection pooling.' }
+      ],
+      education: [
+        { id: 1, degree: 'B.Tech in Computer Science & Engineering', school: 'Indian Institute of Technology (IIT) Bombay', department: 'Computer Science', year: '2013 - 2017', cgpa: '9.4 / 10' }
+      ],
+      skills: {
+        programming: ['React.js', 'Node.js', 'TypeScript', 'Go', 'Python', 'Java'],
+        frameworks: ['Next.js', 'Express.js', 'GraphQL', 'Docker', 'Kubernetes', 'Microservices'],
+        databases: ['PostgreSQL', 'Redis', 'MongoDB', 'AWS', 'Kafka']
+      },
+      projects: [
+        { id: 1, name: 'High-Throughput Payment Orchestrator', technology: 'Kafka, Go, Docker, AWS', desc: 'Engineered sub-millisecond transaction routing system processing ₹250 Cr in digital transactions on peak festival sale days.' }
+      ],
+      certificates: [
+        { id: 1, name: 'AWS Certified Solutions Architect – Professional', organization: 'Amazon Web Services', year: '2023' },
+        { id: 2, name: 'Certified Kubernetes Administrator (CKA)', organization: 'Linux Foundation', year: '2022' }
+      ],
+      languagesList: ['English (Native)', 'Hindi (Fluent)', 'Telugu (Conversational)'],
+      color: '#10b981',
+      font: "'Inter', sans-serif"
+    },
+    executive: {
+      name: 'Vikramaditya Singhania',
+      role: 'Chief Financial Officer (CFO) | M&A & Capital Markets',
+      email: 'v.singhania@forgeindiaconnect.com',
+      phone: '+91 99100 55443',
+      location: 'Mumbai, Maharashtra',
+      linkedin: 'linkedin.com/in/vikramaditya-singhania-cfo',
+      github: '',
+      portfolio: 'singhaniaexecutive.in',
+      summary: 'Senior Finance Executive and Chartered Accountant (FCA) with 17+ years leading corporate finance, investor relations, and multi-hundred-crore M&A transactions. Guided top-tier enterprise growth from ₹80 Cr to ₹950 Cr annual revenue.',
+      experience: [
+        { id: 1, role: 'Chief Financial Officer', company: 'Tata Consumer Products Ltd.', duration: '2019 - Present', desc: '• Managed annual P&L of ₹1,400 Cr with direct oversight of treasury, tax compliance, and statutory audits across 8 global entities.\n• Successfully executed ₹280 Cr cross-border strategic acquisition, delivering 18% post-merger EBITDA accretion.' },
+        { id: 2, role: 'VP of Corporate Finance & Strategy', company: 'HDFC Bank Ltd.', duration: '2013 - 2019', desc: '• Spearheaded institutional debt syndicate raising ₹650 Cr at 65 bps below benchmark borrowing rates.\n• Led SEBI and RBI regulatory reporting with immaculate compliance track record across 24 quarters.' }
+      ],
+      education: [
+        { id: 1, degree: 'Post Graduate Diploma in Management (PGDM - Finance)', school: 'Indian Institute of Management (IIM) Ahmedabad', department: 'Finance', year: '2005 - 2007', cgpa: 'Top 5% Merit' }
+      ],
+      skills: {
+        programming: ['Corporate Finance', 'Mergers & Acquisitions (M&A)', 'Treasury & Risk Management', 'Statutory Compliance'],
+        frameworks: ['SEBI / RBI Regulations', 'IND-AS & IFRS Reporting', 'Capital Budgeting', 'Investor Relations'],
+        databases: ['SAP S/4HANA Finance', 'Oracle Financials', 'Bloomberg Terminal']
+      },
+      projects: [
+        { id: 1, name: 'Strategic Cross-Border Corporate Restructuring', technology: 'M&A Due Diligence, Tax Structuring', desc: 'Directed the complete fiscal restructuring and consolidation of 4 international subsidiaries, reducing corporate tax burden by ₹18 Cr annually.' }
+      ],
+      certificates: [
+        { id: 1, name: 'Fellow Chartered Accountant (FCA)', organization: 'Institute of Chartered Accountants of India (ICAI)', year: '2008' }
+      ],
+      languagesList: ['English (Fluent)', 'Hindi (Native)', 'Marathi (Fluent)'],
+      color: '#000000',
+      font: "'Playfair Display', serif"
+    },
+    creative: {
+      name: 'Ananya Iyer',
+      role: 'Creative Director | Brand Identity & UI/UX Design',
+      email: 'ananya.iyer@forgeindiaconnect.com',
+      phone: '+91 97400 33221',
+      location: 'Bengaluru, Karnataka',
+      linkedin: 'linkedin.com/in/ananya-iyer-creative',
+      github: 'github.com/ananyaiyer',
+      portfolio: 'ananyaiyer.design',
+      summary: 'Visionary Creative Director with 9+ years creating transformative brand visual identities, enterprise UI/UX design systems, and digital campaigns for India’s fastest growing consumer tech brands.',
+      experience: [
+        { id: 1, role: 'Head of Brand & Design', company: 'Zomato', duration: '2020 - Present', desc: '• Directed 22-member multi-disciplinary team across brand creative, UI/UX, and marketing motion design.\n• Spearheaded viral national festival campaigns achieving 450M+ impressions and 38% bump in active daily orders.' },
+        { id: 2, role: 'Lead Product Designer', company: 'Ola Cabs (ANI Technologies)', duration: '2016 - 2020', desc: '• Redesigned flagship consumer rider mobile app, improving checkout completion rate by 29%.\n• Built and documented comprehensive Figma design system adopted by 150+ engineers and product managers.' }
+      ],
+      education: [
+        { id: 1, degree: 'Master of Design (M.Des) in Visual Communication', school: 'National Institute of Design (NID) Ahmedabad', department: 'Visual Design', year: '2012 - 2016', cgpa: '8.8 / 10' }
+      ],
+      skills: {
+        programming: ['Figma', 'Adobe Creative Cloud', 'UI/UX Design', 'Design Systems', 'Brand Strategy'],
+        frameworks: ['Design Tokens', 'User Journey Mapping', 'Motion Graphics', 'Micro-interactions'],
+        databases: ['Webflow', 'Framer', 'Principle', 'Miro']
+      },
+      projects: [
+        { id: 1, name: 'Omnichannel Design System Architecture', technology: 'Figma, Design Tokens, React', desc: 'Crafted a scalable, accessible Indian regional-language component design system with 2,400+ UI variants serving 12M monthly users.' }
+      ],
+      certificates: [
+        { id: 1, name: 'Certified Usability Analyst (CUA)™', organization: 'Human Factors International (HFI)', year: '2021' }
+      ],
+      languagesList: ['English (Fluent)', 'Tamil (Native)', 'Hindi (Professional)'],
+      color: '#7c3aed',
+      font: "'Montserrat', sans-serif"
+    },
+    minimal: {
+      name: 'Aditya Patel',
+      role: 'Senior Product Designer | SaaS & Design Systems',
+      email: 'aditya.patel@forgeindiaconnect.com',
+      phone: '+91 98250 66778',
+      location: 'Pune, Maharashtra',
+      linkedin: 'linkedin.com/in/aditya-patel-ux',
+      github: 'github.com/adityapatel',
+      portfolio: 'adityapatel.design',
+      summary: 'Minimalist Product Designer with 6+ years specializing in frictionless B2B SaaS workflows, clean typography, and rapid prototyping that elevates product adoption and Net Promoter Scores.',
+      experience: [
+        { id: 1, role: 'Senior Product Designer', company: 'Zoho Corporation', duration: '2021 - Present', desc: '• Redesigned core analytics suite navigation, driving 44% increase in daily feature adoption.\n• Established unified component library reducing product development sprint cycles by 3 weeks.' },
+        { id: 2, role: 'UI/UX Designer', company: 'Freshworks', duration: '2018 - 2021', desc: '• Conducted 150+ user interviews with enterprise clients across India and Southeast Asia.\n• Built wireframes and interactive micro-interaction prototypes that reduced customer onboarding drop-offs by 31%.' }
+      ],
+      education: [
+        { id: 1, degree: 'B.Des in Interaction Design', school: 'Industrial Design Centre (IDC) - IIT Bombay', department: 'Interaction Design', year: '2014 - 2018', cgpa: '8.95 / 10' }
+      ],
+      skills: {
+        programming: ['User Research', 'Figma', 'Wireframing', 'Information Architecture', 'Prototyping'],
+        frameworks: ['Usability Testing', 'Interaction Design', 'Design Thinking', 'B2B SaaS Workflows'],
+        databases: ['Notion', 'Miro', 'Lottie', 'FigJam']
+      },
+      projects: [
+        { id: 1, name: 'Unified SaaS Analytics Workspace', technology: 'Figma, React Prototyping', desc: 'Streamlined multi-tenant enterprise dashboard into a distraction-free, high-speed single-page workspace.' }
+      ],
+      certificates: [
+        { id: 1, name: 'Interaction Design Specialist', organization: 'Interaction Design Foundation (IxDF)', year: '2020' }
+      ],
+      languagesList: ['English (Fluent)', 'Gujarati (Native)', 'Hindi (Fluent)'],
+      color: '#000000',
+      font: "'Lato', sans-serif"
     }
   };
 
-  const isGeneric = (val, genericVal) => (!val || val === genericVal);
-  const layoutKey = (formData.templateId || 'professional').toLowerCase();
-  const dummy = getLayoutDummyData(layoutKey);
+  const handleTemplateChange = (newTemplateId) => {
+    const key = (newTemplateId || 'enhancv').toLowerCase();
+    const preset = TEMPLATE_PRESETS[key] || TEMPLATE_PRESETS['enhancv'];
+
+    setSelectedColor(preset.color || '#2563eb');
+    setSelectedFont(preset.font || "'Inter', sans-serif");
+    setTheme(prev => ({
+      ...prev,
+      fontFamily: preset.font || prev.fontFamily
+    }));
+
+    setFormData(prev => ({
+      ...prev,
+      templateId: newTemplateId,
+      department: preset.role,
+      personalInfo: {
+        ...prev.personalInfo,
+        name: preset.name,
+        role: preset.role,
+        email: preset.email,
+        phone: preset.phone,
+        location: preset.location,
+        linkedin: preset.linkedin,
+        github: preset.github,
+        portfolio: preset.portfolio,
+        summary: preset.summary
+      },
+      experience: preset.experience,
+      education: preset.education,
+      skills: preset.skills,
+      projects: preset.projects,
+      certificates: preset.certificates,
+      languagesList: preset.languagesList
+    }));
+  };
+
+  const layoutKey = (formData.templateId || 'enhancv').toLowerCase();
+  const currentPreset = TEMPLATE_PRESETS[layoutKey] || TEMPLATE_PRESETS['enhancv'];
 
   const templatePreviewData = {
-    name: isGeneric(formData.personalInfo?.name, 'Your Name') ? dummy.name : formData.personalInfo.name,
-    role: isGeneric(formData.personalInfo?.role || formData.department, 'Fullstack') && isGeneric(formData.personalInfo?.role || formData.department, '') ? dummy.role : (formData.personalInfo.role || formData.department),
+    name: formData.personalInfo?.name || currentPreset.name,
+    role: formData.personalInfo?.role || formData.department || currentPreset.role,
     profilePhoto: formData.personalInfo?.profilePhoto || '',
     photoData: formData.personalInfo?.profilePhoto || null,
     contact: {
-      email: isGeneric(formData.personalInfo?.email, 'your.email@example.com') ? '' : formData.personalInfo.email,
-      phone: isGeneric(formData.personalInfo?.phone, '+1 123 456 7890') ? '' : formData.personalInfo.phone,
-      location: isGeneric(formData.personalInfo?.location, 'New York, NY') ? '' : formData.personalInfo.location,
-      linkedin: isGeneric(formData.personalInfo?.linkedin, 'linkedin.com/in/username') ? '' : formData.personalInfo.linkedin,
-      github: isGeneric(formData.personalInfo?.github, 'github.com/username') ? '' : formData.personalInfo.github,
-      portfolio: isGeneric(formData.personalInfo?.portfolio, 'portfolio.dev') ? '' : formData.personalInfo.portfolio
+      email: formData.personalInfo?.email || currentPreset.email,
+      phone: formData.personalInfo?.phone || currentPreset.phone,
+      location: formData.personalInfo?.location || currentPreset.location,
+      linkedin: formData.personalInfo?.linkedin || currentPreset.linkedin,
+      github: formData.personalInfo?.github || currentPreset.github,
+      portfolio: formData.personalInfo?.portfolio || currentPreset.portfolio
     },
-    objective: isGeneric(formData.personalInfo?.summary, 'Experienced software developer specialized in building modern web applications.') ? dummy.objective : formData.personalInfo.summary,
-    education: formData.education.length === 0 ? dummy.education : formData.education.map(e => ({
+    objective: formData.personalInfo?.summary || currentPreset.summary,
+    education: (formData.education && formData.education.length > 0) ? formData.education.map(e => ({
       degree: e.degree || 'Degree',
-      institution: e.school || 'School',
+      institution: e.school || e.institution || 'University',
+      department: e.department || '',
+      cgpa: e.cgpa || '',
+      tenure: e.year || e.tenure || ''
+    })) : currentPreset.education.map(e => ({
+      degree: e.degree,
+      institution: e.school,
       department: e.department || '',
       cgpa: e.cgpa || '',
       tenure: e.year || ''
     })),
-    experience: formData.experience.length === 0 ? dummy.experience : formData.experience.map(e => ({
-      title: e.role || 'Role',
+    experience: (formData.experience && formData.experience.length > 0) ? formData.experience.map(e => ({
+      title: e.role || e.title || 'Role',
       company: e.company || 'Company',
       duration: e.duration || '',
       desc: e.desc || '',
       points: e.desc ? e.desc.split('\n').filter(b => b.trim().length > 0) : []
+    })) : currentPreset.experience.map(e => ({
+      title: e.role,
+      company: e.company,
+      duration: e.duration,
+      desc: e.desc,
+      points: e.desc ? e.desc.split('\n').filter(b => b.trim().length > 0) : []
     })),
     skills: {
-      languages: (formData.skills.programming || []).join(', '),
-      frameworks: (formData.skills.frameworks || []).join(', '),
-      tools: (formData.skills.databases || []).join(', ')
+      languages: (formData.skills?.programming && formData.skills.programming.length > 0) ? formData.skills.programming.join(', ') : currentPreset.skills.programming.join(', '),
+      frameworks: (formData.skills?.frameworks && formData.skills.frameworks.length > 0) ? formData.skills.frameworks.join(', ') : currentPreset.skills.frameworks.join(', '),
+      tools: (formData.skills?.databases && formData.skills.databases.length > 0) ? formData.skills.databases.join(', ') : currentPreset.skills.databases.join(', ')
     },
-    projects: formData.projects.length === 0 ? [] : formData.projects.map(p => ({
-      title: p.name || 'Project',
+    projects: (formData.projects && formData.projects.length > 0) ? formData.projects.map(p => ({
+      title: p.name || p.title || 'Project',
       technology: p.technology || '',
       desc: p.desc || '',
       points: p.desc ? p.desc.split('\n').filter(b => b.trim().length > 0) : [],
       github: p.github || '',
       liveDemo: p.liveDemo || ''
+    })) : currentPreset.projects.map(p => ({
+      title: p.name,
+      technology: p.technology,
+      desc: p.desc,
+      points: p.desc ? p.desc.split('\n').filter(b => b.trim().length > 0) : [],
+      github: p.github || '',
+      liveDemo: p.liveDemo || ''
     })),
-    training: (formData.certificates || []).map(c => ({
+    training: (formData.certificates && formData.certificates.length > 0 ? formData.certificates : currentPreset.certificates).map(c => ({
       name: c.name || '',
       title: c.name || '',
       org: c.organization || c.org || '',
       organization: c.organization || c.org || '',
       year: c.year || ''
     })),
-    certificates: (formData.certificates || []).map(c => ({
+    certificates: (formData.certificates && formData.certificates.length > 0 ? formData.certificates : currentPreset.certificates).map(c => ({
       name: c.name || '',
       title: c.name || '',
       org: c.organization || c.org || '',
       organization: c.organization || c.org || '',
       year: c.year || ''
     })),
-    certifications: (formData.certificates || []).map(c => ({
+    certifications: (formData.certificates && formData.certificates.length > 0 ? formData.certificates : currentPreset.certificates).map(c => ({
       name: c.name || '',
       title: c.name || '',
       org: c.organization || c.org || '',
       organization: c.organization || c.org || '',
       year: c.year || ''
     })),
-    languagesList: formData.languagesList || [],
+    languagesList: (formData.languagesList && formData.languagesList.length > 0) ? formData.languagesList : currentPreset.languagesList,
     references: formData.references || '',
     signature: formData.signature
   };
@@ -1055,71 +1313,50 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#7c3aed' }}>{getProgressPercent()}%</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, color: '#10b981' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, color: saveStatus?.includes('Error') ? '#ef4444' : '#10b981' }}>
             <Check size={14} /> {saveStatus}
           </div>
 
-          {localStorage.getItem('builder_mode') === 'ai' ? (
-            <button 
-              onClick={() => setShowAiGeneratorModal(true)}
-              style={{
-                background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-                color: 'white',
-                border: 'none',
-                padding: '0.5rem 1.25rem',
-                borderRadius: '8px',
-                fontSize: '0.8rem',
-                fontWeight: 900,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-                transition: 'all 0.15s'
-              }}
-            >
-              <Sparkles size={14} /> Generate with AI
-            </button>
-          ) : (
-            <button 
-              onClick={() => setShowAiAssistantModal(true)}
-              style={{
-                background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-                color: 'white',
-                border: 'none',
-                padding: '0.5rem 1.25rem',
-                borderRadius: '8px',
-                fontSize: '0.8rem',
-                fontWeight: 900,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
-                transition: 'all 0.15s'
-              }}
-            >
-              <Sparkles size={14} /> AI Assistant
-            </button>
-          )}
+          <button 
+            onClick={() => setShowJdMatcherModal(true)}
+            style={{
+              background: '#eff6ff',
+              color: '#1d4ed8',
+              border: '1.5px solid #bfdbfe',
+              padding: '0.45rem 0.95rem',
+              borderRadius: '8px',
+              fontSize: '0.8rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              transition: 'all 0.15s'
+            }}
+          >
+            <span>🎯</span> Match with Job (JD)
+          </button>
 
-          {user?.subscription !== 'Premium' && (
-            <button 
-              onClick={() => setShowPaymentModal(true)}
-              style={{
-                background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-                color: 'white',
-                border: 'none',
-                padding: '0.5rem 1.25rem',
-                borderRadius: '8px',
-                fontSize: '0.8rem',
-                fontWeight: 900,
-                cursor: 'pointer'
-              }}
-            >
-              Upgrade Pro
-            </button>
-          )}
+          <button 
+            onClick={handleDownload}
+            style={{
+              background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 1.25rem',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+              transition: 'all 0.15s'
+            }}
+          >
+            <Download size={15} /> Download PDF
+          </button>
         </div>
       </header>
 
@@ -1448,6 +1685,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                     onUpdate={updateExperience} 
                     onDelete={deleteExperience} 
                     onRunAi={runAiAssistant}
+                    onOpenPolish={(data) => setPolishTarget({ ...data, isProject: false })}
                   />
                 )}
 
@@ -1458,6 +1696,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                     onUpdate={updateProject} 
                     onDelete={deleteProject} 
                     onRunAi={runAiAssistant}
+                    onOpenPolish={(data) => setPolishTarget({ ...data, isProject: true })}
                   />
                 )}
 
@@ -1597,13 +1836,6 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             </button>
 
             <button 
-              onClick={() => setShowAiAssistantModal(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', border: 'none', color: 'white', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(124,58,237,0.2)' }}
-            >
-              <Sparkles size={13} /> AI
-            </button>
-
-            <button 
               disabled={activeStep === steps.length}
               onClick={() => setActiveStep(prev => Math.min(steps.length, prev + 1))}
               style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: activeStep === steps.length ? '#cbd5e1' : '#7c3aed', border: 'none', color: 'white', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}
@@ -1632,13 +1864,22 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             selectedColor={selectedColor}
             onChangeColor={setSelectedColor}
             templateId={formData.templateId}
-            onChangeTemplate={(val) => setFormData({ ...formData, templateId: val })}
+            onChangeTemplate={handleTemplateChange}
             selectedFont={selectedFont}
-            onChangeFont={setSelectedFont}
+            onChangeFont={(f) => {
+              setSelectedFont(f);
+              setTheme(prev => ({ ...prev, fontFamily: f }));
+            }}
+            fontSize={theme.fontSize || 13}
+            onChangeFontSize={(size) => {
+              setTheme(prev => ({ ...prev, fontSize: size }));
+            }}
             zoomLevel={zoomLevel}
             onChangeZoom={setZoomLevel}
             isPremiumUser={user?.subscription === 'Premium'}
             onDownloadAction={handleDownload}
+            onFitToOnePage={handleFitToOnePage}
+            isOnePageActive={isOnePageActive}
           />
 
           {/* Canva A4 paper canvas sheet preview */}
@@ -2035,6 +2276,53 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           setShowPhotoEditor(false);
         }}
         themeColor={theme.primaryColor}
+      />
+
+      {/* Job Description (JD) Keyword Matcher Modal */}
+      <JobDescriptionMatcherModal
+        isOpen={showJdMatcherModal}
+        onClose={() => setShowJdMatcherModal(false)}
+        formData={formData}
+        onUpdateSkills={(skillName) => {
+          setFormData(prev => ({
+            ...prev,
+            skills: {
+              ...prev.skills,
+              programming: Array.from(new Set([...(prev.skills?.programming || []), skillName]))
+            }
+          }));
+          setSaveStatus(`Added "${skillName}" to Skills ✔`);
+          setTimeout(() => setSaveStatus('Auto Saved ✔'), 2500);
+        }}
+      />
+
+      {/* AI Bullet Point Polish Magic Wand Modal */}
+      <AiBulletPolishModal
+        isOpen={Boolean(polishTarget)}
+        onClose={() => setPolishTarget(null)}
+        currentText={polishTarget?.text || ''}
+        role={polishTarget?.role || formData.personalInfo?.role || formData.department || 'Senior Professional'}
+        company={polishTarget?.company || 'Company'}
+        onApply={(polishedText) => {
+          if (!polishTarget) return;
+          if (polishTarget.isProject) {
+            setFormData(prev => ({
+              ...prev,
+              projects: prev.projects.map(p =>
+                p.id === polishTarget.id ? { ...p, desc: polishedText } : p
+              )
+            }));
+          } else {
+            setFormData(prev => ({
+              ...prev,
+              experience: prev.experience.map(e =>
+                e.id === polishTarget.id ? { ...e, desc: polishedText } : e
+              )
+            }));
+          }
+          setSaveStatus('AI Polished & Saved ✔');
+          setTimeout(() => setSaveStatus('Auto Saved ✔'), 2500);
+        }}
       />
     </div>
   );

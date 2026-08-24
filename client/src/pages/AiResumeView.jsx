@@ -64,14 +64,14 @@ const AiResumeView = () => {
 
   // Format data for layout components
   const layoutData = {
-    name: sessionData.personalInfo?.name || sessionData.personalInfo?.fullName || 'Alexander Wright',
-    role: sessionData.personalInfo?.role || sessionData.department || 'Professional',
+    name: sessionData.personalInfo?.name || sessionData.personalInfo?.fullName || 'Rohan Sharma',
+    role: sessionData.personalInfo?.role || sessionData.department || 'Senior Technical Project Manager',
     contact: {
-      email: sessionData.personalInfo?.email || 'user@forgeindiaconnect.app',
-      phone: sessionData.personalInfo?.phone || '+1 (555) 000-0000',
-      location: sessionData.personalInfo?.location || 'New York, NY',
-      linkedin: sessionData.personalInfo?.linkedin || '',
-      github: sessionData.personalInfo?.github || ''
+      email: sessionData.personalInfo?.email || 'rohan.sharma@forgeindiaconnect.com',
+      phone: sessionData.personalInfo?.phone || '+91 98765 43210',
+      location: sessionData.personalInfo?.location || 'Bengaluru, Karnataka',
+      linkedin: sessionData.personalInfo?.linkedin || 'linkedin.com/in/rohansharma',
+      github: sessionData.personalInfo?.github || 'github.com/rohansharma'
     },
     objective: sessionData.personalInfo?.summary || sessionData.summary || `Dedicated ${sessionData.department} with proven results.`,
     skills: {

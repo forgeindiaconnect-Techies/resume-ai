@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, IndianRupee, Download, FileText } from "lucide-react";
+import { Users, IndianRupee, Download, FileText, RefreshCw, Trash2 } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { API_BASE_URL } from "../../config/api";
@@ -12,14 +12,70 @@ const AdminDashboard = () => {
     totalResumes: 0,
     totalDownloads: 0,
     totalRevenue: 0,
+    activeUsersCount: 0,
     withWatermarkCount: 0,
     withoutWatermarkCount: 0
   });
   const [loading, setLoading] = useState(true);
+  const [clearing, setClearing] = useState(false);
+
+  const handleClearAllData = async () => {
+    if (!window.confirm("⚠️ Are you sure you want to clear ALL platform data (users, activity, payments, downloads, and resumes)?\n\nThis will reset all dashboard metrics to 0 while keeping your templates and admin access intact.")) {
+      return;
+    }
+    try {
+      setClearing(true);
+      const token = localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      try {
+        await fetch(`${API_BASE_URL}/admin/clear-all-data`, {
+          method: "POST",
+          headers: { ...headers, Accept: "application/json" }
+        });
+      } catch (e) {}
+
+      try {
+        await fetch(`${API_BASE_URL}/admin/clear-dummy-data`, { headers });
+      } catch (e) {}
+
+      try {
+        await fetch(`${API_BASE_URL}/payments/clear`, { method: "DELETE", headers });
+      } catch (e) {}
+
+      try {
+        await fetch(`${API_BASE_URL}/user-sessions/clear-test-data`, { method: "DELETE", headers });
+      } catch (e) {}
+
+      setDashboardStats({
+        totalUsers: 0,
+        totalResumes: 0,
+        totalDownloads: 0,
+        totalRevenue: 0,
+        activeUsersCount: 0,
+        withWatermarkCount: 0,
+        withoutWatermarkCount: 0
+      });
+
+      setTimeout(() => {
+        fetchDashboardStats(false);
+      }, 600);
+
+      alert("✅ All platform data (users, payments, downloads, and activity) has been cleared successfully!");
+    } catch (e) {
+      console.error("Failed to clear data:", e);
+      alert("Failed to clear data: " + e.message);
+    } finally {
+      setClearing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDashboardStats = async () => {
+    const fetchDashboardStats = async (showLoader = false) => {
       try {
+        if (showLoader) {
+          setLoading(true);
+        }
         const token = localStorage.getItem("adminToken");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -44,31 +100,35 @@ const AdminDashboard = () => {
           )
         );
 
-        const totalUsers = Math.max(uniqueUsers.size, downloads.length);
+        const totalUsers = uniqueUsers.size;
 
-        const totalResumes = Math.max(
-          sessions.filter(
-            item =>
-              item.resumeCreated === true ||
-              (item.resumeName && item.resumeName !== "Your Name" && item.resumeName !== "Guest") ||
-              item.downloaded === true
-          ).length,
-          downloads.length
-        );
+        const totalResumes = sessions.filter(
+          item => item.resumeCreated === true
+        ).length;
 
         const totalDownloads = downloads.length;
 
         const totalRevenue = downloads.reduce(
-          (sum, item) => sum + Number(item.amount || 0),
+          (sum, item) => sum + (Number(item.amount) || 0),
           0
         );
 
+        const activeUsersCount = sessions.filter(item => {
+          if (item.status === "exited" || item.exitTime) return false;
+          const lastActive = new Date(item.lastActiveTime || item.entryTime || Date.now());
+          return Date.now() - lastActive.getTime() < 5 * 60 * 1000;
+        }).length;
+
         const withWatermarkCount = downloads.filter(
-          item => item.downloadType === "watermarked"
+          item =>
+            item.downloadType === "watermarked" ||
+            item.downloadType === "with_watermark"
         ).length;
 
         const withoutWatermarkCount = downloads.filter(
-          item => item.downloadType === "no_watermark"
+          item =>
+            item.downloadType === "no_watermark" ||
+            item.downloadType === "without_watermark"
         ).length;
 
         setDashboardStats({
@@ -76,27 +136,23 @@ const AdminDashboard = () => {
           totalResumes,
           totalDownloads,
           totalRevenue,
+          activeUsersCount,
           withWatermarkCount,
           withoutWatermarkCount
-        });
-
-        console.log("DASHBOARD DATA:", {
-          totalUsers,
-          totalResumes,
-          totalDownloads,
-          totalRevenue
         });
 
       } catch (error) {
         console.error("Dashboard stats error:", error);
       } finally {
-        setLoading(false);
+        if (showLoader) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchDashboardStats();
+    fetchDashboardStats(true);
 
-    const interval = setInterval(fetchDashboardStats, 5000);
+    const interval = setInterval(() => fetchDashboardStats(false), 15000);
 
     return () => clearInterval(interval);
   }, []);
@@ -109,10 +165,50 @@ const AdminDashboard = () => {
         <main className="admin-content">
           <div className="admin-page">
             {/* Header */}
-            <div className="admin-page-title">
+            <div className="admin-page-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <h2>Dashboard</h2>
                 <p>Welcome back, Admin. Here's your resume builder overview.</p>
+              </div>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <button
+                  onClick={() => fetchDashboardStats(true)}
+                  style={{
+                    padding: "8px 14px",
+                    background: "#0284c7",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.85rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  <RefreshCw size={14} /> Refresh
+                </button>
+                <button
+                  onClick={handleClearAllData}
+                  disabled={clearing}
+                  style={{
+                    padding: "8px 14px",
+                    background: "#ef4444",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: clearing ? "not-allowed" : "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.85rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    opacity: clearing ? 0.7 : 1
+                  }}
+                >
+                  <Trash2 size={14} /> {clearing ? "Clearing..." : "Clear All Data"}
+                </button>
               </div>
             </div>
 

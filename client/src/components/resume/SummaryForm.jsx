@@ -14,20 +14,29 @@ const SummaryForm = ({ summary, onChange, onRunAi }) => {
         style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', outline: 'none', resize: 'none', fontSize: '0.9rem' }}
       />
       
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div>
         <button 
           type="button" 
-          onClick={() => onRunAi('AI Generate Summary')} 
-          style={{ border: 'none', background: '#eff6ff', color: '#2563eb', padding: '0.55rem 1rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', flex: 1 }}
+          onClick={() => onRunAi(summary ? 'AI Improve Summary' : 'AI Generate Summary')} 
+          style={{ 
+            width: '100%',
+            border: 'none', 
+            background: 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)', 
+            color: '#7c3aed', 
+            padding: '0.65rem 1rem', 
+            borderRadius: '8px', 
+            fontWeight: 800, 
+            fontSize: '0.85rem', 
+            cursor: 'pointer',
+            border: '1px solid #ddd6fe',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.4rem',
+            transition: 'all 0.15s'
+          }}
         >
-          ✨ AI Generate Summary
-        </button>
-        <button 
-          type="button" 
-          onClick={() => onRunAi('AI Improve Summary')} 
-          style={{ border: 'none', background: '#f5f3ff', color: '#7c3aed', padding: '0.55rem 1rem', borderRadius: '8px', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer', flex: 1 }}
-        >
-          ✨ AI Improve Summary
+          ✨ {summary ? 'AI Enhance Summary' : 'AI Generate Summary'}
         </button>
       </div>
     </div>

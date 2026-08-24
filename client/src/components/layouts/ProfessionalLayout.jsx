@@ -1,6 +1,8 @@
 import React from 'react';
 
 import SignatureBlock from '../common/SignatureBlock';
+import ResumeQRCode from '../common/ResumeQRCode';
+import RecruiterBadges from '../common/RecruiterBadges';
 
 const ProfessionalLayout = ({data, customColor, customFont,
   fontSize,
@@ -31,17 +33,19 @@ const ProfessionalLayout = ({data, customColor, customFont,
 
   const getSkillsCategorized = () => {
     const parseStr = (str) => str ? str.split(/·|•|-|,/).map(s => s.trim()).filter(Boolean) : [];
-    if (typeof skills === 'object' && !Array.isArray(skills)) {
+    if (typeof skills === 'object' && !Array.isArray(skills) && skills !== null) {
+      const isCat = Boolean((skills.languages && skills.frameworks) || (skills.programming && skills.frameworks));
       return {
-        languages: parseStr(skills.languages),
+        isCategorized: isCat,
+        languages: parseStr(skills.languages || skills.programming),
         frameworks: parseStr(skills.frameworks),
-        tools: parseStr(skills.tools)
+        tools: parseStr(skills.tools || skills.databases)
       };
     }
     let arr = [];
     if (Array.isArray(skills)) arr = skills;
     else if (typeof skills === 'string') arr = parseStr(skills);
-    return { languages: arr, frameworks: [], tools: [] };
+    return { isCategorized: false, languages: arr, frameworks: [], tools: [] };
   };
 
   const skillsCat = getSkillsCategorized();
@@ -101,8 +105,27 @@ const ProfessionalLayout = ({data, customColor, customFont,
               margin: '0 0 0.35rem',
               lineHeight: lineH
             }}>
-              {name || 'CARLOS MENDOZA'}
+              {name || 'ARJUN MEHTA'}
             </h1>
+            {data?.showQrCode !== false && (
+              <ResumeQRCode 
+                url={
+                  contact.customQrImage || data.customQrImage || 
+                  (contact.qrTarget === 'github' ? (contact.github || contact.linkedin) :
+                   contact.qrTarget === 'portfolio' ? (contact.portfolio || contact.linkedin) :
+                   (contact.linkedin || contact.portfolio || contact.github || 'linkedin.com'))
+                }
+                customQrImage={contact.customQrImage || data.customQrImage}
+                label={
+                  (contact.customQrImage || data.customQrImage) ? 'Scan Profile' :
+                  contact.qrTarget === 'github' ? 'Scan GitHub' :
+                  contact.qrTarget === 'portfolio' ? 'Scan Portfolio' : 
+                  'Scan LinkedIn'
+                }
+                size={44}
+                variant="sidebar"
+              />
+            )}
           </div>
 
           {(customSections || [
@@ -198,28 +221,47 @@ const ProfessionalLayout = ({data, customColor, customFont,
                       {titleStr}
                     </h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                      {skillsCat.languages.length > 0 && (
-                        <div>
-                          <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Programming Languages</div>
-                          <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
-                            {skillsCat.languages.join(' • ')}
-                          </div>
-                        </div>
-                      )}
-                      {skillsCat.frameworks.length > 0 && (
-                        <div>
-                          <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
-                          <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
-                            {skillsCat.frameworks.join(' • ')}
-                          </div>
-                        </div>
-                      )}
-                      {skillsCat.tools.length > 0 && (
-                        <div>
-                          <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Databases & Tools</div>
-                          <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
-                            {skillsCat.tools.join(' • ')}
-                          </div>
+                      {skillsCat.isCategorized ? (
+                        <>
+                          {skillsCat.languages.length > 0 && (
+                            <div>
+                              <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Programming Languages</div>
+                              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
+                                {skillsCat.languages.join(' • ')}
+                              </div>
+                            </div>
+                          )}
+                          {skillsCat.frameworks.length > 0 && (
+                            <div>
+                              <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
+                              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
+                                {skillsCat.frameworks.join(' • ')}
+                              </div>
+                            </div>
+                          )}
+                          {skillsCat.tools.length > 0 && (
+                            <div>
+                              <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#86efac', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Databases & Tools</div>
+                              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', lineHeight: lineH, fontWeight: 500 }}>
+                                {skillsCat.tools.join(' • ')}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                          {skillsCat.languages.map((sk, idx) => (
+                            <span key={idx} style={{
+                              background: 'rgba(255,255,255,0.12)',
+                              color: '#ffffff',
+                              padding: '0.2rem 0.5rem',
+                              borderRadius: '4px',
+                              fontSize: `${0.75 * fScale}rem`,
+                              fontWeight: 600
+                            }}>
+                              {sk}
+                            </span>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -293,10 +335,23 @@ const ProfessionalLayout = ({data, customColor, customFont,
               fontSize: `${1.05 * fScale}rem`,
               fontWeight: 800,
               color: '#047857',
-              margin: '0 0 0.4rem'
+              margin: '0 0 0.25rem'
             }}>
-              {role || 'Senior Mechanical Engineer | Automotive & Manufacturing'}
+              {role || 'Senior Cloud Architect & DevOps Lead'}
             </h2>
+
+            {/* Optional Recruiter Quick-Info Badges */}
+            {(data?.showRecruiterBadges || contact?.showRecruiterBadges) && (
+              <div style={{ marginBottom: '0.4rem' }}>
+                <RecruiterBadges 
+                  noticePeriod={data.noticePeriod || contact.noticePeriod || 'Immediate Joiner'}
+                  totalExp={data.totalExp || contact.totalExp || '5+ Years'}
+                  workPreference={data.workPreference || contact.workPreference || 'Hybrid'}
+                  location={contact.location}
+                  accentColor="#047857"
+                />
+              </div>
+            )}
 
             <div style={{
               display: 'flex',

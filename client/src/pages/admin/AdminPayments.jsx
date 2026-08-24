@@ -143,7 +143,8 @@ const AdminPayments = () => {
                         <th>Plan</th>
                         <th>Amount</th>
                         <th>Status</th>
-                        <th>Payment Time</th>
+                        <th>Date</th>
+                        <th>Time</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -164,9 +165,18 @@ const AdminPayments = () => {
                             </span>
                           </td>
                           <td>
-                            {item.createdAt
-                              ? new Date(item.createdAt).toLocaleString()
-                              : "-"}
+                            <span style={{ fontWeight: 600, color: "#334155" }}>
+                              {item.createdAt
+                                ? new Date(item.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                                : "-"}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{ color: "#0284c7", fontWeight: 600 }}>
+                              {item.createdAt
+                                ? new Date(item.createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+                                : "-"}
+                            </span>
                           </td>
                         </tr>
                       ))}
