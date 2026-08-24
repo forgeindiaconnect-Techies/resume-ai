@@ -77,29 +77,40 @@ exports.startSession = async (req, res) => {
     const cName = cleanName(resumeName);
 
     if (isDBConnected()) {
-      let session = await UserSession.findOne({ sessionId });
-      if (!session) {
-        session = new UserSession({
-          sessionId,
-          guestId: guestId || null,
-          userId: userId || null,
-          email: cEmail || null,
-          resumeName: cName || null,
-          currentPage: currentPage || "/",
-          events: [{ action: "Session Started", page: currentPage || "/" }]
-        });
-      } else {
-        session.status = "active";
-        session.exitTime = null;
-        session.lastActiveTime = new Date();
-        session.currentPage = currentPage || session.currentPage || "/";
-        if (guestId && !session.guestId) session.guestId = guestId;
-        if (userId && !session.userId) session.userId = userId;
-        if (cEmail && !session.email) session.email = cEmail;
-        if (cName && !session.resumeName) session.resumeName = cName;
-        session.events.push({ action: "Session Resumed", page: currentPage || "/" });
-      }
-      await session.save();
+      const setFields = {
+        status: "active",
+        exitTime: null,
+        lastActiveTime: new Date(),
+        currentPage: currentPage || "/"
+      };
+      if (guestId) setFields.guestId = guestId;
+      if (userId) setFields.userId = userId;
+      if (cEmail) setFields.email = cEmail;
+      if (cName) setFields.resumeName = cName;
+
+      const session = await UserSession.findOneAndUpdate(
+        { sessionId },
+        {
+          $setOnInsert: {
+            sessionId,
+            guestId: guestId || null,
+            userId: userId || null,
+            email: cEmail || null,
+            resumeName: cName || null,
+            entryTime: new Date()
+          },
+          $set: setFields,
+          $push: {
+            events: {
+              action: "Session Started",
+              page: currentPage || "/",
+              timestamp: new Date()
+            }
+          }
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+
       return res.status(200).json({ success: true, session });
     } else {
       const sessions = getLocalCollection('userSessions');
@@ -132,6 +143,11 @@ exports.startSession = async (req, res) => {
       return res.status(200).json({ success: true, session });
     }
   } catch (error) {
+    if (error.code === 11000) {
+      // Gracefully handle any race condition duplicate key
+      const session = await UserSession.findOne({ sessionId: req.body.sessionId });
+      return res.status(200).json({ success: true, session });
+    }
     console.error("Start session error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
@@ -153,35 +169,43 @@ exports.trackEvent = async (req, res) => {
     const effDownloaded = downloaded || extraData?.downloaded || action === "RESUME_DOWNLOADED" || action === "DOWNLOAD_WITHOUT_WATERMARK" || action === "DOWNLOAD_WITH_WATERMARK";
 
     if (isDBConnected()) {
-      let session = await UserSession.findOne({ sessionId });
-      if (!session) {
-        session = new UserSession({
-          sessionId,
-          guestId: guestId || null,
-          userId: null,
-          email: cEmail || null,
-          resumeName: cName || null,
-          currentPage: page || "/",
-          events: [{ action: "Session Started", page: page || "/" }]
-        });
-      }
-
-      session.lastActiveTime = new Date();
-      session.currentPage = page || session.currentPage;
-      session.events.push({ action, page: page || session.currentPage, timestamp: new Date() });
-
-      if (guestId && !session.guestId) session.guestId = guestId;
-      if (cName) session.resumeName = cName;
-      if (cEmail) session.email = cEmail;
-      if (effResumeCreated) session.resumeCreated = true;
-      if (effResumeId) session.resumeId = effResumeId;
-      if (effDownloadType) session.downloadType = effDownloadType;
+      const setFields = {
+        lastActiveTime: new Date(),
+        currentPage: page || "/"
+      };
+      if (guestId) setFields.guestId = guestId;
+      if (cName) setFields.resumeName = cName;
+      if (cEmail) setFields.email = cEmail;
+      if (effResumeCreated) setFields.resumeCreated = true;
+      if (effResumeId) setFields.resumeId = effResumeId;
+      if (effDownloadType) setFields.downloadType = effDownloadType;
       if (effDownloaded) {
-        session.downloaded = true;
-        session.downloadedAt = session.downloadedAt || new Date();
+        setFields.downloaded = true;
+        setFields.downloadedAt = new Date();
       }
 
-      await session.save();
+      const session = await UserSession.findOneAndUpdate(
+        { sessionId },
+        {
+          $setOnInsert: {
+            sessionId,
+            guestId: guestId || null,
+            userId: null,
+            entryTime: new Date(),
+            status: "active"
+          },
+          $set: setFields,
+          $push: {
+            events: {
+              action,
+              page: page || "/",
+              timestamp: new Date()
+            }
+          }
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+
       return res.status(200).json({ success: true, session });
     } else {
       const sessions = getLocalCollection('userSessions');
@@ -235,6 +259,11 @@ exports.trackEvent = async (req, res) => {
       return res.status(200).json({ success: true, session });
     }
   } catch (error) {
+    if (error.code === 11000) {
+      // Gracefully handle any race condition duplicate key
+      const session = await UserSession.findOne({ sessionId: req.body.sessionId });
+      return res.status(200).json({ success: true, session });
+    }
     console.error("Track event error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
