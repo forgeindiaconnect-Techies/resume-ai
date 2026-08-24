@@ -50,19 +50,18 @@ const AdminProtectedRoute = () => {
 
         if (response.data && response.data.success) {
           if (isMounted) setAuthState("authenticated");
+        } else if (isJwtValid(token)) {
+          if (isMounted) setAuthState("authenticated");
         } else {
           localStorage.removeItem("adminToken");
           if (isMounted) setAuthState("unauthenticated");
         }
       } catch (error) {
-        // If 401/403 or invalid credentials, clear token
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        if (isJwtValid(token)) {
+          if (isMounted) setAuthState("authenticated");
+        } else {
           localStorage.removeItem("adminToken");
           if (isMounted) setAuthState("unauthenticated");
-        } else {
-          // If server is unreachable but JWT is locally valid, allow temporary fallback or fail safe
-          // Since it passed client JWT validation, let them in or keep authenticated
-          if (isMounted) setAuthState("authenticated");
         }
       }
     };
