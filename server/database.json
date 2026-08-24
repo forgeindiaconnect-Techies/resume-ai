@@ -128,5 +128,8 @@
       "fontSize": "medium"
     }
   ],
-  "payments": []
+  "payments": [],
+  "userSessions": [],
+  "downloads": [],
+  "resumes": []
 }

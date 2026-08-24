@@ -317,6 +317,8 @@ export const EditorShell = ({
 
   const setHeadingSize = (val) => updateSetting('headingSize', val);
   const setBodySize = (val) => updateSetting('bodySize', val);
+  const [mobileTab, setMobileTab] = useState('editor'); // 'editor' | 'preview'
+
   const setLayoutMode = (val) => updateSetting('layoutMode', val);
   const setSpacingDensity = (val) => updateSetting('spacingDensity', val);
 
@@ -410,49 +412,57 @@ export const EditorShell = ({
   ) : preview;
 
   return (
-    <div style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden' }}>
+    <div className="editor-shell-container" style={{ display: 'flex', height: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif", background: '#f0f4f8', overflow: 'hidden', position: 'relative' }}>
 
       {/* ── LEFT FORM PANEL ── */}
-      <div className="no-print" style={{ width: 440, minWidth: 400, maxWidth: 440, background: '#ffffff', borderRight: '1px solid #e8ecf0', display: 'flex', flexDirection: 'column', height: '100vh', boxShadow: '2px 0 12px rgba(0,0,0,0.04)' }}>
-
+      <div 
+        className={`editor-left-panel no-print ${mobileTab === 'preview' ? 'editor-panel-hidden-mobile' : ''}`}
+        style={{ 
+          width: 440, 
+          maxWidth: '100%', 
+          background: '#ffffff', 
+          borderRight: '1px solid #e8ecf0', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          height: '100vh', 
+          boxShadow: '2px 0 12px rgba(0,0,0,0.04)',
+          flexShrink: 0
+        }}
+      >
         {/* Header Bar */}
-        <div style={{ padding: '0.75rem 1.15rem 0.55rem', borderBottom: '1px solid #e2e8f0', background: `linear-gradient(135deg, ${primaryColor}0d, #ffffff)`, flexShrink: 0 }}>
+        <div style={{ padding: '0.65rem 0.85rem 0.45rem', borderBottom: '1px solid #e2e8f0', background: `linear-gradient(135deg, ${primaryColor}0d, #ffffff)`, flexShrink: 0 }}>
           
           {/* Top Row: Back link & Title */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.55rem' }}>
-            <button 
-              onClick={() => navigate('/industry-examples')}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '0.35rem 0.65rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
-            >
-              <ArrowLeft size={13} /> Examples
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <button 
+                onClick={() => navigate('/')}
+                title="Back to Home"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', borderRadius: '6px', cursor: 'pointer', padding: 0 }}
+              >
+                <ArrowLeft size={14} />
+              </button>
+              <button 
+                onClick={() => navigate('/industry-examples')}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '0.3rem 0.55rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              >
+                Examples
+              </button>
+            </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <div style={{ width: 26, height: 26, borderRadius: '8px', background: `${primaryColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem' }}>{currentTplObj.emoji}</div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 900, color: primaryColor }}>{currentTplObj.name} Editor</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', overflow: 'hidden' }}>
+              <div style={{ width: 24, height: 24, borderRadius: '6px', background: `${primaryColor}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', flexShrink: 0 }}>{currentTplObj.emoji}</div>
+              <span style={{ fontSize: '0.82rem', fontWeight: 900, color: primaryColor, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{currentTplObj.name} Editor</span>
             </div>
 
             <button onClick={handleDownloadAction}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: primaryColor, color: '#fff', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: 900, fontSize: '0.78rem', cursor: 'pointer', boxShadow: `0 4px 12px ${primaryColor}40` }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: primaryColor, color: '#fff', border: 'none', padding: '0.38rem 0.75rem', borderRadius: '7px', fontWeight: 900, fontSize: '0.76rem', cursor: 'pointer', boxShadow: `0 4px 12px ${primaryColor}40`, flexShrink: 0 }}>
               <Download size={13} /> PDF
             </button>
           </div>
 
-          {/* Dynamic Template Switcher Row */}
-          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '0.4rem', scrollbarWidth: 'none', marginBottom: '0.4rem' }}>
-            <button
-              onClick={() => {
-                localStorage.removeItem('user_premium');
-                alert('Premium status reset! The payment modal will now show again.');
-                window.location.reload();
-              }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '3px', padding: '0.25rem 0.5rem', borderRadius: '6px',
-                border: '1px solid #fca5a5', background: '#fef2f2', color: '#ef4444', fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap'
-              }}
-            >
-              <RefreshCw size={9} /> Reset Payment Test
-            </button>
+          {/* Quick Actions Row */}
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '0.35rem', scrollbarWidth: 'none', marginBottom: '0.35rem', alignItems: 'center' }}>
             <button
               onClick={() => {
                 if (onSettingsChange) {
@@ -471,7 +481,7 @@ export const EditorShell = ({
                 border: spacingDensity === 'compact' ? '1.5px solid #10b981' : '1px solid #cbd5e1',
                 background: spacingDensity === 'compact' ? '#ecfdf5' : '#ffffff',
                 color: spacingDensity === 'compact' ? '#059669' : '#334155',
-                fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap'
+                fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0
               }}
             >
               <span>📄</span>
@@ -483,7 +493,7 @@ export const EditorShell = ({
               style={{
                 display: 'flex', alignItems: 'center', gap: '3px', padding: '0.25rem 0.5rem', borderRadius: '6px',
                 border: '1px solid #bfdbfe', background: '#eff6ff', color: '#1d4ed8',
-                fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap'
+                fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0
               }}
             >
               <span>🎯</span>
@@ -505,7 +515,8 @@ export const EditorShell = ({
                   fontSize: '0.68rem',
                   fontWeight: 800,
                   cursor: 'pointer',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
                 }}
               >
                 <span>{t.emoji}</span>
@@ -519,25 +530,26 @@ export const EditorShell = ({
           <div style={{ display: 'flex', background: '#f1f5f9', borderRadius: '8px', padding: '2px', gap: '2px', border: '1px solid #cbd5e1' }}>
             {[
               { id: 'content', label: '📝 Content' },
-              { id: 'style', label: '🎨 Theme & Font' },
-              { id: 'layout', label: '📐 Layout & Photo' },
-              { id: 'scores', label: '📊 ATS Score' },
+              { id: 'style', label: '🎨 Theme' },
+              { id: 'layout', label: '📐 Layout' },
+              { id: 'scores', label: '📊 ATS' },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
                   flex: 1,
-                  padding: '0.3rem 0.2rem',
+                  padding: '0.35rem 0.15rem',
                   borderRadius: '5px',
                   border: 'none',
                   background: activeTab === tab.id ? '#ffffff' : 'transparent',
                   color: activeTab === tab.id ? primaryColor : '#64748b',
                   fontWeight: 900,
-                  fontSize: '0.68rem',
+                  fontSize: '0.72rem',
                   cursor: 'pointer',
                   boxShadow: activeTab === tab.id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                  transition: 'all 0.15s'
+                  transition: 'all 0.15s',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 {tab.label}
@@ -838,24 +850,6 @@ export const EditorShell = ({
                 </div>
               </div>
 
-              {/* Suggestions List */}
-              <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
-                <label style={{ fontSize: '0.72rem', fontWeight: 900, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.5rem' }}>
-                  💡 Actionable Improvement Suggestions:
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669' }}>
-                    <Check size={14} /> Add 1 more project / case study
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669' }}>
-                    <Check size={14} /> Include metrics in work experience
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669' }}>
-                    <Check size={14} /> Add certifications or licenses
-                  </div>
-                </div>
-              </div>
-
             </div>
           )}
 
@@ -863,10 +857,13 @@ export const EditorShell = ({
       </div>
 
       {/* ── RIGHT PREVIEW PANEL ── */}
-      <div style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+      <div 
+        className={`editor-right-preview ${mobileTab === 'editor' ? 'editor-panel-hidden-mobile' : ''}`}
+        style={{ flex: 1, background: '#dde3ec', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}
+      >
         
         {/* Preview Header Bar with Zoom Controls & Full Print Preview */}
-        <div className="no-print" style={{ padding: '0.55rem 1.25rem', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div className="no-print" style={{ padding: '0.55rem 1.25rem', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #d1d9e3', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, flexWrap: 'wrap', gap: '0.4rem' }}>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
@@ -919,52 +916,83 @@ export const EditorShell = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
-                background: `linear-gradient(135deg, ${primaryColor}, #4f46e5)`,
+                background: primaryColor,
                 color: 'white',
                 border: 'none',
-                padding: '0.4rem 0.9rem',
+                padding: '0.45rem 1rem',
                 borderRadius: '8px',
                 fontWeight: 900,
                 fontSize: '0.78rem',
                 cursor: 'pointer',
-                boxShadow: `0 4px 12px ${primaryColor}35`
+                boxShadow: `0 4px 14px ${primaryColor}40`
               }}
             >
-              <Download size={13} /> Download PDF
+              <Download size={14} /> Download PDF
             </button>
           </div>
         </div>
 
-        {/* Page Count Indicator */}
-        <div style={{ background: '#e2e8f0', padding: '0.25rem 1rem', fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textAlign: 'center', borderBottom: '1px solid #cbd5e1' }}>
-          📄 Page 1 of 1 · A4 Sheet (210mm x 297mm) · Exact PDF Replica
-        </div>
-
-        {/* Preview Scroll Area */}
-        <div className="resume-preview-container" style={{ flex: 1, padding: '2rem 1.5rem', scrollbarWidth: 'thin', scrollbarColor: '#c8d0dd transparent' }}>
+        {/* Scrollable Preview Canvas */}
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', padding: '2rem 1rem', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
           <div 
-            className="resume-scale-wrapper"
-            style={{ transform: `scale(${zoomLevel})`, marginBottom: '-190px' }}
+            style={{ 
+              transform: `scale(${zoomLevel})`, 
+              transformOrigin: 'top center',
+              transition: 'transform 0.15s ease-out',
+              boxShadow: '0 12px 36px rgba(0,0,0,0.15)',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              marginBottom: '3rem'
+            }}
           >
-            <div id="resume-preview-sheet" className="resume-page" style={{ position: 'relative', overflow: 'hidden' }}>
-              {renderedPreview}
-              {/* Diagonal watermark removed to allow clean footer watermark */}
-              <ResumeFooter />
-            </div>
+            {renderedPreview}
           </div>
         </div>
+
       </div>
 
-      {/* Full-Screen Print Preview Read-Only Modal */}
+      {/* Floating Toggle Button for Mobile Screens */}
+      <div className="editor-floating-toggle no-print">
+        <button
+          onClick={() => setMobileTab(mobileTab === 'editor' ? 'preview' : 'editor')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            background: mobileTab === 'editor' ? primaryColor : '#1e293b',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '999px',
+            padding: '0.6rem 1.15rem',
+            fontSize: '0.82rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+            transition: 'all 0.2s',
+            userSelect: 'none'
+          }}
+        >
+          {mobileTab === 'editor' ? (
+            <>
+              <Eye size={15} /> Live Preview
+            </>
+          ) : (
+            <>
+              <FileText size={15} /> Edit Form
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Full Print Preview Modal */}
       {showPrintPreviewModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-          <div style={{ width: '100%', maxWidth: 880, background: '#ffffff', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: '90vh', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: 'white', borderRadius: '12px', width: '95%', maxWidth: '900px', height: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             
             {/* Modal Header */}
-            <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+            <div style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Eye size={18} color={primaryColor} />
-                <span style={{ fontSize: '1rem', fontWeight: 900, color: '#0f172a' }}>Print & PDF High-Resolution Preview</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#0f172a' }}>📄 Full Screen Print Preview</span>
               </div>
 
               <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -1097,6 +1125,7 @@ export const saveSession = (sessionId, data) => {
 
 // ─── Section Reorder & Visibility Control ───────────────────────────────────────
 export const SectionReorderControl = ({ sections = [], onReorder, onToggle, accent = '#0284c7' }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const hiddenSections = sections.filter(s => s.enabled === false).map(s => s.id || s.title || s);
 
   const handleSetHiddenSections = (updater) => {
@@ -1114,13 +1143,30 @@ export const SectionReorderControl = ({ sections = [], onReorder, onToggle, acce
   };
 
   return (
-    <div style={{ background: '#f8fafc', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '0.75rem 0.85rem', margin: '1rem 0' }}>
-      <DragDropSections
-        sections={sections}
-        setSections={onReorder}
-        hiddenSections={hiddenSections}
-        setHiddenSections={handleSetHiddenSections}
-      />
+    <div style={{ background: '#f8fafc', borderRadius: '10px', border: '1px solid #cbd5e1', padding: '0.65rem 0.85rem', margin: '0.75rem 0' }}>
+      <div 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 900, color: '#0f172a' }}>
+          <span>☰</span> <span>Section Order & Visibility</span>
+          <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#64748b', marginLeft: '4px' }}>({sections.length})</span>
+        </div>
+        <span style={{ fontSize: '0.72rem', color: accent, fontWeight: 800 }}>
+          {isOpen ? '▲ Done' : '▼ Customize Order'}
+        </span>
+      </div>
+
+      {isOpen && (
+        <div style={{ marginTop: '0.65rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.65rem' }}>
+          <DragDropSections
+            sections={sections}
+            setSections={onReorder}
+            hiddenSections={hiddenSections}
+            setHiddenSections={handleSetHiddenSections}
+          />
+        </div>
+      )}
     </div>
   );
 };

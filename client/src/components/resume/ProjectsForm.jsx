@@ -22,7 +22,7 @@ const ProjectsForm = ({ projects = [], onAdd, onUpdate, onDelete, onRunAi, onOpe
             <Trash2 size={16} />
           </button>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
+          <div className="form-grid-2col" style={{ marginBottom: '0.75rem' }}>
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Project Name</label>
               <input 
@@ -62,7 +62,7 @@ const ProjectsForm = ({ projects = [], onAdd, onUpdate, onDelete, onRunAi, onOpe
             style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', resize: 'none', marginBottom: '0.75rem', outline: 'none', fontSize: '0.85rem' }} 
           />
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-grid-2col">
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>GitHub URL</label>
               <input 

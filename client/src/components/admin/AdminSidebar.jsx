@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -10,6 +10,7 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  X
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ForgeLogo from "../common/ForgeLogo";
@@ -17,6 +18,24 @@ import ForgeLogo from "../common/ForgeLogo";
 const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleToggle = () => setIsOpen(prev => !prev);
+    const handleClose = () => setIsOpen(false);
+
+    window.addEventListener('toggle-admin-sidebar', handleToggle);
+    window.addEventListener('close-admin-sidebar', handleClose);
+    return () => {
+      window.removeEventListener('toggle-admin-sidebar', handleToggle);
+      window.removeEventListener('close-admin-sidebar', handleClose);
+    };
+  }, []);
+
+  // Automatically close mobile sidebar on navigation
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
 
   const menuItems = [
     {
@@ -39,7 +58,6 @@ const AdminSidebar = () => {
       icon: CreditCard,
       path: "/admin/payments",
     },
-
     {
       name: "Plans",
       icon: Wallet,
@@ -68,42 +86,59 @@ const AdminSidebar = () => {
   };
 
   return (
-    <aside className="admin-sidebar">
-      {/* Logo */}
-      <div className="admin-logo" style={{ padding: "8px 12px 18px", display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
-        <ForgeLogo variant="light" size={42} />
-      </div>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div 
+          className="admin-sidebar-overlay no-print"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-      {/* Menu */}
-      <nav className="admin-menu">
-        <p className="admin-menu-title">MAIN MENU</p>
+      <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
+        {/* Logo and Mobile Close Button */}
+        <div className="admin-logo" style={{ padding: "8px 8px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <ForgeLogo variant="light" size={38} />
+          <button 
+            className="admin-sidebar-close-btn no-print"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close Sidebar"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
-        {menuItems.map((item) => {
-          const Icon = item.icon;
+        {/* Menu */}
+        <nav className="admin-menu">
+          <p className="admin-menu-title">MAIN MENU</p>
 
-          return (
-            <button
-              key={item.name}
-              className={`admin-menu-item ${
-                location.pathname.startsWith(item.path) ? "active" : ""
-              }`}
-              onClick={() => navigate(item.path)}
-            >
-              <Icon size={19} />
-              <span>{item.name}</span>
-            </button>
-          );
-        })}
-      </nav>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
 
-      {/* Logout */}
-      <div className="admin-sidebar-bottom">
-        <button className="admin-menu-item logout" onClick={handleLogout}>
-          <LogOut size={19} />
-          <span>Logout</span>
-        </button>
-      </div>
-    </aside>
+            return (
+              <button
+                key={item.name}
+                className={`admin-menu-item ${
+                  location.pathname.startsWith(item.path) ? "active" : ""
+                }`}
+                onClick={() => navigate(item.path)}
+              >
+                <Icon size={19} />
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Logout */}
+        <div className="admin-sidebar-bottom">
+          <button className="admin-menu-item logout" onClick={handleLogout}>
+            <LogOut size={19} />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 

@@ -32,7 +32,7 @@ const EducationForm = ({ education = [], onAdd, onUpdate, onDelete }) => {
             />
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
+          <div className="form-grid-2col" style={{ marginBottom: '0.75rem' }}>
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Degree</label>
               <input 
@@ -53,7 +53,7 @@ const EducationForm = ({ education = [], onAdd, onUpdate, onDelete }) => {
             </div>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-grid-2col">
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>CGPA / Percentage</label>
               <input 

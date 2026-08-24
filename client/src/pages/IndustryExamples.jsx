@@ -2286,10 +2286,10 @@ const IndustryExamples = () => {
     <div style={{ height: '100vh', overflow: 'hidden', background: '#f8fafc', fontFamily: "'Inter', sans-serif", display: 'flex', flexDirection: 'column' }}>
       <div style={{ flexShrink: 0 }}><Navbar /></div>
 
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
+      <div className="ie-page-container" style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
 
         {/* COL 1: Sidebar Categories */}
-        <div className="ie-col-scroll" style={{ width: '190px', flexShrink: 0, background: '#eaf4fe', padding: '1.5rem 0.9rem', overflowY: 'auto', boxSizing: 'border-box' }}>
+        <div className="ie-col-scroll ie-col-categories" style={{ width: '190px', flexShrink: 0, background: '#eaf4fe', padding: '1.5rem 0.9rem', overflowY: 'auto', boxSizing: 'border-box' }}>
           <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#3b82f6', margin: '0 0 1rem', paddingBottom: '0.2rem', borderBottom: '2px solid #60a5fa', display: 'inline-block' }}>
             Categories
           </h2>
@@ -2322,7 +2322,7 @@ const IndustryExamples = () => {
         </div>
 
         {/* COL 2: Search + Role Grid Cards */}
-        <div className="ie-col-scroll" style={{ width: '260px', flexShrink: 0, background: '#f8fafc', borderRight: '1px solid #e2e8f0', padding: '1.5rem 1rem', overflowY: 'auto', boxSizing: 'border-box' }}>
+        <div className="ie-col-scroll ie-col-roles" style={{ width: '260px', flexShrink: 0, background: '#f8fafc', borderRight: '1px solid #e2e8f0', padding: '1.5rem 1rem', overflowY: 'auto', boxSizing: 'border-box' }}>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1e293b', margin: '0 0 1rem', letterSpacing: '-0.01em' }}>
             Search Resume Examples
           </h1>

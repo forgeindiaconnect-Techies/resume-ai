@@ -48,30 +48,31 @@ const ForgeLogo = ({ size = 40, showText = true, variant = 'light' }) => {
             <span style={{ color: yellow }}>INDIA</span>
           </div>
 
-          {/* Subtitle Line 1: CONNECT PVT.LTD */}
-          <div style={{
-            fontSize: `${Math.max(10, Math.round(11.5 * (size / 40)))}px`,
-            fontWeight: 800,
-            letterSpacing: '0.06em',
-            color: blue,
-            textTransform: 'uppercase',
-            marginTop: '2px',
-            whiteSpace: 'nowrap'
-          }}>
-            CONNECT PVT.LTD
-          </div>
+          {/* Subtitle Lines (hide on very narrow mobile headers) */}
+          <div className="forge-logo-subtitles">
+            <div style={{
+              fontSize: `${Math.max(10, Math.round(11.5 * (size / 40)))}px`,
+              fontWeight: 800,
+              letterSpacing: '0.06em',
+              color: blue,
+              textTransform: 'uppercase',
+              marginTop: '2px',
+              whiteSpace: 'nowrap'
+            }}>
+              CONNECT PVT.LTD
+            </div>
 
-          {/* Subtitle Line 2: SHAPING FUTURE */}
-          <div style={{
-            fontSize: `${Math.max(8.5, Math.round(9.5 * (size / 40)))}px`,
-            fontWeight: 700,
-            letterSpacing: '0.14em',
-            color: subtextColor,
-            textTransform: 'uppercase',
-            marginTop: '2px',
-            whiteSpace: 'nowrap'
-          }}>
-            SHAPING FUTURE
+            <div style={{
+              fontSize: `${Math.max(8.5, Math.round(9.5 * (size / 40)))}px`,
+              fontWeight: 700,
+              letterSpacing: '0.14em',
+              color: subtextColor,
+              textTransform: 'uppercase',
+              marginTop: '2px',
+              whiteSpace: 'nowrap'
+            }}>
+              SHAPING FUTURE
+            </div>
           </div>
         </div>
       )}

@@ -73,32 +73,25 @@ const AdminPlans = () => {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: "16px",
-                marginBottom: "24px"
-              }}
-            >
-              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>Total Revenue</h4>
-                <h2 style={{ margin: 0, fontSize: "28px", color: "#0f172a" }}>₹{totalRevenue}</h2>
+            <div className="admin-stats-grid" style={{ marginBottom: "24px" }}>
+              <div style={{ background: "white", padding: "18px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 8px 0", color: "#64748b", fontSize: "13px", fontWeight: "600" }}>Total Revenue</h4>
+                <h2 style={{ margin: 0, fontSize: "24px", color: "#0f172a" }}>₹{totalRevenue}</h2>
               </div>
 
-              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>Total Downloads</h4>
-                <h2 style={{ margin: 0, fontSize: "28px", color: "#0f172a" }}>{totalDownloads}</h2>
+              <div style={{ background: "white", padding: "18px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 8px 0", color: "#64748b", fontSize: "13px", fontWeight: "600" }}>Total Downloads</h4>
+                <h2 style={{ margin: 0, fontSize: "24px", color: "#0f172a" }}>{totalDownloads}</h2>
               </div>
 
-              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>With Watermark</h4>
-                <h2 style={{ margin: 0, fontSize: "28px", color: "#0ea5e9" }}>{watermarkDownloads}</h2>
+              <div style={{ background: "white", padding: "18px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 8px 0", color: "#64748b", fontSize: "13px", fontWeight: "600" }}>With Watermark</h4>
+                <h2 style={{ margin: 0, fontSize: "24px", color: "#0ea5e9" }}>{watermarkDownloads}</h2>
               </div>
 
-              <div style={{ background: "white", padding: "20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                <h4 style={{ margin: "0 0 10px 0", color: "#64748b", fontSize: "14px", fontWeight: "600" }}>Without Watermark</h4>
-                <h2 style={{ margin: 0, fontSize: "28px", color: "#0ea5e9" }}>{noWatermarkDownloads}</h2>
+              <div style={{ background: "white", padding: "18px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <h4 style={{ margin: "0 0 8px 0", color: "#64748b", fontSize: "13px", fontWeight: "600" }}>Without Watermark</h4>
+                <h2 style={{ margin: 0, fontSize: "24px", color: "#0ea5e9" }}>{noWatermarkDownloads}</h2>
               </div>
             </div>
 
@@ -110,7 +103,7 @@ const AdminPlans = () => {
                 <p>Create your first subscription plan.</p>
               </div>
             ) : (
-              <div className="admin-table-container">
+              <div className="admin-table-container admin-table-card" style={{ width: "100%", overflowX: "auto" }}>
                 <table className="admin-table">
                   <thead>
                     <tr>
@@ -160,25 +153,25 @@ const AdminPlans = () => {
             )}
 
             {editingPlan && (
-              <div style={{ marginTop: "20px", padding: "20px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                <h3 style={{ marginTop: 0, marginBottom: "15px" }}>Edit Plan: {editingPlan.name}</h3>
+              <div style={{ marginTop: "20px", padding: "16px", background: "#f8fafc", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+                <h3 style={{ marginTop: 0, marginBottom: "15px", fontSize: "16px" }}>Edit Plan: {editingPlan.name}</h3>
                 
-                <div style={{ display: "flex", gap: "15px", marginBottom: "15px" }}>
+                <div style={{ display: "flex", gap: "15px", marginBottom: "15px", flexWrap: "wrap" }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "5px", fontSize: "14px", fontWeight: "bold" }}>Price (₹)</label>
+                    <label style={{ display: "block", marginBottom: "5px", fontSize: "13px", fontWeight: "bold" }}>Price (₹)</label>
                     <input
                       type="number"
                       value={editPrice}
                       onChange={(e) => setEditPrice(e.target.value)}
-                      style={{ padding: "8px", borderRadius: "6px", border: "1px solid #cbd5e1", width: "100px" }}
+                      style={{ padding: "8px 10px", borderRadius: "6px", border: "1px solid #cbd5e1", width: "120px" }}
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", marginBottom: "5px", fontSize: "14px", fontWeight: "bold" }}>Status</label>
+                    <label style={{ display: "block", marginBottom: "5px", fontSize: "13px", fontWeight: "bold" }}>Status</label>
                     <select
                       value={editStatus ? "active" : "inactive"}
                       onChange={(e) => setEditStatus(e.target.value === "active")}
-                      style={{ padding: "8px", borderRadius: "6px", border: "1px solid #cbd5e1", width: "120px" }}
+                      style={{ padding: "8px 10px", borderRadius: "6px", border: "1px solid #cbd5e1", width: "130px" }}
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
@@ -186,7 +179,7 @@ const AdminPlans = () => {
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: "10px" }}>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                   <button
                     className="admin-primary-button"
                     style={{ background: "#0ea5e9", color: "white", padding: "8px 16px", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}

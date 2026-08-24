@@ -36,6 +36,27 @@ const CreativeLayout = ({data, customColor, customFont,
   }
 
   const sidebarBg = customColor || '#1f5756'; 
+  const isLightColor = (hex) => {
+    if (!hex) return false;
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    if (c.length !== 6) return false;
+    const r = parseInt(c.substr(0, 2), 16);
+    const g = parseInt(c.substr(2, 2), 16);
+    const b = parseInt(c.substr(4, 2), 16);
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 165;
+  };
+
+  const isLightBg = isLightColor(sidebarBg);
+  const sidebarHeadingColor = isLightBg ? '#0f172a' : '#ffffff';
+  const sidebarHeadingBorder = isLightBg ? '1px solid #cbd5e1' : '1px solid rgba(255,255,255,0.25)';
+  const sidebarTextColor = isLightBg ? '#334155' : '#e2e8f0';
+  const sidebarSubTextColor = isLightBg ? '#64748b' : '#cbd5e1';
+  const sidebarSkillBg = isLightBg ? '#e2e8f0' : 'rgba(255,255,255,0.15)';
+  const sidebarSkillColor = isLightBg ? '#0f172a' : '#ffffff';
+  const sidebarBorder = isLightBg ? '1px solid #e2e8f0' : 'none';
+
   const accentTeal = '#2d8a87';
   const fontFamily = customFont || "'Inter', sans-serif";
 
@@ -113,14 +134,14 @@ const CreativeLayout = ({data, customColor, customFont,
           const langs = data.languagesList || [];
           return langs.length > 0 ? (
             <div key="languages">
-              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.25)', paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
+              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: sidebarHeadingColor, borderBottom: sidebarHeadingBorder, paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
                 {titleStr}
               </h3>
-              <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ fontSize: `${0.75 * fScale}rem`, color: sidebarTextColor, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 {langs.map((lang, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>{typeof lang === 'string' ? lang : lang.name}</span>
-                    {typeof lang === 'object' && lang.level && <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#cbd5e1' }}>{lang.level}</span>}
+                    {typeof lang === 'object' && lang.level && <span style={{ fontSize: `${0.7 * fScale}rem`, color: sidebarSubTextColor }}>{lang.level}</span>}
                   </div>
                 ))}
               </div>
@@ -133,14 +154,14 @@ const CreativeLayout = ({data, customColor, customFont,
           const certs = data.certifications || data.certificates || data.training || [];
           return certs.length > 0 ? (
             <div key="certifications">
-              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.25)', paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
+              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: sidebarHeadingColor, borderBottom: sidebarHeadingBorder, paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
                 {titleStr}
               </h3>
-              <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <div style={{ fontSize: `${0.75 * fScale}rem`, color: sidebarSubTextColor, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {certs.map((cert, idx) => (
                   <div key={idx}>
-                    <div style={{ fontWeight: 800, color: '#ffffff', marginBottom: '0.15rem' }}>{cert.name || cert.title}</div>
-                    <div style={{ color: '#cbd5e1', fontSize: `${0.68 * fScale}rem` }}>{cert.org || cert.organization} {cert.year ? `(${cert.year})` : ''}</div>
+                    <div style={{ fontWeight: 800, color: sidebarHeadingColor, marginBottom: '0.15rem' }}>{cert.name || cert.title}</div>
+                    <div style={{ color: sidebarSubTextColor, fontSize: `${0.68 * fScale}rem` }}>{cert.org || cert.organization} {cert.year ? `(${cert.year})` : ''}</div>
                   </div>
                 ))}
               </div>
@@ -149,7 +170,7 @@ const CreativeLayout = ({data, customColor, customFont,
         case 'achievements':
           return (
             <div key="achievements">
-              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.25)', paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
+              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: sidebarHeadingColor, borderBottom: sidebarHeadingBorder, paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
                 {titleStr}
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: `${0.74 * fScale}rem` }}>
@@ -161,10 +182,10 @@ const CreativeLayout = ({data, customColor, customFont,
                   const icons = ['♥', '♥', '✂', '✂'];
                   return (
                     <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: `${0.8 * fScale}rem`, color: '#93c5fd', marginTop: '1px' }}>{icons[idx % 4]}</span>
+                      <span style={{ fontSize: `${0.8 * fScale}rem`, color: sidebarSubTextColor, marginTop: '1px' }}>{icons[idx % 4]}</span>
                       <div>
-                        <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: lineH, marginBottom: '0.15rem' }}>{ach.title}</div>
-                        <div style={{ color: '#cbd5e1', fontSize: `${0.7 * fScale}rem`, lineHeight: lineH }}>{ach.desc}</div>
+                        <div style={{ fontWeight: 800, color: sidebarHeadingColor, lineHeight: lineH, marginBottom: '0.15rem' }}>{ach.title}</div>
+                        <div style={{ color: sidebarSubTextColor, fontSize: `${0.7 * fScale}rem`, lineHeight: lineH }}>{ach.desc}</div>
                       </div>
                     </div>
                   );
@@ -176,27 +197,27 @@ const CreativeLayout = ({data, customColor, customFont,
         case 'competencies':
           return (
             <div key="skills">
-              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.25)', paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
+              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: sidebarHeadingColor, borderBottom: sidebarHeadingBorder, paddingBottom: '0.3rem', margin: `0 0 0.65rem` }}>
                 {titleStr}
               </h3>
               {!hasSkills ? (
-                <p style={{ margin: 0, fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
+                <p style={{ margin: 0, fontSize: `${0.74 * fScale}rem`, color: sidebarTextColor, lineHeight: lineH, fontWeight: 500 }}>
                   Script Analysis - Character Development - Voice-over Techniques - Improvisational Acting - Film Production
                 </p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                   {skillsCat.languages.length > 0 && (
                     <div>
-                      <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 800, color: '#ffffff', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Programming Languages</div>
-                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
+                      <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 800, color: sidebarHeadingColor, marginBottom: '0.2rem', textTransform: 'uppercase' }}>Programming Languages</div>
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: sidebarTextColor, lineHeight: lineH, fontWeight: 500 }}>
                         {skillsCat.languages.join(' • ')}
                       </div>
                     </div>
                   )}
                   {skillsCat.frameworks.length > 0 && (
                     <div>
-                      <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 800, color: '#ffffff', marginBottom: '0.2rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
-                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#e2e8f0', lineHeight: lineH, fontWeight: 500 }}>
+                      <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 800, color: sidebarHeadingColor, marginBottom: '0.2rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: sidebarTextColor, lineHeight: lineH, fontWeight: 500 }}>
                         {skillsCat.frameworks.join(' • ')}
                       </div>
                     </div>
@@ -412,23 +433,62 @@ const CreativeLayout = ({data, customColor, customFont,
         ) : null;
       
       default:
-        // Render sidebar items as main items if in single column mode
-        if (SIDEBAR_SECTION_IDS.includes(secId) && layoutMode === 'single') {
-          return (
-             <div key={secId}>
-              <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.25rem', margin: `0 0 0.55rem` }}>
-                {titleStr}
-              </h3>
-              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>• {secId} content</div>
-            </div>
-          );
-        }
+        const secCustomData = (data.customSections && (data.customSections[secObj.id] || data.customSections[secObj.title] || data.customSections[secId] || data.customSections[titleStr])) || {};
+        const customTitle = secCustomData.title || titleStr;
+        const customContent = secCustomData.content || '';
+        const customItems = secCustomData.items || [];
+
         return (
           <div key={secId}>
             <h3 style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.25rem', margin: `0 0 0.55rem` }}>
-              {titleStr}
+              {customTitle}
             </h3>
-            <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>• Added custom content for {titleStr}</div>
+            {customItems && customItems.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {customItems.map((item, idx) => (
+                  <div key={idx}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <span style={{ fontSize: `${0.82 * fScale}rem`, fontWeight: 800, color: '#1e293b' }}>
+                        {item.title}
+                      </span>
+                      {item.date && (
+                        <span style={{ fontSize: `${0.72 * fScale}rem`, color: '#64748b' }}>
+                          {item.date}
+                        </span>
+                      )}
+                    </div>
+                    {item.subtitle && (
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#475569', marginBottom: '0.2rem' }}>
+                        {item.subtitle}
+                      </div>
+                    )}
+                    {item.description && (
+                      <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                        {item.description.split('\n').map((line, i) => (
+                          <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative' }}>
+                            <span style={{ position: 'absolute', left: 0 }}>•</span>
+                            {line.replace(/^•\s*/, '')}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : customContent ? (
+              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                {customContent.split('\n').map((line, i) => (
+                  <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative', marginBottom: '0.2rem' }}>
+                    <span style={{ position: 'absolute', left: 0 }}>•</span>
+                    {line.replace(/^•\s*/, '')}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#94a3b8', fontStyle: 'italic' }}>
+                Click on {customTitle} in the editor to add your details.
+              </div>
+            )}
           </div>
         );
     }
@@ -459,7 +519,9 @@ const CreativeLayout = ({data, customColor, customFont,
           <div style={{
             width: layoutMode === 'two-column' ? '50%' : '35%',
             background: sidebarBg,
-            color: '#ffffff',
+            color: sidebarTextColor,
+            borderRight: layoutMode !== 'right-sidebar' ? sidebarBorder : 'none',
+            borderLeft: layoutMode === 'right-sidebar' ? sidebarBorder : 'none',
             padding: spacingPadding,
             display: 'flex',
             flexDirection: 'column',
@@ -478,13 +540,13 @@ const CreativeLayout = ({data, customColor, customFont,
                     borderRadius: photoObj?.shape === 'square' ? '0px' : photoObj?.shape === 'rounded' ? '16px' : '50%', 
                     objectFit: 'cover',
                     marginBottom: '1rem',
-                    border: getPhotoBorder() === 'none' ? '3px solid rgba(255,255,255,0.2)' : getPhotoBorder(),
+                    border: getPhotoBorder() === 'none' ? (isLightBg ? '3px solid #cbd5e1' : '3px solid rgba(255,255,255,0.2)') : getPhotoBorder(),
                     boxShadow: getPhotoShadow(),
                     flexShrink: 0
                   }} 
                 />
               )}
-              <h1 style={{ fontSize: `${1.65 * fScale}rem`, fontWeight: 900, letterSpacing: '0.04em', color: '#ffffff', margin: '0 0 0.35rem', lineHeight: lineH }}>
+              <h1 style={{ fontSize: `${1.65 * fScale}rem`, fontWeight: 900, letterSpacing: '0.04em', color: sidebarHeadingColor, margin: '0 0 0.35rem', lineHeight: lineH }}>
                 {name}
               </h1>
             </div>

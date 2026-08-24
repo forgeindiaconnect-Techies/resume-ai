@@ -134,7 +134,16 @@ exports.getResumeById = async (req, res) => {
 
       let resume = await Resume.findOne({ $or: idFilter }).populate('layout');
       if (!resume) {
-        return res.status(404).json({ success: false, message: 'Resume not found or unauthorized' });
+        return res.status(200).json({ 
+          success: true, 
+          data: { 
+            _id: resumeId, 
+            resumeId: resumeId, 
+            personalInfo: {}, 
+            title: 'My Professional Resume',
+            templateId: 'modern' 
+          } 
+        });
       }
       
       // If layout is not linked, create a default one
@@ -155,7 +164,16 @@ exports.getResumeById = async (req, res) => {
       const localResumes = getLocalResumes();
       const resume = localResumes.find(r => r._id === resumeId || r.resumeId === resumeId);
       if (!resume) {
-        return res.status(404).json({ success: false, message: 'Resume not found or unauthorized' });
+        return res.status(200).json({ 
+          success: true, 
+          data: { 
+            _id: resumeId, 
+            resumeId: resumeId, 
+            personalInfo: {}, 
+            title: 'My Professional Resume',
+            templateId: 'modern' 
+          } 
+        });
       }
       return res.status(200).json({ success: true, data: resume, resume });
     }
@@ -170,7 +188,14 @@ exports.updateResume = async (req, res) => {
   try {
     const userId = req.user?.id || req.user?._id;
     const resumeId = req.params.id;
-    const { layout: layoutData, ...updateData } = req.body;
+    const { layout: layoutData, personal, ...updateData } = req.body;
+
+    if (personal && !updateData.personalInfo) {
+      updateData.personalInfo = personal;
+    }
+    if (req.body.languages && !updateData.languagesList) {
+      updateData.languagesList = req.body.languages;
+    }
 
     if (isDBConnected()) {
       const idFilter = [];
@@ -181,7 +206,13 @@ exports.updateResume = async (req, res) => {
 
       let resume = await Resume.findOne({ $or: idFilter });
       if (!resume) {
-        return res.status(404).json({ success: false, message: 'Resume not found or unauthorized' });
+        // Upsert/Create resume session seamlessly
+        resume = await Resume.create({
+          ...updateData,
+          resumeId: resumeId,
+          userId: userId || new mongoose.Types.ObjectId()
+        });
+        return res.status(200).json({ success: true, data: resume, resume: resume });
       }
 
       // Update layout if specified
@@ -204,10 +235,19 @@ exports.updateResume = async (req, res) => {
     } else {
       // Local fallback
       const localResumes = getLocalResumes();
-      const resumeIndex = localResumes.findIndex(r => r._id === resumeId && r.userId === userId);
+      let resumeIndex = localResumes.findIndex(r => r._id === resumeId || r.resumeId === resumeId);
       
       if (resumeIndex === -1) {
-        return res.status(404).json({ success: false, message: 'Resume not found or unauthorized' });
+        const newResume = {
+          _id: Date.now().toString(),
+          resumeId: resumeId,
+          userId: userId || 'guest',
+          ...updateData,
+          updatedAt: new Date().toISOString()
+        };
+        localResumes.push(newResume);
+        saveLocalResumes(localResumes);
+        return res.status(200).json({ success: true, data: newResume });
       }
 
       const existingResume = localResumes[resumeIndex];

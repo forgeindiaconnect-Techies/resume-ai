@@ -32,7 +32,7 @@ const CertificatesForm = ({ certificates = [], onAdd, onUpdate, onDelete }) => {
             />
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-grid-2col">
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Organization</label>
               <input 

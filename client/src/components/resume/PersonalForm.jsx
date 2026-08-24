@@ -66,7 +66,7 @@ const PersonalForm = ({ personalInfo, onChange, onOpenPhotoEditor }) => {
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="form-grid-2col">
         <div className="input-group">
           <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Phone</label>
           <input 
@@ -103,7 +103,7 @@ const PersonalForm = ({ personalInfo, onChange, onOpenPhotoEditor }) => {
         />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="form-grid-2col">
         <div className="input-group">
           <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>GitHub URL</label>
           <input 
@@ -177,7 +177,7 @@ const PersonalForm = ({ personalInfo, onChange, onOpenPhotoEditor }) => {
         </div>
 
         {personalInfo?.showRecruiterBadges === true && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.6rem', marginTop: '0.2rem' }}>
+          <div className="form-grid-2col" style={{ marginTop: '0.2rem' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 800, color: '#475569', marginBottom: '0.25rem' }}>Notice Period</label>
               <select

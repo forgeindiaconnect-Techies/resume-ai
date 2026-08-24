@@ -31,6 +31,36 @@ const ModernLayout = ({
   const primaryAccent = secondaryColor || '#0284c7';
   const fontFamily = customFont || "'Inter', sans-serif";
 
+  const isLightColor = (hex) => {
+    if (!hex) return false;
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    if (c.length !== 6) return false;
+    const r = parseInt(c.substr(0, 2), 16);
+    const g = parseInt(c.substr(2, 2), 16);
+    const b = parseInt(c.substr(4, 2), 16);
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 165;
+  };
+
+  const isLightBg = isLightColor(sidebarBg);
+  const safeAccent = isLightColor(primaryAccent) ? '#0284c7' : primaryAccent;
+
+  const headerTitleColor = isLightBg ? '#0f172a' : '#ffffff';
+  const headerSubtitleColor = isLightBg ? '#0284c7' : '#93c5fd';
+  const headerContactColor = isLightBg ? '#334155' : '#bfdbfe';
+  const headerIconStroke = isLightBg ? '#0284c7' : '#93c5fd';
+  const headerBorderBottom = isLightBg ? '2px solid #e2e8f0' : '3px solid rgba(255, 255, 255, 0.1)';
+
+  const sidebarHeadingColor = isLightBg ? '#0f172a' : '#93c5fd';
+  const sidebarHeadingBorder = isLightBg ? '1px solid #cbd5e1' : '1px solid rgba(255,255,255,0.2)';
+  const sidebarTextColor = isLightBg ? '#334155' : '#ffffff';
+  const sidebarSubTextColor = isLightBg ? '#0284c7' : '#93c5fd';
+  const sidebarSkillBg = isLightBg ? '#f1f5f9' : 'rgba(255,255,255,0.15)';
+  const sidebarSkillColor = isLightBg ? '#0f172a' : '#ffffff';
+  const sidebarSkillBorder = isLightBg ? '1px solid #cbd5e1' : 'none';
+  const sidebarBorder = isLightBg ? '1px solid #e2e8f0' : 'none';
+
   const spacingPadding = theme?.margin ? `${theme.margin}px`
     : spacing === 'compact' ? '1.1rem'
     : spacing === 'comfortable' ? '2.8rem'
@@ -134,10 +164,10 @@ const ModernLayout = ({
       {/* ========================================================================= */}
       <div style={{
         background: sidebarBg,
-        color: '#ffffff',
+        color: headerTitleColor,
         padding: '2.25rem 2rem 1.75rem',
         boxSizing: 'border-box',
-        borderBottom: '3px solid rgba(255, 255, 255, 0.1)',
+        borderBottom: headerBorderBottom,
         textAlign: pos
       }}>
         {/* Name Header with Optional Profile Photo */}
@@ -160,7 +190,7 @@ const ModernLayout = ({
             <h1 style={{
               fontSize: headingSize ? `${headingSize}px` : `${1.95 * fScale}rem`,
               fontWeight: 700,
-              color: '#ffffff',
+              color: headerTitleColor,
               margin: 0,
               lineHeight: lineH,
               letterSpacing: '0.04em',
@@ -185,7 +215,7 @@ const ModernLayout = ({
                 'Scan LinkedIn'
               }
               size={46}
-              accentColor="#0284c7"
+              accentColor={safeAccent}
             />
           )}
         </div>
@@ -194,7 +224,7 @@ const ModernLayout = ({
         <div style={{
           fontSize: `${0.92 * fScale}rem`,
           fontWeight: 600,
-          color: '#93c5fd',
+          color: headerSubtitleColor,
           marginBottom: '0.45rem',
           letterSpacing: '0.02em'
         }}>
@@ -205,7 +235,7 @@ const ModernLayout = ({
         {(data?.showRecruiterBadges || contact?.showRecruiterBadges) && (
           <div style={{ marginBottom: '0.6rem' }}>
             <RecruiterBadges 
-              theme="dark"
+              theme={isLightBg ? 'light' : 'dark'}
               noticePeriod={data.noticePeriod || contact.noticePeriod || 'Immediate Joiner'}
               totalExp={data.totalExp || contact.totalExp || '5+ Years'}
               workPreference={data.workPreference || contact.workPreference || 'Hybrid'}
@@ -221,43 +251,43 @@ const ModernLayout = ({
           flexWrap: 'wrap',
           gap: '1.25rem',
           fontSize: `${0.78 * fScale}rem`,
-          color: '#bfdbfe',
+          color: headerContactColor,
           fontWeight: 500,
           justifyContent: profilePosition === 'center' ? 'center' : profilePosition === 'right' ? 'flex-end' : 'flex-start'
         }}>
           {contact.phone && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={headerIconStroke} strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               {contact.phone}
             </span>
           )}
           {contact.email && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={headerIconStroke} strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               {contact.email}
             </span>
           )}
           {contact.linkedin && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: '#93c5fd' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: headerSubtitleColor }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={headerIconStroke} strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
               {contact.linkedin}
             </span>
           )}
           {contact.location && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={headerIconStroke} strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               {contact.location}
             </span>
           )}
           {contact.github && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: '#93c5fd' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: headerSubtitleColor }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={headerIconStroke} strokeWidth="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
               {contact.github}
             </span>
           )}
           {contact.portfolio && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: '#93c5fd' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: headerSubtitleColor }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={headerIconStroke} strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               {contact.portfolio}
             </span>
           )}
@@ -272,7 +302,9 @@ const ModernLayout = ({
         <div style={{
           width: isSingleColumn ? '100%' : '34%',
           background: sidebarBg,
-          color: '#ffffff',
+          color: sidebarTextColor,
+          borderRight: !isSingleColumn && !isRightSidebar ? sidebarBorder : 'none',
+          borderLeft: !isSingleColumn && isRightSidebar ? sidebarBorder : 'none',
           padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
@@ -301,21 +333,20 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
-                      color: '#93c5fd',
-                      borderBottom: '1px solid rgba(255,255,255,0.2)',
+                      color: sidebarHeadingColor,
+                      borderBottom: sidebarHeadingBorder,
                       paddingBottom: '0.35rem',
                       margin: '0 0 0.65rem'
                     }}>
                       LANGUAGES
                     </h3>
-                    <div style={{ fontSize: `${0.76 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                    <div style={{ fontSize: `${0.76 * fScale}rem`, color: sidebarTextColor, display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                       {languagesList.map((lang, idx) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontWeight: 500 }}>{typeof lang === 'object' ? lang.name : lang}</span>
-                          <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#93c5fd' }}>{typeof lang === 'object' ? (lang.level || 'Fluent') : 'Native •••••'}</span>
+                          <span style={{ fontSize: `${0.7 * fScale}rem`, color: sidebarSubTextColor }}>{typeof lang === 'object' ? (lang.level || 'Fluent') : 'Native •••••'}</span>
                         </div>
                       ))}
                     </div>
@@ -329,11 +360,10 @@ const ModernLayout = ({
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
-                      color: '#93c5fd',
-                      borderBottom: '1px solid rgba(255,255,255,0.2)',
+                      color: sidebarHeadingColor,
+                      borderBottom: sidebarHeadingBorder,
                       paddingBottom: '0.35rem',
                       margin: '0 0 0.65rem'
                     }}>
@@ -343,8 +373,9 @@ const ModernLayout = ({
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
                         {['Power BI', 'Tableau', 'SQL', 'Data Modeling', 'Dashboard Development', 'JIRA', 'Confluence', 'Python', 'Advanced Excel'].map((skill, idx) => (
                           <span key={idx} style={{
-                            background: 'rgba(255,255,255,0.15)',
-                            color: '#ffffff',
+                            background: sidebarSkillBg,
+                            color: sidebarSkillColor,
+                            border: sidebarSkillBorder,
                             fontSize: `${0.72 * fScale}rem`,
                             fontWeight: 500,
                             padding: '0.2rem 0.6rem',
@@ -360,30 +391,30 @@ const ModernLayout = ({
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {skillsCat.languages.length > 0 && (
                           <div>
-                            <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#93c5fd', marginBottom: '0.25rem', textTransform: 'uppercase' }}>Programming Languages</div>
+                            <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: sidebarSubTextColor, marginBottom: '0.25rem', textTransform: 'uppercase' }}>Programming Languages</div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
                               {skillsCat.languages.map((skill, idx) => (
-                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
+                                <span key={idx} style={{ background: sidebarSkillBg, color: sidebarSkillColor, border: sidebarSkillBorder, fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
                               ))}
                             </div>
                           </div>
                         )}
                         {skillsCat.frameworks.length > 0 && (
                           <div>
-                            <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#93c5fd', marginBottom: '0.25rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
+                            <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: sidebarSubTextColor, marginBottom: '0.25rem', textTransform: 'uppercase' }}>Frameworks & Libraries</div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
                               {skillsCat.frameworks.map((skill, idx) => (
-                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
+                                <span key={idx} style={{ background: sidebarSkillBg, color: sidebarSkillColor, border: sidebarSkillBorder, fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
                               ))}
                             </div>
                           </div>
                         )}
                         {skillsCat.tools.length > 0 && (
                           <div>
-                            <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: '#93c5fd', marginBottom: '0.25rem', textTransform: 'uppercase' }}>Databases & Tools</div>
+                            <div style={{ fontSize: `${0.7 * fScale}rem`, fontWeight: 700, color: sidebarSubTextColor, marginBottom: '0.25rem', textTransform: 'uppercase' }}>Databases & Tools</div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
                               {skillsCat.tools.map((skill, idx) => (
-                                <span key={idx} style={{ background: 'rgba(255,255,255,0.15)', color: '#ffffff', fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
+                                <span key={idx} style={{ background: sidebarSkillBg, color: sidebarSkillColor, border: sidebarSkillBorder, fontSize: `${0.72 * fScale}rem`, fontWeight: 500, padding: '0.2rem 0.6rem', borderRadius: '16px', display: 'inline-block', lineHeight: 1 }}>{skill}</span>
                               ))}
                             </div>
                           </div>
@@ -521,13 +552,18 @@ const ModernLayout = ({
               case 'volunteering':
               case 'awards':
               case 'references':
+              default:
                 const customLabel = typeof secObj === 'string' ? secObj : (secObj.title || secId);
+                const secSideCustomData = (data.customSections && (data.customSections[secObj.id] || data.customSections[secObj.title] || data.customSections[secId] || data.customSections[customLabel])) || {};
+                const customSideTitle = secSideCustomData.title || customLabel;
+                const customSideContent = secSideCustomData.content || '';
+                const customSideItems = secSideCustomData.items || [];
+
                 return (
                   <div key={secId}>
                     <h3 style={{
                       fontSize: `${0.78 * fScale}rem`,
                       fontWeight: 700,
-                      
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: '#93c5fd',
@@ -535,16 +571,30 @@ const ModernLayout = ({
                       paddingBottom: '0.35rem',
                       margin: '0 0 0.65rem'
                     }}>
-                      {customLabel.toUpperCase()}
+                      {customSideTitle.toUpperCase()}
                     </h3>
-                    <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#cbd5e1', lineHeight: lineH }}>
-                      • {customLabel} details
-                    </div>
+                    {customSideItems && customSideItems.length > 0 ? (
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                        {customSideItems.map((it, idx) => (
+                          <div key={idx}>
+                            <div style={{ fontWeight: 600 }}>• {it.title}</div>
+                            {it.subtitle && <div style={{ fontSize: `${0.7 * fScale}rem`, color: '#93c5fd' }}>{it.subtitle}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    ) : customSideContent ? (
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#cbd5e1', lineHeight: lineH }}>
+                        {customSideContent.split('\n').map((line, i) => (
+                          <div key={i} style={{ marginBottom: '0.2rem' }}>• {line.replace(/^•\s*/, '')}</div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: `${0.74 * fScale}rem`, color: '#93c5fd', fontStyle: 'italic' }}>
+                        {customSideTitle} details
+                      </div>
+                    )}
                   </div>
                 );
-
-              default:
-                return null;
             }
           })}
         </div>
@@ -775,12 +825,16 @@ const ModernLayout = ({
 
               default:
                 const titleStr = typeof secObj === 'string' ? secObj : (secObj.title || secObj.id);
+                const secCustomData = (data.customSections && (data.customSections[secObj.id] || data.customSections[secObj.title] || data.customSections[secId] || data.customSections[titleStr])) || {};
+                const customTitle = secCustomData.title || titleStr;
+                const customContent = secCustomData.content || '';
+                const customItems = secCustomData.items || [];
+
                 return (
                   <div key={secId}>
                     <h3 style={{
                       fontSize: `${0.84 * fScale}rem`,
                       fontWeight: 700,
-                      
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       color: '#111827',
@@ -789,12 +843,56 @@ const ModernLayout = ({
                       alignItems: 'center',
                       gap: '0.5rem'
                     }}>
-                      {titleStr}
+                      {customTitle}
                       <span style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
                     </h3>
-                    <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
-                      • Added custom content for {titleStr}
-                    </div>
+
+                    {customItems && customItems.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                        {customItems.map((item, idx) => (
+                          <div key={idx}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <span style={{ fontSize: `${0.84 * fScale}rem`, fontWeight: 700, color: primaryAccent }}>
+                                {item.title}
+                              </span>
+                              {item.date && (
+                                <span style={{ fontSize: `${0.76 * fScale}rem`, fontWeight: 500, color: '#64748b' }}>
+                                  {item.date}
+                                </span>
+                              )}
+                            </div>
+                            {item.subtitle && (
+                              <div style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 600, color: '#334155', marginBottom: '0.2rem' }}>
+                                {item.subtitle}
+                              </div>
+                            )}
+                            {item.description && (
+                              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                                {item.description.split('\n').map((line, i) => (
+                                  <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative' }}>
+                                    <span style={{ position: 'absolute', left: 0 }}>•</span>
+                                    {line.replace(/^•\s*/, '')}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : customContent ? (
+                      <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                        {customContent.split('\n').map((line, i) => (
+                          <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative', marginBottom: '0.2rem' }}>
+                            <span style={{ position: 'absolute', left: 0 }}>•</span>
+                            {line.replace(/^•\s*/, '')}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#94a3b8', fontStyle: 'italic' }}>
+                        Click on {customTitle} in the editor to add your details.
+                      </div>
+                    )}
                   </div>
                 );
             }

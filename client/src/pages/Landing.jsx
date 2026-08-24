@@ -6,7 +6,7 @@ import ContactModal from '../components/common/ContactModal';
 import {
   Sparkles, Compass, FileText, MessageCircle, Briefcase, 
   ArrowRight, ChevronRight, HelpCircle, Upload, Layers,
-  FileSearch, X, Mail, Phone, MapPin, Globe, ExternalLink
+  FileSearch, X, Menu, Mail, Phone, MapPin, Globe, ExternalLink
 } from 'lucide-react';
 import { generateResumeAI } from '../services/aiService';
 import { getOrCreateUser } from '../utils/userIdentity';
@@ -23,6 +23,7 @@ const LandingPage = () => {
   };
 
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   // AI Generator Modal States
   const [showAiModal, setShowAiModal] = useState(false);
@@ -189,96 +190,185 @@ const LandingPage = () => {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        padding: '0 2rem',
-        height: '64px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <ForgeLogo size={36} showText={true} variant="light" />
-        </div>
+        <div className="landing-nav-container">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => navigate('/')}>
+            <ForgeLogo size={32} showText={true} variant="light" />
+          </div>
 
-        {/* Navigation Links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-          {[
-            { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
-            { label: 'Features', href: '#features' },
-            { label: 'Examples', onClick: () => navigate('/industry-examples') }
-          ].map((item, idx) => (
-            <span
-              key={idx}
-              onClick={item.onClick || (() => {
-                const el = document.querySelector(item.href);
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              })}
-              style={{ color: '#475569', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#0284c7'}
-              onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+          {/* Desktop Navigation Links */}
+          <div className="landing-desktop-nav">
+            {[
+              { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+              { label: 'Features', href: '#features' },
+              { label: 'Examples', onClick: () => navigate('/industry-examples') }
+            ].map((item, idx) => (
+              <span
+                key={idx}
+                onClick={item.onClick || (() => {
+                  const el = document.querySelector(item.href);
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                })}
+                style={{ color: '#475569', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#0284c7'}
+                onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+              >
+                {item.label}
+              </span>
+            ))}
+          </div>
+
+          {/* Desktop Action Buttons */}
+          <div className="landing-desktop-actions">
+            <button 
+              onClick={() => setShowAiModal(true)}
+              style={{
+                background: 'white',
+                border: '1.5px solid #0284c7',
+                color: '#0284c7',
+                padding: '0.5rem 1.15rem',
+                borderRadius: '24px',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 2px 6px rgba(2,132,199,0.08)'
+              }}
             >
-              {item.label}
-            </span>
-          ))}
-        </div>
+              <Sparkles size={15} /> ✨ AI Resume Generator
+            </button>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button 
-            onClick={() => setShowAiModal(true)}
-            style={{
-              background: 'white',
-              border: '1.5px solid #0284c7',
-              color: '#0284c7',
-              padding: '0.5rem 1.15rem',
-              borderRadius: '24px',
-              fontWeight: 800,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 2px 6px rgba(2,132,199,0.08)'
-            }}
-          >
-            <Sparkles size={15} /> ✨ AI Resume Generator
-          </button>
+            <button 
+              onClick={() => onEnterApp(isLoggedIn ? null : 'login')}
+              style={{
+                background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+                border: 'none',
+                color: 'white',
+                padding: '0.55rem 1.35rem',
+                borderRadius: '24px',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)',
+                cursor: 'pointer'
+              }}
+            >
+              {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
+            </button>
+          </div>
 
+          {/* Mobile Hamburger Toggle Button */}
           <button 
-            onClick={() => onEnterApp(isLoggedIn ? null : 'login')}
-            style={{
-              background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
-              border: 'none',
-              color: 'white',
-              padding: '0.55rem 1.35rem',
-              borderRadius: '24px',
-              fontWeight: 800,
-              fontSize: '0.85rem',
-              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)',
-              cursor: 'pointer'
-            }}
+            className="landing-mobile-toggle"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            aria-label="Toggle Navigation Menu"
           >
-            {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
+            {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        <AnimatePresence>
+          {showMobileMenu && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              style={{
+                background: 'white',
+                borderTop: '1px solid #e2e8f0',
+                padding: '1.25rem 1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.08)'
+              }}
+            >
+              <span
+                onClick={() => { setShowMobileMenu(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', padding: '0.4rem 0' }}
+              >
+                Home
+              </span>
+              <span
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  const el = document.querySelector('#features');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', padding: '0.4rem 0' }}
+              >
+                Features
+              </span>
+              <span
+                onClick={() => { setShowMobileMenu(false); navigate('/industry-examples'); }}
+                style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', padding: '0.4rem 0' }}
+              >
+                Examples
+              </span>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
+                <button 
+                  onClick={() => { setShowMobileMenu(false); setShowAiModal(true); }}
+                  style={{
+                    background: '#e0f2fe',
+                    border: '1.5px solid #0284c7',
+                    color: '#0284c7',
+                    padding: '0.75rem',
+                    borderRadius: '12px',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <Sparkles size={16} /> AI Resume Generator
+                </button>
+
+                <button 
+                  onClick={() => { setShowMobileMenu(false); onEnterApp(isLoggedIn ? null : 'login'); }}
+                  style={{
+                    background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+                    border: 'none',
+                    color: 'white',
+                    padding: '0.75rem',
+                    borderRadius: '12px',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Main Content */}
       <main style={{ position: 'relative', zIndex: 10 }}>
         
         {/* Hero Section */}
-        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 2rem 4rem', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+        <section className="landing-hero-section" style={{ position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', marginBottom: '2.2rem' }}>
-            <p style={{ fontSize: '1.25rem', color: '#334155', fontWeight: 500, margin: 0 }}>
+            <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: '#334155', fontWeight: 500, margin: 0, padding: '0 0.5rem' }}>
               Thinking about your next career move — not sure where to start?
             </p>
             <p style={{ 
-              fontSize: '1.65rem', 
+              fontSize: 'clamp(1.2rem, 3.5vw, 1.65rem)', 
               fontFamily: "'Playfair Display', serif", 
               fontStyle: 'italic', 
               color: '#0284c7',
               fontWeight: 600,
-              margin: 0
+              margin: 0,
+              padding: '0 0.5rem'
             }}>
               Let's find your next role.
             </p>
@@ -293,22 +383,14 @@ const LandingPage = () => {
             border: '1px solid #bae6fd', 
             background: '#e0f2fe', 
             color: '#0284c7', 
-            fontSize: '0.875rem', 
+            fontSize: '0.85rem', 
             fontWeight: 800, 
-            marginBottom: '2rem' 
+            marginBottom: '1.75rem' 
           }}>
             <Layers size={14} /> Introducing Career 360°
           </div>
 
-          <h1 style={{ 
-            fontSize: '4.5rem', 
-            fontWeight: 900, 
-            fontFamily: "'Playfair Display', serif",
-            lineHeight: 1.1,
-            letterSpacing: '-0.03em',
-            color: '#0f172a',
-            marginBottom: '2.5rem'
-          }}>
+          <h1 className="landing-hero-h1">
             Build Professional <span style={{ 
               background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
               WebkitBackgroundClip: 'text',
@@ -317,27 +399,19 @@ const LandingPage = () => {
             }}>ATS-Friendly Resume</span> with AI
           </h1>
 
-          <p style={{ 
-            fontSize: '1.5rem', 
-            fontFamily: "'Playfair Display', serif", 
-            fontStyle: 'italic',
-            color: '#475569',
-            maxWidth: '800px',
-            margin: '0 auto 3.5rem',
-            lineHeight: 1.55
-          }}>
+          <p className="landing-hero-sub">
             Career 360° gives you the <span style={{ fontStyle: 'normal', fontWeight: 700, color: '#0284c7' }}>standout resume</span> + <span style={{ fontStyle: 'normal', fontWeight: 700, color: '#0ea5e9' }}>executive one-pager</span> — <span style={{ fontStyle: 'normal', fontWeight: 700, color: '#0f172a' }}>in minutes.</span>
-            <span style={{ display: 'block', marginTop: '1rem', fontStyle: 'normal', fontSize: '1.05rem', color: '#64748b' }}>
+            <span style={{ display: 'block', marginTop: '1rem', fontStyle: 'normal', fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', color: '#64748b' }}>
               It also maps your next roles — so recruiters can find you for what's coming, not just what's been.
             </span>
           </p>
 
           {/* Hero Action Cards */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch', gap: '2rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+          <div className="landing-hero-cards">
             
             {/* Create Resume */}
-            <div style={{
-              background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', width: '280px', textAlign: 'left',
+            <div className="landing-hero-card" style={{
+              background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', textAlign: 'left',
               boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s ease', cursor: 'pointer'
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#0284c7'; }}
@@ -369,8 +443,8 @@ const LandingPage = () => {
             </div>
 
             {/* AI Resume */}
-            <div style={{
-              background: '#ffffff', border: '2px solid #0ea5e9', borderRadius: '16px', padding: '1.5rem', width: '280px', textAlign: 'left',
+            <div className="landing-hero-card" style={{
+              background: '#ffffff', border: '2px solid #0ea5e9', borderRadius: '16px', padding: '1.5rem', textAlign: 'left',
               boxShadow: '0 8px 16px rgba(14, 165, 233, 0.1)', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s ease', cursor: 'pointer'
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(14, 165, 233, 0.15)'; }}
@@ -405,8 +479,8 @@ const LandingPage = () => {
             </div>
 
             {/* Resume Examples */}
-            <div style={{
-              background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', width: '280px', textAlign: 'left',
+            <div className="landing-hero-card" style={{
+              background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', textAlign: 'left',
               boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s ease', cursor: 'pointer'
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#0284c7'; }}
@@ -490,23 +564,17 @@ const LandingPage = () => {
             Executive Ready Resumes | Career 360° Output
           </h2>
 
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between', 
-            gap: '2.5rem',
-            position: 'relative',
-            zIndex: 10
-          }}>
+          <div className="landing-showcase-container">
             {/* Left Card: Resume Preview */}
             <div style={{ 
               flex: 1.1,
+              width: '100%',
               background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(16px)',
               borderRadius: '24px',
               border: '1px solid rgba(255, 255, 255, 0.6)',
               boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(2, 132, 199, 0.15)',
-              padding: '2.2rem',
+              padding: 'clamp(1.25rem, 3vw, 2.2rem)',
               color: '#1e293b',
               textAlign: 'left',
               fontFamily: "'Inter', sans-serif"
@@ -531,7 +599,7 @@ const LandingPage = () => {
               <div style={{ marginBottom: '1.75rem' }}>
                 <h4 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>PROFESSIONAL EXPERIENCE</h4>
                 <div style={{ borderLeft: '2px solid #e2e8f0', paddingLeft: '1rem', marginLeft: '0.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.25rem' }}>
                     <div>
                       <h5 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Marketing Solutions Inc.</h5>
                       <h6 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0284c7', margin: '0.1rem 0 0.3rem 0' }}>VP Marketing</h6>
@@ -547,7 +615,7 @@ const LandingPage = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem' }}>
                 <div>
                   <h4 style={{ fontSize: '0.75rem', fontWeight: 900, color: '#0f172a', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>🎓 EDUCATION</h4>
                   <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>✓ Harvard MBA</span>
@@ -563,7 +631,7 @@ const LandingPage = () => {
             </div>
 
             {/* Arrow */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="landing-showcase-arrow" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
               <motion.div 
                 animate={{ x: [0, 8, 0] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
@@ -576,12 +644,13 @@ const LandingPage = () => {
             {/* Right Card: Career 360° Profile */}
             <div style={{ 
               flex: 1.1,
+              width: '100%',
               background: 'rgba(15, 23, 42, 0.45)',
               backdropFilter: 'blur(16px)',
               borderRadius: '24px',
               border: '1.5px solid rgba(56, 189, 248, 0.3)',
               boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.25)',
-              padding: '2.2rem',
+              padding: 'clamp(1.25rem, 3vw, 2.2rem)',
               color: '#f8fafc',
               textAlign: 'left',
               fontFamily: "'Inter', sans-serif"
@@ -591,7 +660,7 @@ const LandingPage = () => {
               </h3>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.75rem' }}>
-                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', boxShadow: '0 0 15px rgba(2,132,199,0.4)' }}>
+                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', boxShadow: '0 0 15px rgba(2,132,199,0.4)', flexShrink: 0 }}>
                   <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
@@ -628,7 +697,7 @@ const LandingPage = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem' }}>
                 <div>
                   <h4 style={{ fontSize: '0.7rem', fontWeight: 900, color: '#94a3b8', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>🎓 EDUCATION</h4>
                   <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>✓ Harvard MBA</span>
@@ -646,18 +715,18 @@ const LandingPage = () => {
         </section>
 
         {/* How It Works Section */}
-        <section style={{ borderTop: '1px solid #f1f5f9', background: 'linear-gradient(180deg, #f8f9fb 0%, #eef2ff 100%)', padding: '5rem 2rem', position: 'relative' }}>
+        <section style={{ borderTop: '1px solid #f1f5f9', background: 'linear-gradient(180deg, #f8f9fb 0%, #eef2ff 100%)', padding: 'clamp(3rem, 6vw, 5rem) 1.5rem', position: 'relative' }}>
           <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-              <h2 style={{ fontSize: '2.5rem', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: '#0f172a', marginBottom: '0.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem, 4.5vw, 2.5rem)', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: '#0f172a', marginBottom: '0.5rem' }}>
                 See where you're going next
               </h2>
-              <p style={{ fontSize: '1.1rem', color: '#475569', margin: 0 }}>
+              <p style={{ fontSize: '1.05rem', color: '#475569', margin: 0 }}>
                 Built from your real career. Designed for your next one.
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+            <div className="landing-3col-grid">
               <div style={{ background: '#ecfeff', border: '1px solid #cffafe', padding: '2rem', borderRadius: '24px', position: 'relative' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
@@ -704,16 +773,16 @@ const LandingPage = () => {
         </section>
 
         {/* Deliverables Section */}
-        <section style={{ borderTop: '1px solid #f1f5f9', padding: '5rem 2rem', background: '#fff' }}>
+        <section style={{ borderTop: '1px solid #f1f5f9', padding: 'clamp(3rem, 6vw, 5rem) 1.5rem', background: '#fff' }}>
           <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
               <p style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>What you get</p>
-              <h2 style={{ fontSize: '2.5rem', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: '#0f172a', margin: 0 }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem, 4.5vw, 2.5rem)', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: '#0f172a', margin: 0 }}>
                 Three ways Career 360° gets you found.
               </h2>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+            <div className="landing-3col-grid">
               <div style={{ background: '#ecfeff', border: '1px solid #cffafe', padding: '2.2rem 2rem', borderRadius: '24px' }}>
                 <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 900, display: 'block', marginBottom: '0.5rem' }}>01</span>
                 <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', marginBottom: '1rem' }}>Standout Resume</h3>
@@ -745,19 +814,19 @@ const LandingPage = () => {
         </section>
 
         {/* Career Advisor Chat Simulator Section */}
-        <section style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', padding: '6rem 2rem', color: 'white', position: 'relative' }}>
+        <section style={{ borderTop: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', padding: 'clamp(3.5rem, 6vw, 6rem) 1.5rem', color: 'white', position: 'relative' }}>
           <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
             <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: 400, height: 400, background: 'rgba(6, 182, 212, 0.1)', borderRadius: '50%', filter: 'blur(100px)' }} />
             <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: 400, height: 400, background: 'rgba(99, 102, 241, 0.1)', borderRadius: '50%', filter: 'blur(100px)' }} />
           </div>
 
           <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
-            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)', padding: '0.4rem 1rem', borderRadius: '50px', color: '#22d3ee', fontSize: '0.8rem', fontWeight: 700, marginBottom: '1.5rem' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22d3ee', display: 'inline-block' }} />
                 Career Advisor · Online
               </div>
-              <h2 style={{ fontSize: '2.6rem', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: 'white', marginBottom: '0.5rem' }}>
+              <h2 style={{ fontSize: 'clamp(1.8rem, 4.5vw, 2.6rem)', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: 'white', marginBottom: '0.5rem' }}>
                 Talk to your Career Advisor
               </h2>
               <p style={{ fontSize: '1.05rem', color: '#94a3b8', margin: 0 }}>
@@ -781,7 +850,7 @@ const LandingPage = () => {
                     style={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start', width: '100%' }}
                   >
                     <div style={{ 
-                      maxWidth: '75%', 
+                      maxWidth: '85%', 
                       padding: '1rem 1.25rem', 
                       borderRadius: '16px',
                       fontSize: '0.95rem',
@@ -815,7 +884,7 @@ const LandingPage = () => {
               </div>
 
               <div style={{ padding: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.01)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+                <div className="landing-chat-actions">
                   {[
                     { text: 'Career Strategy', id: 'strategy', icon: Compass, color: '#0284c7' },
                     { text: 'Resume Analysis', id: 'analysis', icon: FileSearch, color: '#06b6d4' },
@@ -827,7 +896,7 @@ const LandingPage = () => {
                       <button
                         key={btn.id}
                         onClick={() => handleAdvisorChoice(btn.text, btn.id)}
-                        style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '1rem 0.5rem', color: 'rgba(255,255,255,0.9)', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s' }}
+                        style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '0.85rem 0.4rem', color: 'rgba(255,255,255,0.9)', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', transition: 'all 0.2s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = btn.color; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'; }}
                       >
@@ -843,9 +912,9 @@ const LandingPage = () => {
         </section>
 
         {/* CTA Bottom Section */}
-        <section id="pricing" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '6rem 2rem', textAlign: 'center', color: 'white', position: 'relative' }}>
+        <section id="pricing" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: 'clamp(3.5rem, 6vw, 6rem) 1.5rem', textAlign: 'center', color: 'white', position: 'relative' }}>
           <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
-            <h2 style={{ fontSize: '3rem', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: 'white', marginBottom: '2rem', lineHeight: 1.2 }}>
+            <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontFamily: "'Playfair Display', serif", fontWeight: 500, color: 'white', marginBottom: '2rem', lineHeight: 1.2 }}>
               Your potential isn't hidden.<br />
               <span style={{ background: 'linear-gradient(90deg, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'italic' }}>
                 It's just not mapped.
@@ -854,7 +923,7 @@ const LandingPage = () => {
 
             <button 
               onClick={() => onEnterApp('create')}
-              style={{ background: '#ffffff', color: '#0f172a', border: 'none', padding: '1.25rem 3rem', borderRadius: '16px', fontSize: '1.1rem', fontWeight: 900, display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 10px 30px rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'transform 0.2s' }}
+              style={{ background: '#ffffff', color: '#0f172a', border: 'none', padding: '1.15rem 2.5rem', borderRadius: '16px', fontSize: '1rem', fontWeight: 900, display: 'inline-flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 10px 30px rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'transform 0.2s', maxWidth: '100%' }}
               onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
             >
@@ -868,8 +937,8 @@ const LandingPage = () => {
       </main>
 
       {/* Footer */}
-      <footer style={{ background: 'linear-gradient(135deg, #090e1a 0%, #0f172a 50%, #1e293b 100%)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '4.5rem 2rem 2rem', color: '#94a3b8', position: 'relative', zIndex: 10 }}>
-        <div style={{ maxWidth: '1140px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1.2fr', gap: '2.5rem', marginBottom: '3.5rem' }}>
+      <footer style={{ background: 'linear-gradient(135deg, #090e1a 0%, #0f172a 50%, #1e293b 100%)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '4rem 1.5rem 2rem', color: '#94a3b8', position: 'relative', zIndex: 10 }}>
+        <div className="landing-footer-grid" style={{ maxWidth: '1140px', margin: '0 auto' }}>
           
           {/* Brand Column */}
           <div>

@@ -82,8 +82,8 @@ const ResumeToolbar = ({
             height: '18px',
             borderRadius: '50%',
             background: !colors.includes(selectedColor) ? selectedColor : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)',
-            border: !colors.includes(selectedColor) ? '2px solid white' : '1px solid #cbd5e1',
-            boxShadow: !colors.includes(selectedColor) ? `0 0 0 2px ${selectedColor}` : 'none',
+            border: !colors.includes(selectedColor) ? '2px solid #ffffff' : '1px solid #cbd5e1',
+            boxShadow: !colors.includes(selectedColor) ? '0 0 0 2px #7c3aed' : 'none',
             zIndex: 1,
             pointerEvents: 'none',
             transition: 'all 0.15s'

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { 
+  Menu,
   Search, 
   UserCircle, 
   X, 
@@ -78,11 +79,21 @@ const AdminHeader = () => {
 
   return (
     <header className="admin-header">
-      <div>
-        <h1 style={{ fontSize: "18px", margin: 0, color: "#111827", fontWeight: 700 }}>
-          Welcome back, Administrator!
-        </h1>
-        <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: "13px" }}>{today}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <button
+          className="admin-mobile-menu-btn no-print"
+          onClick={() => window.dispatchEvent(new CustomEvent('toggle-admin-sidebar'))}
+          aria-label="Open Navigation Menu"
+        >
+          <Menu size={20} />
+        </button>
+
+        <div>
+          <h1 style={{ fontSize: "17px", margin: 0, color: "#111827", fontWeight: 700 }}>
+            Welcome back, Administrator!
+          </h1>
+          <p style={{ margin: "3px 0 0", color: "#6b7280", fontSize: "12px" }}>{today}</p>
+        </div>
       </div>
 
       <div className="admin-header-right">

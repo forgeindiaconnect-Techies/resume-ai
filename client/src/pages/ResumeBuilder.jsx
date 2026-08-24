@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Briefcase, GraduationCap, Award, Code, Save, 
-  Download, Sparkles, Plus, Trash2, ChevronRight, ChevronLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2,
+  Download, Sparkles, Plus, Trash2, ChevronRight, ChevronLeft, ArrowLeft, Check, Palette, Type, ZoomIn, ZoomOut, Link2,
   AlertTriangle, Eye, Settings2, ShieldCheck, FileText, CheckCircle2
 } from 'lucide-react';
 import ModernResumeTemplate from '../components/builder/ModernResumeTemplate';
@@ -27,6 +27,7 @@ import CertificatesForm from '../components/resume/CertificatesForm';
 import LanguagesForm from '../components/resume/LanguagesForm';
 import AchievementsForm from '../components/resume/AchievementsForm';
 import SignatureForm from '../components/resume/SignatureForm';
+import CustomSectionForm from '../components/resume/CustomSectionForm';
 import AIAssistant from '../components/resume/AIAssistant';
 import ResumeFooter from '../components/layouts/ResumeFooter';
 import ResumeToolbar from '../components/resume/ResumeToolbar';
@@ -45,6 +46,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   const { resumeId } = useParams();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
+  const [mobileTab, setMobileTab] = useState('form');
   const [showJdMatcherModal, setShowJdMatcherModal] = useState(false);
   const [polishTarget, setPolishTarget] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -185,7 +187,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
   }, []);
 
   // Preview Config States
-  const [zoomLevel, setZoomLevel] = useState(0.6);
+  const [zoomLevel, setZoomLevel] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 640) ? 0.45 : 0.6);
   const [selectedColor, setSelectedColor] = useState('#7c3aed'); // Purple
   const [selectedFont, setSelectedFont] = useState("'Inter', sans-serif");
   
@@ -1241,7 +1243,29 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     })),
     languagesList: (formData.languagesList && formData.languagesList.length > 0) ? formData.languagesList : currentPreset.languagesList,
     references: formData.references || '',
-    signature: formData.signature
+    signature: formData.signature,
+    customSections: formData.customSections || {}
+  };
+
+  const handleCustomSectionChange = (sectionId, updatedData) => {
+    setFormData(prev => ({
+      ...prev,
+      customSections: {
+        ...(prev.customSections || {}),
+        [sectionId]: updatedData
+      }
+    }));
+  };
+
+  const handleDeleteCustomSection = (sectionId) => {
+    setSections(prev => prev.filter(s => (typeof s === 'string' ? s : (s.id || s.title)) !== sectionId));
+    setEnabledSections(prev => prev.filter(s => s !== sectionId));
+    setFormData(prev => {
+      const updated = { ...(prev.customSections || {}) };
+      delete updated[sectionId];
+      return { ...prev, customSections: updated };
+    });
+    setActiveStep(1);
   };
 
   const renderLayout = () => {
@@ -1287,169 +1311,432 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#f8fafc', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
       
       {/* Top Navbar */}
-      <header className="no-print" style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '0.85rem 2.5rem', 
-        background: 'white', 
-        borderBottom: '1px solid #e2e8f0',
-        zIndex: 50,
-        flex: '0 0 auto'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <ForgeLogo size={32} />
-          <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
-          <span style={{ fontSize: '1.05rem', fontWeight: 900, color: '#0f172a' }}>Resume Builder</span>
+      <header className="builder-header no-print">
+        <div className="builder-header-left" style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+          <button
+            onClick={() => navigate('/')}
+            title="Back to Home"
+            aria-label="Back to Home"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              flexShrink: 0,
+              padding: 0
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#e2e8f0';
+              e.currentTarget.style.color = '#0f172a';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#f1f5f9';
+              e.currentTarget.style.color = '#475569';
+            }}
+          >
+            <ArrowLeft size={16} />
+          </button>
+
+          <div 
+            onClick={() => navigate('/')} 
+            title="Go to Home" 
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          >
+            <ForgeLogo size={26} showText={true} />
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
-          {/* Progress Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="builder-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+          {/* Progress Bar (Desktop) */}
+          <div className="builder-desktop-progress" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748b' }}>Resume Completion:</span>
-            <div style={{ width: '80px', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ width: '60px', height: '6px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
               <div style={{ width: `${getProgressPercent()}%`, height: '100%', background: '#7c3aed', borderRadius: '4px' }} />
             </div>
             <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#7c3aed' }}>{getProgressPercent()}%</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, color: saveStatus?.includes('Error') ? '#ef4444' : '#10b981' }}>
+          <div className="builder-desktop-saved" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.78rem', fontWeight: 700, color: saveStatus?.includes('Error') ? '#ef4444' : '#10b981' }}>
             <Check size={14} /> {saveStatus}
           </div>
 
           <button 
+            className="builder-btn-jd"
             onClick={() => setShowJdMatcherModal(true)}
             style={{
               background: '#eff6ff',
               color: '#1d4ed8',
               border: '1.5px solid #bfdbfe',
-              padding: '0.45rem 0.95rem',
+              padding: '0.42rem 0.75rem',
               borderRadius: '8px',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
-              transition: 'all 0.15s'
+              gap: '0.3rem',
+              transition: 'all 0.15s',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
             }}
           >
-            <span>🎯</span> Match with Job (JD)
+            <span>🎯</span> <span className="builder-btn-label">Match JD</span><span className="builder-btn-label-mobile">JD</span>
           </button>
 
           <button 
+            className="builder-btn-download"
             onClick={handleDownload}
             style={{
               background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
               color: 'white',
               border: 'none',
-              padding: '0.5rem 1.25rem',
+              padding: '0.42rem 0.85rem',
               borderRadius: '8px',
-              fontSize: '0.82rem',
+              fontSize: '0.78rem',
               fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              gap: '0.3rem',
               boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
-              transition: 'all 0.15s'
+              transition: 'all 0.15s',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
             }}
           >
-            <Download size={15} /> Download PDF
+            <Download size={13} /> <span className="builder-btn-label">Download PDF</span><span className="builder-btn-label-mobile">Download</span>
           </button>
         </div>
       </header>
 
-      {/* Progress Stepper */}
-      <div className="no-print" style={{ 
-        background: 'white', 
-        borderBottom: '1px solid #e2e8f0', 
-        padding: '0.75rem 2rem', 
-        display: 'flex', 
-        flexWrap: 'wrap',
-        justifyContent: 'center', 
-        gap: '0.85rem', 
-        flex: '0 0 auto',
-        zIndex: 40
-      }}>
+      {/* Mobile Sub-Header & Segmented Mode Switcher (Visible only on mobile < 900px) */}
+      <div className="builder-mobile-tabs no-print">
+        {/* Completion & Save status mini bar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '0.35rem', padding: '0 0.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b' }}>Completion:</span>
+            <div style={{ width: '40px', height: '5px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ width: `${getProgressPercent()}%`, height: '100%', background: '#7c3aed', borderRadius: '4px' }} />
+            </div>
+            <span style={{ fontSize: '0.74rem', fontWeight: 900, color: '#7c3aed' }}>{getProgressPercent()}%</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.72rem', fontWeight: 700, color: saveStatus?.includes('Error') ? '#ef4444' : '#10b981' }}>
+            <Check size={12} /> {saveStatus?.includes('Saved') ? 'Saved' : saveStatus}
+          </div>
+        </div>
+
+        {/* Clean Segmented Tabs */}
+        <div style={{ display: 'flex', width: '100%', background: '#e2e8f0', borderRadius: '10px', padding: '3px', gap: '3px' }}>
+          <button 
+            className="builder-mobile-tab-btn"
+            onClick={() => setMobileTab('form')}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.3rem',
+              padding: '0.45rem 0.25rem',
+              fontSize: '0.76rem',
+              fontWeight: 800,
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              background: mobileTab === 'form' ? '#ffffff' : 'transparent',
+              color: mobileTab === 'form' ? '#7c3aed' : '#64748b',
+              boxShadow: mobileTab === 'form' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none'
+            }}
+          >
+            <FileText size={13} /> Form
+          </button>
+          <button 
+            className="builder-mobile-tab-btn"
+            onClick={() => setMobileTab('sidebar')}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.3rem',
+              padding: '0.45rem 0.25rem',
+              fontSize: '0.76rem',
+              fontWeight: 800,
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              background: mobileTab === 'sidebar' ? '#ffffff' : 'transparent',
+              color: mobileTab === 'sidebar' ? '#7c3aed' : '#64748b',
+              boxShadow: mobileTab === 'sidebar' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none'
+            }}
+          >
+            <Palette size={13} /> Theme
+          </button>
+          <button 
+            className="builder-mobile-tab-btn"
+            onClick={() => setMobileTab('preview')}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.3rem',
+              padding: '0.45rem 0.25rem',
+              fontSize: '0.76rem',
+              fontWeight: 800,
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              background: mobileTab === 'preview' ? '#ffffff' : 'transparent',
+              color: mobileTab === 'preview' ? '#0284c7' : '#64748b',
+              boxShadow: mobileTab === 'preview' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none'
+            }}
+          >
+            <Eye size={13} /> Preview
+          </button>
+        </div>
+      </div>
+
+      {/* Progress Stepper (Visible on Desktop and on mobile when editing Form) */}
+      <div className={`builder-step-tracker no-print ${mobileTab !== 'form' ? 'builder-col-hidden-mobile' : ''}`}>
         {steps.map((step) => {
           const isActive = activeStep === step.num;
           const isDone = activeStep > step.num;
           return (
             <div 
               key={step.num}
-              onClick={() => setActiveStep(step.num)}
+              onClick={() => {
+                setActiveStep(step.num);
+                setMobileTab('form');
+              }}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '0.4rem', 
+                gap: '0.35rem', 
                 cursor: 'pointer',
-                padding: '0.25rem 0.6rem',
+                padding: '0.25rem 0.55rem',
                 borderRadius: '6px',
-                background: isActive ? '#f5f3ff' : 'transparent'
+                background: isActive ? '#f5f3ff' : 'transparent',
+                flexShrink: 0
               }}
             >
               <div style={{ 
-                width: '22px', 
-                height: '22px', 
+                width: '20px', 
+                height: '20px', 
                 borderRadius: '50%', 
                 background: isActive ? '#7c3aed' : isDone ? '#10b981' : '#e2e8f0',
                 color: isActive || isDone ? 'white' : '#64748b',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: 900
               }}>
-                {isDone ? <Check size={12} /> : step.num}
+                {isDone ? <Check size={11} /> : step.num}
               </div>
-              <span style={{ fontSize: '0.8rem', fontWeight: isActive ? 800 : 600, color: isActive ? '#7c3aed' : isDone ? '#10b981' : '#64748b' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: isActive ? 800 : 600, color: isActive ? '#7c3aed' : isDone ? '#10b981' : '#64748b' }}>
                 {step.label}
               </span>
-              {step.num < steps.length && <ChevronRight size={12} color="#cbd5e1" style={{ marginLeft: '0.4rem' }} />}
+              {step.num < steps.length && <ChevronRight size={11} color="#cbd5e1" style={{ marginLeft: '0.25rem' }} />}
             </div>
           );
         })}
       </div>
 
       {/* Three Column Grid Workspace */}
-      <div style={{ display: 'flex', flex: '1 1 auto', overflow: 'hidden', minHeight: 0, boxSizing: 'border-box', paddingTop: '10px' }}>
+      <div className="builder-workspace" style={{ display: 'flex', flex: '1 1 auto', overflow: 'hidden', minHeight: 0, boxSizing: 'border-box' }}>
         
-        {/* Left Column (Fixed 240px width): Metrics Sidebar */}
-        <div className="no-print" style={{ 
-          width: '240px',
-          minWidth: '240px',
-          maxWidth: '240px',
+        {/* Left Column: Theme & Design Sidebar */}
+        <div className={`builder-sidebar-col no-print ${mobileTab !== 'sidebar' ? 'builder-col-hidden-mobile' : ''}`} style={{ 
+          width: '260px',
+          minWidth: '260px',
+          maxWidth: '260px',
           height: '100%',
           minHeight: 0,
           background: 'white', 
           borderRight: '1px solid #e2e8f0', 
           display: 'flex', 
           flexDirection: 'column',
-          padding: '1.25rem 1rem',
-          gap: '1.5rem',
+          padding: '1rem 0.85rem',
+          gap: '1.15rem',
           overflowY: 'auto',
           boxSizing: 'border-box'
         }}>
 
-
-          {/* AI Suggestions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a' }}>AI Suggestions</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {['Improve Summary', 'Add Leadership', 'Add Metrics', 'Improve Skills'].map((tip, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '0.4rem', fontSize: '0.75rem', fontWeight: 650, color: '#475569' }}>
-                  <span style={{ color: '#10b981', fontWeight: 900 }}>✔</span>
-                  <span>{tip}</span>
-                </div>
-              ))}
+          {/* ── 1. Choose Resume Template ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                🎨 Choose Template
+              </span>
+              <span style={{ fontWeight: 800, color: '#7c3aed', textTransform: 'capitalize', fontSize: '0.7rem', background: '#f5f3ff', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
+                {formData.templateId || 'modern'}
+              </span>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem' }}>
+              {[
+                { id: 'modern', name: 'Modern', emoji: '💻' },
+                { id: 'professional', name: 'Professional', emoji: '📋' },
+                { id: 'creative', name: 'Creative', emoji: '🎨' },
+                { id: 'enhancv', name: 'Enhancv', emoji: '⚡' },
+                { id: 'minimal', name: 'Minimal', emoji: '🪶' },
+                { id: 'executive', name: 'Executive', emoji: '🏛' }
+              ].map((tpl) => {
+                const isActive = (formData.templateId || 'modern').toLowerCase() === tpl.id;
+                return (
+                  <button
+                    key={tpl.id}
+                    onClick={() => {
+                      setFormData({ ...formData, templateId: tpl.id });
+                    }}
+                    style={{
+                      padding: '0.45rem 0.4rem',
+                      borderRadius: '8px',
+                      border: `1.5px solid ${isActive ? '#7c3aed' : '#e2e8f0'}`,
+                      background: isActive ? '#f5f3ff' : '#ffffff',
+                      color: isActive ? '#7c3aed' : '#334155',
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      boxShadow: isActive ? '0 2px 8px rgba(124,58,237,0.15)' : 'none',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <span>{tpl.emoji}</span>
+                    <span>{tpl.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div style={{ height: '1px', background: '#cbd5e1' }} />
+          <div style={{ height: '1px', background: '#e2e8f0' }} />
 
-          {/* Section Reordering Widget */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          {/* ── 2. Primary Color Palette ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              🌈 Theme Color
+            </span>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              {['#7c3aed', '#0284c7', '#059669', '#dc2626', '#d97706', '#0f172a', '#ffffff'].map((hex) => {
+                const isSelected = selectedColor?.toLowerCase() === hex.toLowerCase();
+                return (
+                  <button
+                    key={hex}
+                    onClick={() => {
+                      setSelectedColor(hex);
+                      setTheme(prev => ({ ...prev, primaryColor: hex }));
+                    }}
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: hex,
+                      border: hex === '#ffffff' ? '1.5px solid #cbd5e1' : '1px solid rgba(0,0,0,0.15)',
+                      boxShadow: isSelected ? '0 0 0 2.5px #7c3aed' : 'none',
+                      cursor: 'pointer',
+                      transform: isSelected ? 'scale(1.15)' : 'scale(1)',
+                      transition: 'all 0.15s'
+                    }}
+                  />
+                );
+              })}
+
+              {/* Custom Color Picker */}
+              <div style={{ position: 'relative', width: '24px', height: '24px' }} title="Custom Color">
+                <input
+                  type="color"
+                  value={selectedColor || '#7c3aed'}
+                  onChange={(e) => {
+                    setSelectedColor(e.target.value);
+                    setTheme(prev => ({ ...prev, primaryColor: e.target.value }));
+                  }}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    opacity: 0,
+                    cursor: 'pointer',
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 2
+                  }}
+                />
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)',
+                  border: '1px solid #cbd5e1',
+                  boxShadow: !['#7c3aed', '#0284c7', '#059669', '#dc2626', '#d97706', '#0f172a', '#ffffff'].includes(selectedColor?.toLowerCase()) ? '0 0 0 2.5px #7c3aed' : 'none',
+                  pointerEvents: 'none'
+                }} />
+              </div>
+            </div>
+          </div>
+
+          <div style={{ height: '1px', background: '#e2e8f0' }} />
+
+          {/* ── 3. Typography & Fonts ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              🔤 Typography & Font
+            </span>
+
+            <div>
+              <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.25rem' }}>Font Family</label>
+              <select
+                value={selectedFont || theme.fontFamily || "'Inter', sans-serif"}
+                onChange={(e) => {
+                  setSelectedFont(e.target.value);
+                  setTheme(prev => ({ ...prev, fontFamily: e.target.value }));
+                }}
+                style={{ width: '100%', padding: '0.4rem 0.5rem', borderRadius: '7px', border: '1px solid #cbd5e1', fontSize: '0.75rem', fontWeight: 700, outline: 'none', background: 'white', color: '#0f172a' }}
+              >
+                <option value="'Inter', sans-serif">Inter (Modern & Clean)</option>
+                <option value="'Roboto', sans-serif">Roboto (Tech Standard)</option>
+                <option value="'Poppins', sans-serif">Poppins (Friendly)</option>
+                <option value="'Outfit', sans-serif">Outfit (Contemporary)</option>
+                <option value="'Playfair Display', serif">Playfair (Classic Serif)</option>
+                <option value="Georgia, serif">Georgia (Editorial)</option>
+                <option value="Arial, sans-serif">Arial (Standard)</option>
+              </select>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', marginBottom: '0.2rem' }}>
+                <span>Font Size</span>
+                <span>{theme.fontSize || 13}px</span>
+              </div>
+              <input
+                type="range"
+                min="11"
+                max="17"
+                value={theme.fontSize || 13}
+                onChange={(e) => setTheme(prev => ({ ...prev, fontSize: Number(e.target.value) }))}
+                style={{ width: '100%', accentColor: '#7c3aed', cursor: 'pointer' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ height: '1px', background: '#e2e8f0' }} />
+
+          {/* ── 4. Section Reordering Widget ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             <DragDropSections
               sections={sections}
               setSections={(newSections) => {
@@ -1474,163 +1761,27 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             />
           </div>
 
-          <div style={{ height: '1px', background: '#cbd5e1' }} />
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', alignItems: 'center' }}>
-            <span style={{ color: '#64748b', fontWeight: 700 }}>Active Layout:</span>
-            <span style={{ fontWeight: 800, color: '#7c3aed', textTransform: 'uppercase', background: '#f5f3ff', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>{formData.templateId || 'professional'}</span>
-          </div>
+          <div style={{ height: '1px', background: '#e2e8f0' }} />
 
-          {/* Layout Selector Cards */}
+          {/* ── 5. AI Suggestions & Tips ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Switch Layout</span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-              {['professional', 'modern', 'minimal', 'executive', 'creative'].map((lType) => {
-                const isActive = (formData.templateId || 'professional').toLowerCase() === lType;
-                return (
-                  <button
-                    key={lType}
-                    onClick={() => setFormData({ ...formData, templateId: lType })}
-                    style={{
-                      flex: '1 1 40%',
-                      padding: '0.4rem 0.5rem',
-                      borderRadius: '6px',
-                      border: `1px solid ${isActive ? '#7c3aed' : '#cbd5e1'}`,
-                      background: isActive ? '#f5f3ff' : 'white',
-                      color: isActive ? '#7c3aed' : '#475569',
-                      fontSize: '0.72rem',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      textTransform: 'capitalize',
-                      boxShadow: isActive ? '0 2px 8px rgba(124,58,237,0.15)' : 'none',
-                      transition: 'all 0.15s'
-                    }}
-                  >
-                    {lType}
-                  </button>
-                );
-              })}
+            <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              💡 AI Resume Tips
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              {['Quantify your achievements with metrics', 'Tailor your bullet points using Match JD', 'Highlight core competencies in Skills'].map((tip, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '0.35rem', fontSize: '0.72rem', fontWeight: 650, color: '#475569' }}>
+                  <span style={{ color: '#10b981', fontWeight: 900 }}>✔</span>
+                  <span>{tip}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div style={{ height: '1px', background: '#cbd5e1' }} />
-
-          {/* Theme Customization Panel */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 900, color: '#0f172a' }}>Customize Theme</span>
-            
-            {/* Primary & Secondary Color Pickers */}
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Primary</label>
-                <input
-                  type="color"
-                  value={theme.primaryColor}
-                  onChange={(e) => {
-                    setTheme({ ...theme, primaryColor: e.target.value });
-                    setSelectedColor(e.target.value);
-                  }}
-                  style={{ width: '100%', height: '30px', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', background: 'none', padding: 0 }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Secondary</label>
-                <input
-                  type="color"
-                  value={theme.secondaryColor}
-                  onChange={(e) => setTheme({ ...theme, secondaryColor: e.target.value })}
-                  style={{ width: '100%', height: '30px', borderRadius: '6px', border: '1px solid #cbd5e1', cursor: 'pointer', background: 'none', padding: 0 }}
-                />
-              </div>
-            </div>
-
-            {/* Font Family Selector */}
-            <div>
-              <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Font Family</label>
-              <select
-                value={theme.fontFamily}
-                onChange={(e) => {
-                  setTheme({ ...theme, fontFamily: e.target.value });
-                  setSelectedFont(e.target.value);
-                }}
-                style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.75rem', fontWeight: 700, outline: 'none' }}
-              >
-                <option value="'Inter', sans-serif">Inter</option>
-                <option value="'Roboto', sans-serif">Roboto</option>
-                <option value="'Poppins', sans-serif">Poppins</option>
-                <option value="'Playfair Display', serif">Playfair</option>
-                <option value="Georgia, serif">Georgia</option>
-                <option value="Arial, sans-serif">Arial</option>
-              </select>
-            </div>
-
-            {/* Font Size Slider */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', marginBottom: '0.2rem' }}>
-                <span>Font Size</span>
-                <span>{theme.fontSize}px</span>
-              </div>
-              <input
-                type="range"
-                min="11"
-                max="18"
-                value={theme.fontSize}
-                onChange={(e) => setTheme({ ...theme, fontSize: Number(e.target.value) })}
-                style={{ width: '100%', accentColor: '#7c3aed', cursor: 'pointer' }}
-              />
-            </div>
-
-            {/* Line Spacing Slider */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', marginBottom: '0.2rem' }}>
-                <span>Line Spacing</span>
-                <span>{theme.lineHeight}</span>
-              </div>
-              <input
-                type="range"
-                min="1.2"
-                max="2.2"
-                step="0.1"
-                value={theme.lineHeight}
-                onChange={(e) => setTheme({ ...theme, lineHeight: Number(e.target.value) })}
-                style={{ width: '100%', accentColor: '#7c3aed', cursor: 'pointer' }}
-              />
-            </div>
-
-            {/* Page Margins Slider */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', marginBottom: '0.2rem' }}>
-                <span>Page Margins</span>
-                <span>{theme.margin}px</span>
-              </div>
-              <input
-                type="range"
-                min="15"
-                max="60"
-                value={theme.margin}
-                onChange={(e) => setTheme({ ...theme, margin: Number(e.target.value) })}
-                style={{ width: '100%', accentColor: '#7c3aed', cursor: 'pointer' }}
-              />
-            </div>
-
-            {/* Header Alignment Position Selector */}
-            <div>
-              <label style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Header Alignment</label>
-              <select
-                value={theme.profilePosition}
-                onChange={(e) => setTheme({ ...theme, profilePosition: e.target.value })}
-                style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.75rem', fontWeight: 700, outline: 'none' }}
-              >
-                <option value="left">Left Align</option>
-                <option value="center">Center Align</option>
-                <option value="right">Right Align</option>
-              </select>
-            </div>
-          </div>
         </div>
 
         {/* Middle Column (Form Editor): Step Form */}
-        <div className="no-print" style={{ 
+        <div className={`builder-form-col no-print ${mobileTab !== 'form' ? 'builder-col-hidden-mobile' : ''}`} style={{ 
           flex: '0 0 440px',
           width: '440px', 
           maxWidth: '460px',
@@ -1743,6 +1894,16 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
                   />
                 )}
 
+                {!['Personal', 'Summary', 'Education', 'Experience', 'Projects', 'Skills', 'Certificates', 'Languages', 'Achievements', 'Signature', 'Preview'].includes(currentLabel) && (
+                  <CustomSectionForm 
+                    sectionId={currentLabel} 
+                    sectionData={formData.customSections?.[currentLabel] || { title: currentLabel, content: '' }} 
+                    onChange={handleCustomSectionChange} 
+                    onDelete={handleDeleteCustomSection} 
+                    onRunAi={runAiAssistant} 
+                  />
+                )}
+
                 {currentLabel === 'Preview' && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     <h3 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>Resume Ready</h3>
@@ -1847,7 +2008,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
         </div>
 
         {/* Right Column (Flex Fill): Live Preview */}
-        <div style={{ 
+        <div className={`builder-preview-col ${mobileTab !== 'preview' ? 'builder-col-hidden-mobile' : ''}`} style={{ 
           flex: 1, 
           height: '100%',
           minHeight: 0,
@@ -1883,14 +2044,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           />
 
           {/* Canva A4 paper canvas sheet preview */}
-          <div style={{ 
-            flex: 1, 
-            overflow: 'auto', 
-            padding: '2rem', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'flex-start'
-          }}>
+          <div className="builder-preview-container">
             <div 
               id="resume-preview-sheet" 
               className="print-paper-sheet"
@@ -1917,6 +2071,57 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
         </div>
 
+      </div>
+
+      {/* Floating Mobile View Quick-Toggle Button */}
+      <div className="no-print" style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 9999,
+        display: (typeof window !== 'undefined' && window.innerWidth < 900) ? 'block' : 'none'
+      }}>
+        {mobileTab === 'preview' ? (
+          <button
+            onClick={() => setMobileTab('form')}
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50px',
+              padding: '0.75rem 1.25rem',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              boxShadow: '0 8px 25px rgba(124,58,237,0.4)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            <FileText size={16} /> Edit Form
+          </button>
+        ) : (
+          <button
+            onClick={() => setMobileTab('preview')}
+            style={{
+              background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50px',
+              padding: '0.75rem 1.25rem',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              boxShadow: '0 8px 25px rgba(2,132,199,0.4)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            <Eye size={16} /> Live Preview
+          </button>
+        )}
       </div>
 
       {/* AI Assistant Output Modal */}

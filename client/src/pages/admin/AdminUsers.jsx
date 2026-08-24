@@ -98,13 +98,13 @@ const AdminUsers = () => {
         <main className="admin-content">
           <div className="admin-page">
             {/* Header */}
-            <div className="admin-page-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div className="admin-page-title">
               <div>
                 <h2>Users</h2>
                 <p>Manage your resume builder users.</p>
               </div>
 
-              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <div style={{ display: "flex", gap: "0.65rem", alignItems: "center", flexWrap: "wrap" }}>
                 <button
                   onClick={() => fetchUsers(true)}
                   style={{

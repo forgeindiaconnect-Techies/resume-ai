@@ -22,7 +22,7 @@ const ExperienceForm = ({ experience = [], onAdd, onUpdate, onDelete, onRunAi, o
             <Trash2 size={16} />
           </button>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '0.75rem' }}>
+          <div className="form-grid-2col" style={{ marginBottom: '0.75rem' }}>
             <div className="input-group">
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', marginBottom: '0.4rem' }}>Company</label>
               <input 

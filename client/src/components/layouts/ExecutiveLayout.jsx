@@ -24,7 +24,20 @@ const ExecutiveLayout = ({data, customColor, customFont,
 
   const photoObj = profilePhoto || photoData || (typeof data?.profilePhoto === 'object' ? data.profilePhoto : null);
   const photoUrl = photoObj?.url || (typeof data?.profilePhoto === 'string' ? data.profilePhoto : null);
-  const accentColor = customColor || '#1e293b';
+
+  const isLightColor = (hex) => {
+    if (!hex) return false;
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    if (c.length !== 6) return false;
+    const r = parseInt(c.substr(0, 2), 16);
+    const g = parseInt(c.substr(2, 2), 16);
+    const b = parseInt(c.substr(4, 2), 16);
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 165;
+  };
+
+  const accentColor = (customColor && !isLightColor(customColor)) ? customColor : '#1e293b';
 
   const getPhotoBorder = () => {
     if (photoObj?.border === 'white') return '3px solid #ffffff';
@@ -468,6 +481,11 @@ const ExecutiveLayout = ({data, customColor, customFont,
             ) : null;
           
           default:
+            const secCustomData = (data.customSections && (data.customSections[secObj.id] || data.customSections[secObj.title] || data.customSections[secId] || data.customSections[titleStr])) || {};
+            const customTitle = secCustomData.title || titleStr;
+            const customContent = secCustomData.content || '';
+            const customItems = secCustomData.items || [];
+
             return (
               <div key={secId} style={{ textAlign: 'left', marginBottom: '1.25rem' }}>
                 <h3 style={{
@@ -481,11 +499,54 @@ const ExecutiveLayout = ({data, customColor, customFont,
                   paddingBottom: '0.25rem',
                   textAlign: 'center'
                 }}>
-                  {titleStr}
+                  {customTitle}
                 </h3>
-                <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
-                  • Added custom content for {titleStr}
-                </div>
+                {customItems && customItems.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {customItems.map((item, idx) => (
+                      <div key={idx}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                          <span style={{ fontSize: `${0.85 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
+                            {item.title}
+                          </span>
+                          {item.date && (
+                            <span style={{ fontSize: `${0.75 * fScale}rem`, fontWeight: 700, color: '#64748b' }}>
+                              {item.date}
+                            </span>
+                          )}
+                        </div>
+                        {item.subtitle && (
+                          <div style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, color: '#0f172a', marginBottom: '0.2rem' }}>
+                            {item.subtitle}
+                          </div>
+                        )}
+                        {item.description && (
+                          <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                            {item.description.split('\n').map((line, i) => (
+                              <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative' }}>
+                                <span style={{ position: 'absolute', left: 0 }}>•</span>
+                                {line.replace(/^•\s*/, '')}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : customContent ? (
+                  <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                    {customContent.split('\n').map((line, i) => (
+                      <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative', marginBottom: '0.2rem' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        {line.replace(/^•\s*/, '')}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#94a3b8', fontStyle: 'italic', textAlign: 'center' }}>
+                    Click on {customTitle} in the editor to add your details.
+                  </div>
+                )}
               </div>
             );
         }

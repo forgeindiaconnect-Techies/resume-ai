@@ -25,6 +25,25 @@ const MinimalLayout = ({data, customColor, customFont,
   const sidebarBg = customColor || '#1e3a5f';
   const fontFamily = customFont || "'Inter', sans-serif";
 
+  const isLightColor = (hex) => {
+    if (!hex) return false;
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    if (c.length !== 6) return false;
+    const r = parseInt(c.substr(0, 2), 16);
+    const g = parseInt(c.substr(2, 2), 16);
+    const b = parseInt(c.substr(4, 2), 16);
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 165;
+  };
+
+  const isLightBg = isLightColor(sidebarBg);
+  const sidebarHeadingColor = isLightBg ? '#0f172a' : '#93c5fd';
+  const sidebarHeadingBorder = isLightBg ? '1px solid #cbd5e1' : '1px solid rgba(255,255,255,0.2)';
+  const sidebarTextColor = isLightBg ? '#334155' : '#ffffff';
+  const sidebarSubTextColor = isLightBg ? '#2563eb' : '#93c5fd';
+  const sidebarBorder = isLightBg ? '1px solid #e2e8f0' : 'none';
+
   const { name, role, contact = {}, objective, education = [], skills = {}, projects = [], experience = [], achievements = [], profilePhoto, photoData } = data;
 
   const photoObj = profilePhoto || photoData || (typeof data?.profilePhoto === 'object' ? data.profilePhoto : null);
@@ -77,7 +96,9 @@ const MinimalLayout = ({data, customColor, customFont,
         <div style={{
           width: isSingleColumn ? '100%' : '34%',
           background: sidebarBg,
-          color: '#ffffff',
+          color: sidebarTextColor,
+          borderRight: !isSingleColumn && !isRightSidebar ? sidebarBorder : 'none',
+          borderLeft: !isSingleColumn && isRightSidebar ? sidebarBorder : 'none',
           padding: spacingPadding,
           display: 'flex',
           flexDirection: 'column',
@@ -107,7 +128,7 @@ const MinimalLayout = ({data, customColor, customFont,
               fontWeight: 900,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
-              color: '#ffffff',
+              color: sidebarHeadingColor,
               margin: '0 0 0.35rem',
               lineHeight: lineH
             }}>
@@ -140,18 +161,18 @@ const MinimalLayout = ({data, customColor, customFont,
                       fontWeight: 900,
                       letterSpacing: '0.12em',
                       textTransform: 'uppercase',
-                      color: '#93c5fd',
-                      borderBottom: '1px solid rgba(255,255,255,0.2)',
+                      color: sidebarHeadingColor,
+                      borderBottom: sidebarHeadingBorder,
                       paddingBottom: '0.35rem',
                       margin: '0 0 0.65rem'
                     }}>
                       {titleStr}
                     </h3>
-                    <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <div style={{ fontSize: `${0.78 * fScale}rem`, color: sidebarTextColor, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                       {langs.map((lang, idx) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span>{typeof lang === 'string' ? lang : lang.name}</span>
-                          {typeof lang === 'object' && lang.level && <span style={{ fontSize: `${0.7 * fScale}rem`, color: '#93c5fd' }}>{lang.level}</span>}
+                          {typeof lang === 'object' && lang.level && <span style={{ fontSize: `${0.7 * fScale}rem`, color: sidebarSubTextColor }}>{lang.level}</span>}
                         </div>
                       ))}
                     </div>
@@ -169,18 +190,18 @@ const MinimalLayout = ({data, customColor, customFont,
                       fontWeight: 900,
                       letterSpacing: '0.12em',
                       textTransform: 'uppercase',
-                      color: '#93c5fd',
-                      borderBottom: '1px solid rgba(255,255,255,0.2)',
+                      color: sidebarHeadingColor,
+                      borderBottom: sidebarHeadingBorder,
                       paddingBottom: '0.35rem',
                       margin: '0 0 0.65rem'
                     }}>
                       {titleStr}
                     </h3>
-                    <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    <div style={{ fontSize: `${0.75 * fScale}rem`, color: sidebarTextColor, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                       {certs.map((cert, idx) => (
                         <div key={idx}>
-                          <div style={{ fontWeight: 800, color: '#ffffff', marginBottom: '0.15rem' }}>{cert.name || cert.title}</div>
-                          <div style={{ color: '#cbd5e1', fontSize: `${0.7 * fScale}rem` }}>{cert.org || cert.organization} {cert.year ? `(${cert.year})` : ''}</div>
+                          <div style={{ fontWeight: 800, color: sidebarHeadingColor, marginBottom: '0.15rem' }}>{cert.name || cert.title}</div>
+                          <div style={{ color: sidebarSubTextColor, fontSize: `${0.7 * fScale}rem` }}>{cert.org || cert.organization} {cert.year ? `(${cert.year})` : ''}</div>
                         </div>
                       ))}
                     </div>
@@ -195,25 +216,25 @@ const MinimalLayout = ({data, customColor, customFont,
                       fontWeight: 900,
                       letterSpacing: '0.12em',
                       textTransform: 'uppercase',
-                      color: '#93c5fd',
-                      borderBottom: '1px solid rgba(255,255,255,0.2)',
+                      color: sidebarHeadingColor,
+                      borderBottom: sidebarHeadingBorder,
                       paddingBottom: '0.35rem',
                       margin: '0 0 0.65rem'
                     }}>
                       {titleStr}
                     </h3>
-                    <div style={{ fontSize: `${0.75 * fScale}rem`, color: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div style={{ fontSize: `${0.75 * fScale}rem`, color: sidebarTextColor, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       {(achievements.length > 0 ? achievements : [
                         { title: '94% State Test Pass Rate', desc: 'Achieved high state exam pass rates.' },
                         { title: 'STEM Teacher of the Year', desc: 'Awarded regional STEM teaching honor.' }
                       ]).map((ach, idx) => (
                         <div key={idx} style={{ display: 'flex', gap: '0.45rem', alignItems: 'flex-start' }}>
-                          <span style={{ fontSize: `${0.8 * fScale}rem`, color: '#93c5fd', marginTop: '1px' }}>✓</span>
+                          <span style={{ fontSize: `${0.8 * fScale}rem`, color: sidebarSubTextColor, marginTop: '1px' }}>✓</span>
                           <div>
-                            <div style={{ fontWeight: 800, color: '#ffffff', lineHeight: lineH, marginBottom: '0.15rem' }}>
+                            <div style={{ fontWeight: 800, color: sidebarHeadingColor, lineHeight: lineH, marginBottom: '0.15rem' }}>
                               {ach.title}
                             </div>
-                            <div style={{ color: '#cbd5e1', fontSize: `${0.7 * fScale}rem`, lineHeight: lineH }}>
+                            <div style={{ color: sidebarSubTextColor, fontSize: `${0.7 * fScale}rem`, lineHeight: lineH }}>
                               {ach.desc}
                             </div>
                           </div>
@@ -611,6 +632,11 @@ const MinimalLayout = ({data, customColor, customFont,
                 ) : null;
               
               default:
+                const secCustomData = (data.customSections && (data.customSections[secObj.id] || data.customSections[secObj.title] || data.customSections[secId] || data.customSections[titleStr])) || {};
+                const customTitle = secCustomData.title || titleStr;
+                const customContent = secCustomData.content || '';
+                const customItems = secCustomData.items || [];
+
                 return (
                   <div key={secId}>
                     <h3 style={{
@@ -624,12 +650,56 @@ const MinimalLayout = ({data, customColor, customFont,
                       alignItems: 'center',
                       gap: '0.5rem'
                     }}>
-                      {titleStr}
+                      {customTitle}
                       <span style={{ flex: 1, height: '1px', background: '#cbd5e1' }} />
                     </h3>
-                    <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
-                      • Added custom content for {titleStr}
-                    </div>
+
+                    {customItems && customItems.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {customItems.map((item, idx) => (
+                          <div key={idx}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <span style={{ fontSize: `${0.85 * fScale}rem`, fontWeight: 800, color: '#0f172a' }}>
+                                {item.title}
+                              </span>
+                              {item.date && (
+                                <span style={{ fontSize: `${0.75 * fScale}rem`, fontWeight: 700, color: '#64748b' }}>
+                                  {item.date}
+                                </span>
+                              )}
+                            </div>
+                            {item.subtitle && (
+                              <div style={{ fontSize: `${0.78 * fScale}rem`, fontWeight: 700, color: '#1e3a5f', marginBottom: '0.2rem' }}>
+                                {item.subtitle}
+                              </div>
+                            )}
+                            {item.description && (
+                              <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                                {item.description.split('\n').map((line, i) => (
+                                  <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative' }}>
+                                    <span style={{ position: 'absolute', left: 0 }}>•</span>
+                                    {line.replace(/^•\s*/, '')}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : customContent ? (
+                      <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#475569', lineHeight: lineH }}>
+                        {customContent.split('\n').map((line, i) => (
+                          <div key={i} style={{ paddingLeft: '0.6rem', position: 'relative', marginBottom: '0.2rem' }}>
+                            <span style={{ position: 'absolute', left: 0 }}>•</span>
+                            {line.replace(/^•\s*/, '')}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: `${0.78 * fScale}rem`, color: '#94a3b8', fontStyle: 'italic' }}>
+                        Click on {customTitle} in the editor to add your details.
+                      </div>
+                    )}
                   </div>
                 );
             }
