@@ -65,6 +65,15 @@ const cleanEmail = (email) => {
   return trimmed;
 };
 
+const cleanObjectId = (id) => {
+  if (!id) return null;
+  const str = String(id).trim();
+  if (mongoose.Types.ObjectId.isValid(str) && /^[0-9a-fA-F]{24}$/.test(str)) {
+    return new mongoose.Types.ObjectId(str);
+  }
+  return null;
+};
+
 exports.startSession = async (req, res) => {
   try {
     const { sessionId, guestId, userId, email, resumeName, currentPage } = req.body;
@@ -75,6 +84,7 @@ exports.startSession = async (req, res) => {
 
     const cEmail = cleanEmail(email);
     const cName = cleanName(resumeName);
+    const cUserId = cleanObjectId(userId);
 
     if (isDBConnected()) {
       const setFields = {
@@ -84,7 +94,7 @@ exports.startSession = async (req, res) => {
         currentPage: currentPage || "/"
       };
       if (guestId) setFields.guestId = guestId;
-      if (userId) setFields.userId = userId;
+      if (cUserId) setFields.userId = cUserId;
       if (cEmail) setFields.email = cEmail;
       if (cName) setFields.resumeName = cName;
 
@@ -93,10 +103,6 @@ exports.startSession = async (req, res) => {
         {
           $setOnInsert: {
             sessionId,
-            guestId: guestId || null,
-            userId: userId || null,
-            email: cEmail || null,
-            resumeName: cName || null,
             entryTime: new Date()
           },
           $set: setFields,
@@ -108,7 +114,7 @@ exports.startSession = async (req, res) => {
             }
           }
         },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
+        { upsert: true, returnDocument: 'after' }
       );
 
       return res.status(200).json({ success: true, session });
@@ -155,7 +161,7 @@ exports.startSession = async (req, res) => {
 
 exports.trackEvent = async (req, res) => {
   try {
-    const { sessionId, guestId, action, page, extraData, resumeName, email, resumeId, resumeCreated, downloadType, downloaded } = req.body;
+    const { sessionId, guestId, userId, action, page, extraData, resumeName, email, resumeId, resumeCreated, downloadType, downloaded } = req.body;
 
     if (!sessionId || !action) {
       return res.status(400).json({ success: false, message: "sessionId and action are required" });
@@ -163,6 +169,7 @@ exports.trackEvent = async (req, res) => {
 
     const cName = cleanName(resumeName || extraData?.resumeName);
     const cEmail = cleanEmail(email || extraData?.email);
+    const cUserId = cleanObjectId(userId || extraData?.userId);
     const effResumeId = resumeId || extraData?.resumeId;
     const effResumeCreated = resumeCreated || extraData?.resumeCreated || action === "RESUME_CREATED" || action === "Resume Auto-Saved";
     const effDownloadType = downloadType || extraData?.downloadType;
@@ -174,6 +181,7 @@ exports.trackEvent = async (req, res) => {
         currentPage: page || "/"
       };
       if (guestId) setFields.guestId = guestId;
+      if (cUserId) setFields.userId = cUserId;
       if (cName) setFields.resumeName = cName;
       if (cEmail) setFields.email = cEmail;
       if (effResumeCreated) setFields.resumeCreated = true;
@@ -189,8 +197,6 @@ exports.trackEvent = async (req, res) => {
         {
           $setOnInsert: {
             sessionId,
-            guestId: guestId || null,
-            userId: null,
             entryTime: new Date(),
             status: "active"
           },
@@ -203,7 +209,7 @@ exports.trackEvent = async (req, res) => {
             }
           }
         },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
+        { upsert: true, returnDocument: 'after' }
       );
 
       return res.status(200).json({ success: true, session });
@@ -271,7 +277,11 @@ exports.trackEvent = async (req, res) => {
 
 exports.endSession = async (req, res) => {
   try {
-    const { sessionId } = req.body;
+    let body = req.body;
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body); } catch (e) {}
+    }
+    const sessionId = body?.sessionId;
     if (!sessionId) return res.status(400).json({ success: false, message: "sessionId is required" });
 
     if (isDBConnected()) {

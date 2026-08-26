@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, IndianRupee, Download, FileText, RefreshCw, Trash2 } from "lucide-react";
+import { Users, IndianRupee, Download, FileText, RefreshCw, Trash2, FileCheck } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { API_BASE_URL } from "../../config/api";
@@ -10,6 +10,7 @@ const AdminDashboard = () => {
   const [dashboardStats, setDashboardStats] = useState({
     totalUsers: 0,
     totalResumes: 0,
+    totalATSAnalyses: 0,
     totalDownloads: 0,
     totalRevenue: 0,
     activeUsersCount: 0,
@@ -79,18 +80,22 @@ const AdminDashboard = () => {
         const token = localStorage.getItem("adminToken");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-        const [sessionsRes, downloadsRes] = await Promise.all([
+        const [sessionsRes, downloadsRes, atsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/user-sessions`, { headers }),
           fetch(`${API_BASE_URL}/downloads`, { headers }),
+          fetch(`${API_BASE_URL}/resume-analysis/admin/stats`, { headers }).catch(() => null),
         ]);
 
         const sessionsData = await sessionsRes.json();
         const downloadsData = await downloadsRes.json();
+        const atsData = atsRes && atsRes.ok ? await atsRes.json() : null;
 
         const sessions = sessionsData.success ? sessionsData.sessions || [] : [];
         const downloads = downloadsData.success
           ? downloadsData.downloads || []
           : [];
+
+        const totalATSAnalyses = atsData?.data?.totalAnalyses || 0;
 
         const uniqueUsers = new Set(
           sessions.map(item =>
@@ -134,6 +139,7 @@ const AdminDashboard = () => {
         setDashboardStats({
           totalUsers,
           totalResumes,
+          totalATSAnalyses,
           totalDownloads,
           totalRevenue,
           activeUsersCount,
@@ -249,6 +255,24 @@ const AdminDashboard = () => {
                   <div>
                     <span>Resumes Created</span>
                     <h2 style={{ margin: 0 }}>{dashboardStats.totalResumes}</h2>
+                  </div>
+                </div>
+
+                {/* ATS Resume Analyses Card */}
+                <div 
+                  className="report-stat-card" 
+                  onClick={() => navigate('/admin/ats-analyses')}
+                  style={{ cursor: 'pointer', transition: 'all 0.2s ease', borderLeft: '4px solid #0284c7' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.08)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = ''; }}
+                  title="Click to view ATS Resume Analyses"
+                >
+                  <div className="report-stat-icon" style={{ background: '#e0f2fe', color: '#0284c7' }}>
+                    <FileCheck size={20} />
+                  </div>
+                  <div>
+                    <span>ATS Analyses</span>
+                    <h2 style={{ margin: 0 }}>{dashboardStats.totalATSAnalyses}</h2>
                   </div>
                 </div>
 

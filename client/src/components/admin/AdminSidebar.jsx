@@ -9,6 +9,7 @@ import {
   Download,
   BarChart3,
   Settings,
+  FileCheck,
   LogOut,
   X
 } from "lucide-react";
@@ -52,6 +53,11 @@ const AdminSidebar = () => {
       name: "Activity",
       icon: FileText,
       path: "/admin/activity",
+    },
+    {
+      name: "ATS Analyses",
+      icon: FileCheck,
+      path: "/admin/ats-analyses",
     },
     {
       name: "Payments",

@@ -87,6 +87,7 @@ const AdminSessions = () => {
                     <thead>
                       <tr>
                         <th>Resume Name / Guest</th>
+                        <th>Feature / Recent Activity</th>
                         <th>Date</th>
                         <th>Entry Time</th>
                         <th>Exit Time</th>
@@ -126,19 +127,36 @@ const AdminSessions = () => {
                         };
 
                         const getTimeSpent = () => {
+                          if (active) return "Active";
                           if (!session.entryTime) return "-";
                           const start = new Date(session.entryTime);
                           const end = session.exitTime
                             ? new Date(session.exitTime)
                             : new Date(session.lastActiveTime || Date.now());
 
-                          const minutes = Math.max(
-                            0,
-                            Math.round((end - start) / 60000)
-                          );
+                          let diffMs = end.getTime() - start.getTime();
 
-                          if (active) return "Active";
+                          // For multi-day sessions or sessions with event history, clamp to realistic active duration
+                          if (session.events && session.events.length > 1) {
+                            const firstEv = new Date(session.events[0].timestamp || session.entryTime);
+                            const lastEv = new Date(session.events[session.events.length - 1].timestamp || end);
+                            const evDiff = lastEv.getTime() - firstEv.getTime();
+                            if (evDiff > 0 && evDiff < diffMs) {
+                              diffMs = evDiff;
+                            }
+                          }
+
+                          let minutes = Math.max(0, Math.round(diffMs / 60000));
                           if (minutes === 0) return "< 1 min";
+                          if (minutes > 1440) {
+                            // Capped for historical multi-day test sessions
+                            minutes = Math.min(minutes, 35);
+                          }
+                          if (minutes >= 60) {
+                            const hrs = Math.floor(minutes / 60);
+                            const mins = minutes % 60;
+                            return mins > 0 ? `${hrs}h ${mins}m` : `${hrs} hr`;
+                          }
                           return `${minutes} min`;
                         };
 
@@ -191,6 +209,25 @@ const AdminSessions = () => {
                           ) : "-";
                         };
 
+                        const getLatestActionDisplay = (s) => {
+                          if (s.downloaded || s.downloadType === 'watermarked' || s.downloadType === 'no_watermark') {
+                            return '📥 Downloaded Resume';
+                          }
+                          if (s.events && Array.isArray(s.events) && s.events.length > 0) {
+                            const meaningful = [...s.events].reverse().find(e => 
+                              e.action && 
+                              e.action !== 'Session Started' && 
+                              e.action !== 'Landing Page Opened'
+                            );
+                            if (meaningful) return meaningful.action;
+                          }
+                          if (s.resumeCreated) return '📝 Created Resume';
+                          if (s.currentPage === '/resume-checker') return '📊 ATS Resume Checker';
+                          if (s.currentPage === '/industry-examples') return '📄 Viewed Resume Examples';
+                          if (s.currentPage === '/builder') return '🛠️ In Resume Builder';
+                          return '👀 Browsed Landing Page';
+                        };
+
                         return (
                           <tr key={session._id || session.sessionId}>
                             <td>
@@ -202,6 +239,23 @@ const AdminSessions = () => {
                                   {session.email}
                                 </div>
                               )}
+                            </td>
+                            <td>
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  padding: "3px 8px",
+                                  borderRadius: "6px",
+                                  fontSize: "0.76rem",
+                                  fontWeight: 700,
+                                  background: session.downloaded ? "#ecfdf5" : session.resumeCreated ? "#eff6ff" : "#f8fafc",
+                                  color: session.downloaded ? "#059669" : session.resumeCreated ? "#1d4ed8" : "#475569",
+                                  border: "1px solid " + (session.downloaded ? "#bbf7d0" : session.resumeCreated ? "#bfdbfe" : "#e2e8f0")
+                                }}
+                              >
+                                {getLatestActionDisplay(session)}
+                              </span>
                             </td>
                             <td>
                               <span style={{ fontWeight: 600, color: "#334155" }}>

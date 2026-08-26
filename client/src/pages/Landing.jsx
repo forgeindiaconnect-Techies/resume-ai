@@ -16,7 +16,15 @@ import { startSession, trackEvent } from '../utils/sessionTracker';
 const LandingPage = () => {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem('token');
-  const onEnterApp = (action) => {
+
+  const onEnterApp = async (action) => {
+    try {
+      await getOrCreateUser();
+      await trackEvent(
+        action === 'create' ? "Clicked 'Create Resume' (Manual Builder)" : "Clicked 'Get Started' (Landing CTA)",
+        '/builder'
+      );
+    } catch (e) {}
     localStorage.setItem('builder_mode', 'manual');
     localStorage.setItem('source', 'create');
     navigate('/builder');
@@ -157,6 +165,16 @@ const LandingPage = () => {
       localStorage.setItem('activeResumeSessionId', newSessionId);
       localStorage.setItem(`resume_draft_${newSessionId}`, JSON.stringify(sessionData));
       localStorage.setItem('localResumeDraft', JSON.stringify(sessionData));
+
+      // Track AI generation in UserSession
+      try {
+        await trackEvent(`Generated Resume with AI: ${aiJobTitle}`, `/ai-resume/${newSessionId}`, {
+          resumeCreated: true,
+          resumeName: sessionData.personalInfo.name,
+          email: sessionData.personalInfo.email,
+        });
+      } catch (trackErr) {}
+
       setShowAiModal(false);
       navigate(`/ai-resume/${newSessionId}`);
     } catch (err) {
@@ -222,7 +240,14 @@ const LandingPage = () => {
           {/* Desktop Action Buttons */}
           <div className="landing-desktop-actions">
             <button 
-              onClick={() => setShowAiModal(true)}
+              onClick={async () => {
+                try {
+                  await getOrCreateUser();
+                  await trackEvent("Clicked 'AI Resume Generator' (Navbar)", "/");
+                } catch (e) {}
+                localStorage.setItem('source', 'ai');
+                setShowAiModal(true);
+              }}
               style={{
                 background: 'white',
                 border: '1.5px solid #0284c7',
@@ -242,7 +267,13 @@ const LandingPage = () => {
             </button>
 
             <button 
-              onClick={() => onEnterApp(isLoggedIn ? null : 'login')}
+              onClick={() => {
+                if (isLoggedIn) {
+                  navigate('/admin/dashboard');
+                } else {
+                  onEnterApp('create');
+                }
+              }}
               style={{
                 background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
                 border: 'none',
@@ -303,7 +334,14 @@ const LandingPage = () => {
                 Features
               </span>
               <span
-                onClick={() => { setShowMobileMenu(false); navigate('/industry-examples'); }}
+                onClick={async () => { 
+                  setShowMobileMenu(false); 
+                  try {
+                    await getOrCreateUser();
+                    await trackEvent("Clicked 'Resume Examples' (Mobile)", "/industry-examples");
+                  } catch (e) {}
+                  navigate('/industry-examples'); 
+                }}
                 style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', padding: '0.4rem 0' }}
               >
                 Examples
@@ -311,7 +349,15 @@ const LandingPage = () => {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
                 <button 
-                  onClick={() => { setShowMobileMenu(false); setShowAiModal(true); }}
+                  onClick={async () => { 
+                    setShowMobileMenu(false); 
+                    try {
+                      await getOrCreateUser();
+                      await trackEvent("Clicked 'Generate with AI' (Mobile)", "/");
+                    } catch (e) {}
+                    localStorage.setItem('source', 'ai');
+                    setShowAiModal(true); 
+                  }}
                   style={{
                     background: '#e0f2fe',
                     border: '1.5px solid #0284c7',
@@ -449,7 +495,11 @@ const LandingPage = () => {
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(14, 165, 233, 0.15)'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 16px rgba(14, 165, 233, 0.1)'; }}
-            onClick={() => {
+            onClick={async () => {
+              try {
+                await getOrCreateUser();
+                await trackEvent("Clicked 'Generate with AI'", "/");
+              } catch (e) {}
               localStorage.setItem('source', 'ai');
               setShowAiModal(true);
             }}
@@ -488,10 +538,11 @@ const LandingPage = () => {
             onClick={async () => {
               try {
                 const user = await getOrCreateUser();
+                await trackEvent("Clicked 'Resume Examples'", "/industry-examples");
                 localStorage.setItem('source', 'template');
                 navigate('/industry-examples');
               } catch (error) {
-                alert("Unable to continue. Please try again.");
+                navigate('/industry-examples');
               }
             }}
             >
@@ -516,6 +567,56 @@ const LandingPage = () => {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', marginTop: 'auto'
               }}>
                 Browse Examples <ArrowRight size={16} />
+              </button>
+            </div>
+
+            {/* ATS Resume Checker */}
+            <div className="landing-hero-card feature-card" style={{
+              background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.5rem', textAlign: 'left',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'all 0.2s ease', cursor: 'pointer'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#0284c7'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
+            onClick={async () => {
+              try {
+                await getOrCreateUser();
+                await trackEvent("Clicked 'ATS Resume Checker'", "/resume-checker");
+              } catch (e) {}
+              navigate('/resume-checker');
+            }}
+            >
+              <div className="feature-icon" style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📊</div>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>ATS Resume Checker</h3>
+                <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>Upload your resume and receive a professional ATS score</p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', margin: '0.5rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Overall score out of 100
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Identify missing information
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#475569', fontWeight: 500 }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>✓</span> Get improvement suggestions
+                </div>
+              </div>
+              <button 
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  try {
+                    await getOrCreateUser();
+                    await trackEvent("Clicked 'ATS Resume Checker'", "/resume-checker");
+                  } catch (err) {}
+                  navigate('/resume-checker');
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #0284c7, #0369a1)', color: 'white', border: 'none', padding: '0.75rem', borderRadius: '8px', fontSize: '0.95rem', fontWeight: 700, width: '100%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', marginTop: 'auto',
+                  boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)'
+                }}
+              >
+                Check My Resume <ArrowRight size={16} />
               </button>
             </div>
 

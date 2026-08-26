@@ -13,8 +13,10 @@ import Templates from './pages/Templates';
 import TemplatePreview from './pages/TemplatePreview';
 import Plans from './pages/Plans';
 import Pricing from './pages/Pricing';
+import ResumeChecker from './pages/ResumeChecker';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminATSAnalyses from './pages/admin/AdminATSAnalyses';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminPayments from './pages/admin/AdminPayments';
 import AdminTemplates from './pages/admin/AdminTemplates';
@@ -140,11 +142,13 @@ function App() {
         <Route path="/resume-examples/:id" element={<ResumeExample />} />
         <Route path="/templates" element={<Templates />} />
         <Route path="/preview/:id" element={<TemplatePreview />} />
+        <Route path="/resume-checker" element={<ResumeChecker />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         
         <Route element={<AdminProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/ats-analyses" element={<AdminATSAnalyses />} />
           <Route path="/admin/templates" element={<AdminTemplates />} />
           <Route path="/admin/templates/add" element={<AddTemplate />} />
           <Route path="/admin/templates/edit/:id" element={<EditTemplate />} />

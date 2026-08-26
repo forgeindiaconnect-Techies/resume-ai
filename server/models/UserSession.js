@@ -51,7 +51,6 @@ const userSessionSchema = new mongoose.Schema(
     },
     downloadType: {
       type: String,
-      enum: ["none", "watermarked", "no_watermark"],
       default: "none",
     },
     downloaded: {

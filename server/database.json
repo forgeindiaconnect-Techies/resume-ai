@@ -129,7 +129,40 @@
     }
   ],
   "payments": [],
-  "userSessions": [],
+  "userSessions": [
+    {
+      "_id": "1787742307993",
+      "sessionId": "SESSION_1787375671304_j9kpyv",
+      "guestId": "GUEST_1787375671304_p9vvdp",
+      "userId": null,
+      "email": "help@forgeindiaconnect.com",
+      "resumeName": "Joshua Nelson",
+      "entryTime": "2026-08-26T11:05:07.993Z",
+      "lastActiveTime": "2026-08-26T11:13:13.220Z",
+      "exitTime": null,
+      "currentPage": "/editor/enhancv/session_1787742646972",
+      "resumeCreated": false,
+      "resumeId": null,
+      "downloadType": "none",
+      "downloaded": false,
+      "downloadedAt": null,
+      "status": "active",
+      "events": [
+        {
+          "action": "HEARTBEAT",
+          "page": "/admin/dashboard",
+          "timestamp": "2026-08-26T11:05:07.993Z"
+        },
+        {
+          "action": "HEARTBEAT",
+          "page": "/editor/enhancv/session_1787742646972",
+          "timestamp": "2026-08-26T11:13:13.220Z"
+        }
+      ],
+      "createdAt": "2026-08-26T11:05:07.993Z",
+      "updatedAt": "2026-08-26T11:13:13.220Z"
+    }
+  ],
   "downloads": [],
   "resumes": []
 }

@@ -26,6 +26,7 @@ const adminSettingsRoutes = require("./routes/adminSettingsRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
 const userRoutes = require("./routes/userRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
+const resumeAnalysisRoutes = require("./routes/resumeAnalysisRoutes");
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use("/api/users", userRoutes);
 app.use("/api", industryRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/user-sessions", sessionRoutes);
+app.use("/api/resume-analysis", resumeAnalysisRoutes);
 
 // Home Route
 app.get("/", (req, res) => {

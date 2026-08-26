@@ -30,6 +30,7 @@ const handleClearAllData = async (req, res) => {
     const Download = require('../models/Download');
     const Resume = require('../models/Resume');
     const Subscription = require('../models/Subscription');
+    const ResumeAnalysis = require('../models/ResumeAnalysis');
 
     if (mongoose.connection.readyState === 1) {
       await UserSession.deleteMany({});
@@ -37,6 +38,7 @@ const handleClearAllData = async (req, res) => {
       await Download.deleteMany({});
       await Resume.deleteMany({});
       await Subscription.deleteMany({});
+      await ResumeAnalysis.deleteMany({});
       
       // Delete all non-admin users
       await User.deleteMany({ role: { $ne: 'admin' } });

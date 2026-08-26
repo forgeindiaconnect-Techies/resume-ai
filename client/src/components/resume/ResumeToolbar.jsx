@@ -41,22 +41,27 @@ const ResumeToolbar = ({
     }}>
       {/* Color Picker */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
-        {colors.map(c => (
-          <button
-            key={c}
-            onClick={() => onChangeColor(c)}
-            style={{ 
-              width: '18px', 
-              height: '18px', 
-              borderRadius: '50%', 
-              background: c, 
-              border: selectedColor === c ? '2px solid white' : '1px solid #cbd5e1', 
-              boxShadow: selectedColor === c ? '0 0 0 2px #7c3aed' : 'none',
-              cursor: 'pointer',
-              transition: 'all 0.15s'
-            }}
-          />
-        ))}
+        {colors.map(c => {
+          const isSelected = selectedColor?.toLowerCase() === c.toLowerCase();
+          return (
+            <button
+              key={c}
+              onClick={() => onChangeColor(c)}
+              title={`Select Color ${c}`}
+              style={{ 
+                width: '20px', 
+                height: '20px', 
+                borderRadius: '50%', 
+                background: c, 
+                border: isSelected ? '2px solid white' : '1px solid #cbd5e1', 
+                boxShadow: isSelected ? `0 0 0 2px #0f172a, 0 2px 6px rgba(0,0,0,0.2)` : 'none',
+                cursor: 'pointer',
+                transform: isSelected ? 'scale(1.15)' : 'scale(1)',
+                transition: 'all 0.15s ease'
+              }}
+            />
+          );
+        })}
         {/* Custom Color Picker */}
         <div style={{ position: 'relative', display: 'inline-block', width: '20px', height: '20px', marginLeft: '2px' }} title="Custom Color">
           <input

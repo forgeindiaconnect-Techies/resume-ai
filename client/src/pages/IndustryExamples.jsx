@@ -8,6 +8,7 @@ import ProfessionalLayout from '../components/layouts/ProfessionalLayout';
 import MinimalLayout from '../components/layouts/MinimalLayout';
 import ResumeFooter from '../components/layouts/ResumeFooter';
 import { Search, Edit3, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { startSession, trackEvent } from '../utils/sessionTracker';
 
 const categorySlugMap = {
   'most-popular': 'Most Popular Resume Examples',
@@ -2054,6 +2055,10 @@ const IndustryExamples = () => {
     };
     updateWidth();
     window.addEventListener('resize', updateWidth);
+    try {
+      startSession("/industry-examples");
+      trackEvent("Viewed Resume Examples", "/industry-examples");
+    } catch (e) {}
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
@@ -2201,6 +2206,16 @@ const IndustryExamples = () => {
     const newSessionId = 'session_' + Date.now();
     localStorage.setItem('activeResumeSessionId', newSessionId);
     localStorage.setItem(`resume_draft_${newSessionId}`, JSON.stringify(sessionData));
+    localStorage.setItem('localResumeDraft', JSON.stringify(sessionData));
+
+    try {
+      trackEvent(`Selected Template Example: ${activeRole.title}`, `${editorRoute}/${newSessionId}`, {
+        resumeCreated: true,
+        resumeName: currentResumeData.name || null,
+        email: currentResumeData.contact?.email || null
+      });
+    } catch (e) {}
+
     navigate(`${editorRoute}/${newSessionId}`);
   };
 

@@ -50,14 +50,16 @@ const AdminProtectedRoute = () => {
 
         if (response.data && response.data.success) {
           if (isMounted) setAuthState("authenticated");
-        } else if (isJwtValid(token)) {
-          if (isMounted) setAuthState("authenticated");
         } else {
           localStorage.removeItem("adminToken");
           if (isMounted) setAuthState("unauthenticated");
         }
       } catch (error) {
-        if (isJwtValid(token)) {
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          localStorage.removeItem("adminToken");
+          if (isMounted) setAuthState("unauthenticated");
+        } else if (isJwtValid(token)) {
+          // Network error or offline
           if (isMounted) setAuthState("authenticated");
         } else {
           localStorage.removeItem("adminToken");

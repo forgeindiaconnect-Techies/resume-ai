@@ -1165,13 +1165,27 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
     role: formData.personalInfo?.role || formData.department || currentPreset.role,
     profilePhoto: formData.personalInfo?.profilePhoto || '',
     photoData: formData.personalInfo?.profilePhoto || null,
+    showQrCode: formData.personalInfo?.showQrCode !== false,
+    qrTarget: formData.personalInfo?.qrTarget || 'linkedin',
+    customQrImage: formData.personalInfo?.customQrImage || null,
+    showRecruiterBadges: formData.personalInfo?.showRecruiterBadges === true,
+    noticePeriod: formData.personalInfo?.noticePeriod || 'Immediate Joiner',
+    totalExp: formData.personalInfo?.totalExp || '5+ Years',
+    workPreference: formData.personalInfo?.workPreference || 'Hybrid',
     contact: {
       email: formData.personalInfo?.email || currentPreset.email,
       phone: formData.personalInfo?.phone || currentPreset.phone,
       location: formData.personalInfo?.location || currentPreset.location,
       linkedin: formData.personalInfo?.linkedin || currentPreset.linkedin,
       github: formData.personalInfo?.github || currentPreset.github,
-      portfolio: formData.personalInfo?.portfolio || currentPreset.portfolio
+      portfolio: formData.personalInfo?.portfolio || currentPreset.portfolio,
+      showQrCode: formData.personalInfo?.showQrCode !== false,
+      qrTarget: formData.personalInfo?.qrTarget || 'linkedin',
+      customQrImage: formData.personalInfo?.customQrImage || null,
+      showRecruiterBadges: formData.personalInfo?.showRecruiterBadges === true,
+      noticePeriod: formData.personalInfo?.noticePeriod || 'Immediate Joiner',
+      totalExp: formData.personalInfo?.totalExp || '5+ Years',
+      workPreference: formData.personalInfo?.workPreference || 'Hybrid'
     },
     objective: formData.personalInfo?.summary || currentPreset.summary,
     education: (formData.education && formData.education.length > 0) ? formData.education.map(e => ({
@@ -1274,7 +1288,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       data: templatePreviewData,
       role: formData.department,
       customColor: selectedColor,
-      secondaryColor: theme.primaryColor,
+      secondaryColor: selectedColor,
       customFont: selectedFont,
       sections: sections,
       sectionsOrder: enabledSections,
@@ -2023,7 +2037,10 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
           {/* Preset controls */}
           <ResumeToolbar 
             selectedColor={selectedColor}
-            onChangeColor={setSelectedColor}
+            onChangeColor={(c) => {
+              setSelectedColor(c);
+              setTheme(prev => ({ ...prev, primaryColor: c }));
+            }}
             templateId={formData.templateId}
             onChangeTemplate={handleTemplateChange}
             selectedFont={selectedFont}

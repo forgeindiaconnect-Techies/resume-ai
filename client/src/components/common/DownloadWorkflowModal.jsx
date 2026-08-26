@@ -106,10 +106,15 @@ const DownloadWorkflowModal = ({
     }
 
     try {
-      const sheet = document.getElementById("resume-preview-sheet");
+      const sheet =
+        document.getElementById("resume-preview-sheet") ||
+        document.querySelector(".print-paper-sheet") ||
+        document.querySelector(".resume-page") ||
+        document.querySelector(".resume-preview-container") ||
+        document.querySelector(".editor-right-preview > div:last-child > div");
 
       if (!sheet) {
-        alert("Resume preview not found.");
+        alert("Resume preview not found. Please ensure the preview canvas is loaded.");
         return;
       }
 

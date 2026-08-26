@@ -1,18 +1,21 @@
-const { GoogleGenAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require("@google/genai");
 
-// Check if Gemini API Key is present in environment variables
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
 let aiClient = null;
 
 if (GEMINI_API_KEY) {
   try {
-    // Note: in modern SDK it can be initialized like new GoogleGenAI() or directly importing GoogleGenAI
-    // Or we use standard import of GoogleGenerativeAI from '@google/generative-ai'
-    const { GoogleGenerativeAI } = require('@google/generative-ai');
-    aiClient = new GoogleGenerativeAI(GEMINI_API_KEY);
-    console.log('Gemini AI Engine Initialized ✅');
-  } catch (e) {
-    console.error('Failed to initialize Gemini AI Client:', e.message);
+    aiClient = new GoogleGenAI({
+      apiKey: GEMINI_API_KEY,
+    });
+
+    console.log("Gemini AI Engine Initialized ✅");
+  } catch (error) {
+    console.error(
+      "Failed to initialize Gemini AI Client:",
+      error.message
+    );
   }
 }
 
@@ -100,14 +103,37 @@ const getOpenAICompletion = async (promptText) => {
 
 // Gemini Completion Helper
 const getGeminiCompletion = async (promptText) => {
-  if (!aiClient) return null;
+  if (!aiClient) {
+    return null;
+  }
+
   try {
-    const model = aiClient.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const result = await model.generateContent(promptText);
-    const response = await result.response;
-    return response.text().trim();
-  } catch (e) {
-    console.error('Gemini API query failed:', e.message);
+    const response = await aiClient.models.generateContent({
+      model:
+        process.env.GEMINI_MODEL ||
+        "gemini-3.5-flash",
+
+      contents: promptText,
+
+      config: {
+        temperature: 0.4,
+      },
+    });
+
+    const generatedText =
+      typeof response.text === "function"
+        ? response.text()
+        : response.text;
+
+    return generatedText
+      ? generatedText.trim()
+      : null;
+  } catch (error) {
+    console.error(
+      "Gemini API query failed:",
+      error.message
+    );
+
     return null;
   }
 };

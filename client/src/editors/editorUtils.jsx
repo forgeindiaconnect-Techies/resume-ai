@@ -465,14 +465,25 @@ export const EditorShell = ({
           <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '0.35rem', scrollbarWidth: 'none', marginBottom: '0.35rem', alignItems: 'center' }}>
             <button
               onClick={() => {
+                const isCompact = spacingDensity === 'compact';
+                const newBodySize = isCompact ? 14 : 11.5;
+                const newHeadingSize = isCompact ? 24 : 19;
+                const newDensity = isCompact ? 'normal' : 'compact';
+
                 if (onSettingsChange) {
-                  const isCompact = spacingDensity === 'compact';
                   onSettingsChange({
-                    ...settings,
-                    bodySize: isCompact ? 14 : 11.5,
-                    headingSize: isCompact ? 24 : 19,
-                    spacingDensity: isCompact ? 'normal' : 'compact'
+                    ...(settings || localSettings),
+                    bodySize: newBodySize,
+                    headingSize: newHeadingSize,
+                    spacingDensity: newDensity
                   });
+                } else {
+                  setLocalSettings(prev => ({
+                    ...prev,
+                    bodySize: newBodySize,
+                    headingSize: newHeadingSize,
+                    spacingDensity: newDensity
+                  }));
                 }
               }}
               title="Auto-adjust font size & margins to fit on 1 Page"
@@ -935,6 +946,8 @@ export const EditorShell = ({
         {/* Scrollable Preview Canvas */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', padding: '2rem 1rem', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
           <div 
+            id="resume-preview-sheet"
+            className="print-paper-sheet"
             style={{ 
               transform: `scale(${zoomLevel})`, 
               transformOrigin: 'top center',
@@ -942,10 +955,14 @@ export const EditorShell = ({
               boxShadow: '0 12px 36px rgba(0,0,0,0.15)',
               borderRadius: '4px',
               overflow: 'hidden',
-              marginBottom: '3rem'
+              marginBottom: '3rem',
+              background: '#ffffff',
+              display: 'flex',
+              flexDirection: 'column'
             }}
           >
             {renderedPreview}
+            <ResumeFooter />
           </div>
         </div>
 

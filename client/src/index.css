@@ -2660,17 +2660,31 @@ input::-ms-clear {
 }
 
 .landing-hero-cards {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  gap: 1.75rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 1.5rem auto 0;
+  width: 100%;
 }
 
 .landing-hero-card {
-  width: 280px;
-  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
+  .landing-hero-cards {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 700px;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-hero-cards {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
 }
 
 .landing-showcase-container {

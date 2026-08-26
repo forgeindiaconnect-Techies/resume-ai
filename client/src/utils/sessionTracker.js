@@ -1,14 +1,17 @@
 import { API_BASE_URL } from "../config/api";
 
-// CREATE / GET ONE WEBSITE SESSION ID
+// CREATE / GET ONE WEBSITE SESSION ID (Refreshes per visit/30m inactivity for accurate real-time dates)
 export const getUserSessionId = () => {
   let sessionId = localStorage.getItem("userSessionId");
+  const lastActiveStr = localStorage.getItem("userSessionLastActive");
+  const now = Date.now();
 
-  if (!sessionId) {
-    sessionId = `SESSION_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  if (!sessionId || !lastActiveStr || (now - parseInt(lastActiveStr, 10) > 30 * 60 * 1000)) {
+    sessionId = `SESSION_${now}_${Math.random().toString(36).substring(2, 8)}`;
     localStorage.setItem("userSessionId", sessionId);
   }
 
+  localStorage.setItem("userSessionLastActive", now.toString());
   return sessionId;
 };
 
@@ -120,3 +123,35 @@ export const trackEvent = async (
     console.error("TRACK EVENT ERROR:", error);
   }
 };
+
+// END SESSION (Called when user exits or leaves site)
+export const endSession = async () => {
+  try {
+    const sessionId = localStorage.getItem("userSessionId");
+    if (!sessionId) return;
+
+    const payload = JSON.stringify({ sessionId });
+
+    if (navigator.sendBeacon) {
+      const blob = new Blob([payload], { type: 'application/json' });
+      navigator.sendBeacon(`${API_BASE_URL}/sessions/end`, blob);
+    } else {
+      await fetch(`${API_BASE_URL}/sessions/end`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: true
+      });
+    }
+  } catch (e) {
+    // Non-blocking
+  }
+};
+
+// Automatic tab/window close listener
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", () => {
+    endSession();
+  });
+}
+
