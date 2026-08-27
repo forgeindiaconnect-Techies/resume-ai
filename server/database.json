@@ -131,16 +131,16 @@
   "payments": [],
   "userSessions": [
     {
-      "_id": "1787742307993",
-      "sessionId": "SESSION_1787375671304_j9kpyv",
+      "_id": "1787819765505",
+      "sessionId": "SESSION_1787818865509_1hfkwz",
       "guestId": "GUEST_1787375671304_p9vvdp",
       "userId": null,
       "email": "help@forgeindiaconnect.com",
       "resumeName": "Joshua Nelson",
-      "entryTime": "2026-08-26T11:05:07.993Z",
-      "lastActiveTime": "2026-08-26T11:13:13.220Z",
+      "entryTime": "2026-08-27T08:36:05.505Z",
+      "lastActiveTime": "2026-08-27T08:36:05.505Z",
       "exitTime": null,
-      "currentPage": "/editor/enhancv/session_1787742646972",
+      "currentPage": "/admin/ats-analyses",
       "resumeCreated": false,
       "resumeId": null,
       "downloadType": "none",
@@ -150,64 +150,12 @@
       "events": [
         {
           "action": "HEARTBEAT",
-          "page": "/admin/dashboard",
-          "timestamp": "2026-08-26T11:05:07.993Z"
-        },
-        {
-          "action": "HEARTBEAT",
-          "page": "/editor/enhancv/session_1787742646972",
-          "timestamp": "2026-08-26T11:13:13.220Z"
+          "page": "/admin/ats-analyses",
+          "timestamp": "2026-08-27T08:36:05.505Z"
         }
       ],
-      "createdAt": "2026-08-26T11:05:07.993Z",
-      "updatedAt": "2026-08-26T11:13:13.220Z"
-    },
-    {
-      "_id": "1787748048946",
-      "sessionId": "SESSION_1787747269770_d535id",
-      "guestId": "GUEST_1787375671304_p9vvdp",
-      "userId": null,
-      "email": "help@forgeindiaconnect.com",
-      "resumeName": "Joshua Nelson",
-      "entryTime": "2026-08-26T12:40:48.946Z",
-      "lastActiveTime": "2026-08-26T12:40:50.822Z",
-      "exitTime": null,
-      "currentPage": "/editor/enhancv/session_1787742646972",
-      "resumeCreated": false,
-      "resumeId": null,
-      "downloadType": "none",
-      "downloaded": false,
-      "downloadedAt": null,
-      "status": "active",
-      "events": [
-        {
-          "action": "HEARTBEAT",
-          "page": "/editor/enhancv/session_1787742646972",
-          "timestamp": "2026-08-26T12:40:48.946Z"
-        },
-        {
-          "action": "HEARTBEAT",
-          "page": "/editor/enhancv/session_1787742646972",
-          "timestamp": "2026-08-26T12:40:50.742Z"
-        },
-        {
-          "action": "HEARTBEAT",
-          "page": "/editor/enhancv/session_1787742646972",
-          "timestamp": "2026-08-26T12:40:50.775Z"
-        },
-        {
-          "action": "LANDING_PAGE_OPENED",
-          "page": "/editor/enhancv/session_1787742646972",
-          "timestamp": "2026-08-26T12:40:50.812Z"
-        },
-        {
-          "action": "LANDING_PAGE_OPENED",
-          "page": "/editor/enhancv/session_1787742646972",
-          "timestamp": "2026-08-26T12:40:50.822Z"
-        }
-      ],
-      "createdAt": "2026-08-26T12:40:48.946Z",
-      "updatedAt": "2026-08-26T12:40:50.822Z"
+      "createdAt": "2026-08-27T08:36:05.505Z",
+      "updatedAt": "2026-08-27T08:36:05.505Z"
     }
   ],
   "downloads": [],
