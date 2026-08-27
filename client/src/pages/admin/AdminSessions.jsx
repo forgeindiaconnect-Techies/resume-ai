@@ -131,17 +131,24 @@ const AdminSessions = () => {
         return namePart.charAt(0).toUpperCase() + namePart.slice(1);
       }
     }
-    return s.guestId
-      ? `Guest (${s.guestId.slice(-6)})`
-      : s.sessionId
-      ? `Guest (${s.sessionId.slice(-6)})`
-      : "Guest Visitor";
+    return "Guest Visitor";
+  };
+
+  const getCleanUserId = (s) => {
+    const raw = String(s.guestId || s.sessionId || s._id || '');
+    const clean = raw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    const tag = s.email ? 'USR' : 'GST';
+    const idSnippet = clean.slice(-6) || '000000';
+    return `${tag}-${idSnippet}`;
   };
 
   const getLatestActionDisplay = (s) => {
+    let rawAction = '';
+
     if (s.downloaded || s.downloadType === 'watermarked' || s.downloadType === 'no_watermark') {
-      return '📥 Downloaded Resume';
+      return '📥 Downloaded';
     }
+
     if (s.events && Array.isArray(s.events) && s.events.length > 0) {
       const meaningful = [...s.events].reverse().find(e => 
         e.action && 
@@ -149,13 +156,51 @@ const AdminSessions = () => {
         e.action !== 'Landing Page Opened' &&
         !e.action.includes('HEARTBEAT')
       );
-      if (meaningful) return meaningful.action;
+      if (meaningful) {
+        rawAction = meaningful.action;
+      }
     }
-    if (s.resumeCreated) return '📝 Created Resume';
-    if (s.currentPage === '/resume-checker') return '📊 ATS Resume Checker';
-    if (s.currentPage === '/industry-examples') return '📄 Viewed Resume Examples';
-    if (s.currentPage === '/builder') return '🛠️ In Resume Builder';
-    return '🌐 Visited Landing Page';
+
+    if (!rawAction) {
+      if (s.resumeCreated) return '📝 Resume Created';
+      if (s.currentPage === '/resume-checker') return '📊 ATS Checker';
+      if (s.currentPage === '/industry-examples') return '📄 Examples';
+      if (s.currentPage === '/builder') return '🛠️ Builder';
+      return '🌐 Landing Page';
+    }
+
+    const actionLower = rawAction.toLowerCase();
+
+    if (actionLower.includes('ats resume analysis') || actionLower.includes('ats')) {
+      return '📊 ATS Analysis';
+    }
+    if (actionLower.includes('generated resume with ai') || actionLower.includes('ai resume') || actionLower.includes('ai generator')) {
+      return '🤖 AI Resume';
+    }
+    if (actionLower.includes('career advisor') || actionLower.includes('advisor')) {
+      return '💬 Advisor';
+    }
+    if (actionLower.includes('download')) {
+      return '📥 Downloaded';
+    }
+    if (actionLower.includes('auto-saved') || actionLower.includes('auto saved')) {
+      return '💾 Resume Saved';
+    }
+    if (actionLower.includes('builder') || actionLower.includes('create resume')) {
+      return '🛠️ Builder';
+    }
+    if (actionLower.includes('example')) {
+      return '📄 Examples';
+    }
+    if (actionLower.includes('landing') || actionLower.includes('opened') || actionLower.includes('visit')) {
+      return '🌐 Landing Page';
+    }
+
+    // Default short fallback
+    if (rawAction.length > 20) {
+      return rawAction.slice(0, 18) + '...';
+    }
+    return rawAction;
   };
 
   // Filter sessions
@@ -290,7 +335,6 @@ const AdminSessions = () => {
                         <th>Starting Time</th>
                         <th>Ending Time</th>
                         <th>Time Spent</th>
-                        <th style={{ textAlign: "center" }}>Start-to-End Track</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -340,8 +384,8 @@ const AdminSessions = () => {
                                   {session.email}
                                 </div>
                               ) : (
-                                <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>
-                                  {session.sessionId ? `ID: ${session.sessionId.slice(0, 16)}...` : "Anonymous"}
+                                <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700, marginTop: "2px" }}>
+                                  ID: <span style={{ color: "#0284c7" }}>{getCleanUserId(session)}</span>
                                 </div>
                               )}
                             </td>
@@ -410,29 +454,6 @@ const AdminSessions = () => {
                               >
                                 {getTimeSpent(session)}
                               </span>
-                            </td>
-
-                            {/* View Full Timeline Button */}
-                            <td style={{ textAlign: "center" }}>
-                              <button
-                                onClick={() => setSelectedSession(session)}
-                                style={{
-                                  padding: "5px 12px",
-                                  background: "#ffffff",
-                                  border: "1.5px solid #0284c7",
-                                  color: "#0284c7",
-                                  borderRadius: "6px",
-                                  fontSize: "0.78rem",
-                                  fontWeight: 700,
-                                  cursor: "pointer",
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: "5px",
-                                  boxShadow: "0 1px 3px rgba(2, 132, 199, 0.1)"
-                                }}
-                              >
-                                <Eye size={13} /> View Trail ({eventCount})
-                              </button>
                             </td>
                           </tr>
                         );

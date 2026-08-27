@@ -20,10 +20,32 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
 
   useEffect(() => {
-    const handleToggle = () => setIsOpen(prev => !prev);
-    const handleClose = () => setIsOpen(false);
+    // Apply desktop collapsed state to admin-layout elements
+    const layouts = document.querySelectorAll('.admin-layout');
+    layouts.forEach(el => {
+      if (isDesktopCollapsed && window.innerWidth > 900) {
+        el.classList.add('sidebar-collapsed');
+      } else {
+        el.classList.remove('sidebar-collapsed');
+      }
+    });
+  }, [isDesktopCollapsed, location.pathname]);
+
+  useEffect(() => {
+    const handleToggle = () => {
+      if (window.innerWidth <= 900) {
+        setIsOpen(prev => !prev);
+      } else {
+        setIsDesktopCollapsed(prev => !prev);
+      }
+    };
+
+    const handleClose = () => {
+      setIsOpen(false);
+    };
 
     window.addEventListener('toggle-admin-sidebar', handleToggle);
     window.addEventListener('close-admin-sidebar', handleClose);
@@ -101,7 +123,7 @@ const AdminSidebar = () => {
         />
       )}
 
-      <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
+      <aside className={`admin-sidebar ${isOpen ? 'open' : ''} ${isDesktopCollapsed ? 'collapsed' : ''}`}>
         {/* Logo and Mobile Close Button */}
         <div className="admin-logo" style={{ padding: "8px 8px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <ForgeLogo variant="light" size={38} />
@@ -124,6 +146,7 @@ const AdminSidebar = () => {
             return (
               <button
                 key={item.name}
+                title={item.name}
                 className={`admin-menu-item ${
                   location.pathname.startsWith(item.path) ? "active" : ""
                 }`}
@@ -138,7 +161,7 @@ const AdminSidebar = () => {
 
         {/* Logout */}
         <div className="admin-sidebar-bottom">
-          <button className="admin-menu-item logout" onClick={handleLogout}>
+          <button className="admin-menu-item logout" title="Logout" onClick={handleLogout}>
             <LogOut size={19} />
             <span>Logout</span>
           </button>

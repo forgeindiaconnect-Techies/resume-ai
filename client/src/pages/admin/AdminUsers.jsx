@@ -174,31 +174,42 @@ const AdminUsers = () => {
                           item.downloaded === true;
                         const hasDownloaded = item.downloaded === true || item.totalDownloads > 0;
 
-                        const displayName =
-                          item.resumeName &&
-                          item.resumeName.toLowerCase() !== "user" &&
-                          item.resumeName !== "Your Name" &&
-                          item.resumeName !== "guest_user"
-                            ? item.resumeName
-                            : item.email
-                            ? item.email.split("@")[0].charAt(0).toUpperCase() + item.email.split("@")[0].slice(1)
-                            : item.guestId
-                            ? `Guest (${item.guestId.slice(-6)})`
-                            : item.sessionId
-                            ? `Guest (${item.sessionId.slice(-6)})`
-                            : "Guest Visitor";
+                        const getDisplayName = (u) => {
+                          if (
+                            u.resumeName &&
+                            u.resumeName.toLowerCase() !== "user" &&
+                            u.resumeName !== "Your Name" &&
+                            u.resumeName !== "guest_user" &&
+                            u.resumeName !== "Guest"
+                          ) {
+                            return u.resumeName;
+                          }
+                          if (u.email) {
+                            const namePart = u.email.split("@")[0];
+                            if (namePart && namePart.toLowerCase() !== "user" && namePart.toLowerCase() !== "guest") {
+                              return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+                            }
+                          }
+                          return "Guest Visitor";
+                        };
+
+                        const getCleanUserId = (u) => {
+                          const raw = String(u.guestId || u.sessionId || u._id || '');
+                          const clean = raw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                          const tag = u.email ? 'USR' : 'GST';
+                          const idSnippet = clean.slice(-6) || '000000';
+                          return `${tag}-${idSnippet}`;
+                        };
 
                         return (
                           <tr key={item._id || item.sessionId}>
                             <td>
                               <div style={{ fontWeight: 600, color: "#0f172a" }}>
-                                {displayName}
+                                {getDisplayName(item)}
                               </div>
-                              {item.guestId && displayName !== item.guestId && (
-                                <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>
-                                  ID: {item.guestId.slice(-8)}
-                                </div>
-                              )}
+                              <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700, marginTop: "2px", letterSpacing: "0.03em" }}>
+                                ID: <span style={{ color: "#0284c7" }}>{getCleanUserId(item)}</span>
+                              </div>
                             </td>
                             <td>
                               {item.email ? (

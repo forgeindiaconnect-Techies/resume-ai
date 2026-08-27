@@ -146,12 +146,8 @@ const AdminATSAnalyses = () => {
         <main className="admin-content">
           <div className="admin-page">
             
-            {/* Page Header */}
-            <div className="admin-page-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <div>
-                <h2>ATS Resume Analyses</h2>
-                <p>Track all analyzed resumes, ATS compatibility scores, and feedback metrics.</p>
-              </div>
+            {/* Page Action Toolbar */}
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1.25rem" }}>
               <button
                 onClick={fetchStatsAndAnalyses}
                 style={{
