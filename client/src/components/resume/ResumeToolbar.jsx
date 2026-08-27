@@ -28,74 +28,17 @@ const ResumeToolbar = ({
   return (
     <div className="no-print" style={{ 
       display: 'flex', 
-      justifyContent: 'space-between', 
+      justifyContent: 'flex-end', 
       alignItems: 'center', 
       padding: '0.6rem 1.25rem', 
       background: 'white', 
       borderBottom: '1px solid #e2e8f0',
       flexShrink: 0,
-      minHeight: '60px',
+      minHeight: '52px',
       gap: '0.75rem',
       boxSizing: 'border-box',
       flexWrap: 'wrap'
     }}>
-      {/* Color Picker */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
-        {colors.map(c => {
-          const isSelected = selectedColor?.toLowerCase() === c.toLowerCase();
-          return (
-            <button
-              key={c}
-              onClick={() => onChangeColor(c)}
-              title={`Select Color ${c}`}
-              style={{ 
-                width: '20px', 
-                height: '20px', 
-                borderRadius: '50%', 
-                background: c, 
-                border: isSelected ? '2px solid white' : '1px solid #cbd5e1', 
-                boxShadow: isSelected ? `0 0 0 2px #0f172a, 0 2px 6px rgba(0,0,0,0.2)` : 'none',
-                cursor: 'pointer',
-                transform: isSelected ? 'scale(1.15)' : 'scale(1)',
-                transition: 'all 0.15s ease'
-              }}
-            />
-          );
-        })}
-        {/* Custom Color Picker */}
-        <div style={{ position: 'relative', display: 'inline-block', width: '20px', height: '20px', marginLeft: '2px' }} title="Custom Color">
-          <input
-            type="color"
-            value={colors.includes(selectedColor) ? '#0284c7' : selectedColor}
-            onChange={(e) => onChangeColor(e.target.value)}
-            style={{
-              opacity: 0,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              cursor: 'pointer',
-              zIndex: 2
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '18px',
-            height: '18px',
-            borderRadius: '50%',
-            background: !colors.includes(selectedColor) ? selectedColor : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)',
-            border: !colors.includes(selectedColor) ? '2px solid #ffffff' : '1px solid #cbd5e1',
-            boxShadow: !colors.includes(selectedColor) ? '0 0 0 2px #7c3aed' : 'none',
-            zIndex: 1,
-            pointerEvents: 'none',
-            transition: 'all 0.15s'
-          }} />
-        </div>
-      </div>
-
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
         {/* Template Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>

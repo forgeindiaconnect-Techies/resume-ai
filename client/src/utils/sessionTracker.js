@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config/api";
 
-// CREATE / GET ONE WEBSITE SESSION ID (Refreshes per visit/30m inactivity for accurate real-time dates)
+// CREATE / GET ONE WEBSITE SESSION ID (Refreshes per visit/30m inactivity)
 export const getUserSessionId = () => {
   let sessionId = localStorage.getItem("userSessionId");
   const lastActiveStr = localStorage.getItem("userSessionLastActive");
@@ -27,7 +27,7 @@ export const getGuestId = () => {
   return guestId;
 };
 
-const getStoredUserInfo = () => {
+export const getStoredUserInfo = () => {
   try {
     const email = localStorage.getItem("userEmail") || null;
     let resumeName = localStorage.getItem("userName") || null;
@@ -60,6 +60,35 @@ const getStoredUserInfo = () => {
   }
 };
 
+// Format time in 12-hour AM/PM format (e.g., "1:00 AM" or "4:25 PM")
+export const formatExactTime = (dateInput, includeSeconds = false) => {
+  if (!dateInput) return "-";
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) return "-";
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    ...(includeSeconds ? { second: "2-digit" } : {}),
+    hour12: true
+  });
+};
+
+// Format full date and time (e.g., "Aug 27, 2026, 1:00 PM")
+export const formatExactDateTime = (dateInput, includeSeconds = false) => {
+  if (!dateInput) return "-";
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) return "-";
+
+  const dateStr = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+  const timeStr = formatExactTime(date, includeSeconds);
+  return `${dateStr}, ${timeStr}`;
+};
+
 // START WEBSITE SESSION
 export const startSession = async () => {
   try {
@@ -77,7 +106,8 @@ export const startSession = async () => {
         guestId,
         resumeName,
         email,
-        currentPage: window.location.pathname
+        currentPage: window.location.pathname,
+        timestamp: new Date().toISOString()
       })
     });
 
@@ -106,6 +136,7 @@ export const trackEvent = async (
       page,
       resumeName: extra.resumeName || stored.resumeName || null,
       email: extra.email || stored.email || null,
+      timestamp: new Date().toISOString(),
       ...extra
     };
 
@@ -130,7 +161,10 @@ export const endSession = async () => {
     const sessionId = localStorage.getItem("userSessionId");
     if (!sessionId) return;
 
-    const payload = JSON.stringify({ sessionId });
+    const payload = JSON.stringify({
+      sessionId,
+      timestamp: new Date().toISOString()
+    });
 
     if (navigator.sendBeacon) {
       const blob = new Blob([payload], { type: 'application/json' });
@@ -148,10 +182,12 @@ export const endSession = async () => {
   }
 };
 
-// Automatic tab/window close listener
+// Automatic tab/window close listeners
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
     endSession();
   });
+  window.addEventListener("pagehide", () => {
+    endSession();
+  });
 }
-

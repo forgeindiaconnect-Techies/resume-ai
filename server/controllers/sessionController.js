@@ -76,7 +76,7 @@ const cleanObjectId = (id) => {
 
 exports.startSession = async (req, res) => {
   try {
-    const { sessionId, guestId, userId, email, resumeName, currentPage } = req.body;
+    const { sessionId, guestId, userId, email, resumeName, currentPage, timestamp } = req.body;
 
     if (!sessionId) {
       return res.status(400).json({ success: false, message: "sessionId is required" });
@@ -85,12 +85,13 @@ exports.startSession = async (req, res) => {
     const cEmail = cleanEmail(email);
     const cName = cleanName(resumeName);
     const cUserId = cleanObjectId(userId);
+    const eventTime = timestamp ? new Date(timestamp) : new Date();
 
     if (isDBConnected()) {
       const setFields = {
         status: "active",
         exitTime: null,
-        lastActiveTime: new Date(),
+        lastActiveTime: eventTime,
         currentPage: currentPage || "/"
       };
       if (guestId) setFields.guestId = guestId;
@@ -103,16 +104,16 @@ exports.startSession = async (req, res) => {
         {
           $setOnInsert: {
             sessionId,
-            entryTime: new Date()
+            entryTime: eventTime,
+            events: [
+              {
+                action: "🌐 Visited Landing Page",
+                page: currentPage || "/",
+                timestamp: eventTime
+              }
+            ]
           },
-          $set: setFields,
-          $push: {
-            events: {
-              action: "Session Started",
-              page: currentPage || "/",
-              timestamp: new Date()
-            }
-          }
+          $set: setFields
         },
         { upsert: true, returnDocument: 'after' }
       );
@@ -129,8 +130,8 @@ exports.startSession = async (req, res) => {
           userId: userId || null,
           email: cEmail || null,
           resumeName: cName || null,
-          entryTime: new Date().toISOString(),
-          lastActiveTime: new Date().toISOString(),
+          entryTime: eventTime.toISOString(),
+          lastActiveTime: eventTime.toISOString(),
           exitTime: null,
           currentPage: currentPage || "/",
           resumeCreated: false,
@@ -139,9 +140,9 @@ exports.startSession = async (req, res) => {
           downloaded: false,
           downloadedAt: null,
           status: "active",
-          events: [{ action: "Session Started", page: currentPage || "/", timestamp: new Date().toISOString() }],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          events: [{ action: "🌐 Visited Landing Page", page: currentPage || "/", timestamp: eventTime.toISOString() }],
+          createdAt: eventTime.toISOString(),
+          updatedAt: eventTime.toISOString()
         };
         sessions.push(session);
         saveLocalCollection('userSessions', sessions);
@@ -161,7 +162,7 @@ exports.startSession = async (req, res) => {
 
 exports.trackEvent = async (req, res) => {
   try {
-    const { sessionId, guestId, userId, action, page, extraData, resumeName, email, resumeId, resumeCreated, downloadType, downloaded } = req.body;
+    const { sessionId, guestId, userId, action, page, extraData, resumeName, email, resumeId, resumeCreated, downloadType, downloaded, timestamp } = req.body;
 
     if (!sessionId || !action) {
       return res.status(400).json({ success: false, message: "sessionId and action are required" });
@@ -174,10 +175,12 @@ exports.trackEvent = async (req, res) => {
     const effResumeCreated = resumeCreated || extraData?.resumeCreated || action === "RESUME_CREATED" || action === "Resume Auto-Saved";
     const effDownloadType = downloadType || extraData?.downloadType;
     const effDownloaded = downloaded || extraData?.downloaded || action === "RESUME_DOWNLOADED" || action === "DOWNLOAD_WITHOUT_WATERMARK" || action === "DOWNLOAD_WITH_WATERMARK";
+    const eventTime = timestamp ? new Date(timestamp) : new Date();
 
     if (isDBConnected()) {
       const setFields = {
-        lastActiveTime: new Date(),
+        lastActiveTime: eventTime,
+        status: "active",
         currentPage: page || "/"
       };
       if (guestId) setFields.guestId = guestId;
@@ -189,26 +192,31 @@ exports.trackEvent = async (req, res) => {
       if (effDownloadType) setFields.downloadType = effDownloadType;
       if (effDownloaded) {
         setFields.downloaded = true;
-        setFields.downloadedAt = new Date();
+        setFields.downloadedAt = eventTime;
+      }
+
+      const updateOp = {
+        $setOnInsert: {
+          sessionId,
+          entryTime: eventTime
+        },
+        $set: setFields
+      };
+
+      // Only push non-heartbeat actions to maintain a clean start-to-end timeline
+      if (action !== "HEARTBEAT") {
+        updateOp.$push = {
+          events: {
+            action,
+            page: page || "/",
+            timestamp: eventTime
+          }
+        };
       }
 
       const session = await UserSession.findOneAndUpdate(
         { sessionId },
-        {
-          $setOnInsert: {
-            sessionId,
-            entryTime: new Date(),
-            status: "active"
-          },
-          $set: setFields,
-          $push: {
-            events: {
-              action,
-              page: page || "/",
-              timestamp: new Date()
-            }
-          }
-        },
+        updateOp,
         { upsert: true, returnDocument: 'after' }
       );
 
@@ -226,26 +234,29 @@ exports.trackEvent = async (req, res) => {
           userId: null,
           email: cEmail || null,
           resumeName: cName || null,
-          entryTime: new Date().toISOString(),
-          lastActiveTime: new Date().toISOString(),
+          entryTime: eventTime.toISOString(),
+          lastActiveTime: eventTime.toISOString(),
           exitTime: null,
           currentPage: page || "/",
           resumeCreated: Boolean(effResumeCreated),
           resumeId: effResumeId || null,
           downloadType: effDownloadType || "none",
           downloaded: Boolean(effDownloaded),
-          downloadedAt: effDownloaded ? new Date().toISOString() : null,
+          downloadedAt: effDownloaded ? eventTime.toISOString() : null,
           status: "active",
-          events: [{ action, page: page || "/", timestamp: new Date().toISOString() }],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          events: action !== "HEARTBEAT" ? [{ action, page: page || "/", timestamp: eventTime.toISOString() }] : [],
+          createdAt: eventTime.toISOString(),
+          updatedAt: eventTime.toISOString()
         };
         sessions.push(session);
       } else {
         session = sessions[sessionIndex];
-        session.lastActiveTime = new Date().toISOString();
+        session.lastActiveTime = eventTime.toISOString();
+        session.status = "active";
         session.currentPage = page || session.currentPage;
-        session.events.push({ action, page: page || session.currentPage, timestamp: new Date().toISOString() });
+        if (action !== "HEARTBEAT") {
+          session.events.push({ action, page: page || session.currentPage, timestamp: eventTime.toISOString() });
+        }
 
         if (guestId && !session.guestId) session.guestId = guestId;
         if (cName) session.resumeName = cName;
@@ -255,9 +266,9 @@ exports.trackEvent = async (req, res) => {
         if (effDownloadType) session.downloadType = effDownloadType;
         if (effDownloaded) {
           session.downloaded = true;
-          session.downloadedAt = session.downloadedAt || new Date().toISOString();
+          session.downloadedAt = session.downloadedAt || eventTime.toISOString();
         }
-        session.updatedAt = new Date().toISOString();
+        session.updatedAt = eventTime.toISOString();
         sessions[sessionIndex] = session;
       }
 
@@ -283,13 +294,15 @@ exports.endSession = async (req, res) => {
     }
     const sessionId = body?.sessionId;
     if (!sessionId) return res.status(400).json({ success: false, message: "sessionId is required" });
+    const eventTime = body?.timestamp ? new Date(body.timestamp) : new Date();
 
     if (isDBConnected()) {
       let session = await UserSession.findOne({ sessionId });
       if (session) {
-        session.exitTime = new Date();
+        session.exitTime = eventTime;
+        session.lastActiveTime = eventTime;
         session.status = "exited";
-        session.events.push({ action: "Session Ended", page: session.currentPage });
+        session.events.push({ action: "🚪 Completed Session / Left Site", page: session.currentPage || "/", timestamp: eventTime });
         await session.save();
       }
       return res.status(200).json({ success: true });
@@ -297,10 +310,11 @@ exports.endSession = async (req, res) => {
       const sessions = getLocalCollection('userSessions');
       const sessionIndex = sessions.findIndex(s => s.sessionId === sessionId);
       if (sessionIndex !== -1) {
-        sessions[sessionIndex].exitTime = new Date().toISOString();
+        sessions[sessionIndex].exitTime = eventTime.toISOString();
+        sessions[sessionIndex].lastActiveTime = eventTime.toISOString();
         sessions[sessionIndex].status = "exited";
-        sessions[sessionIndex].events.push({ action: "Session Ended", page: sessions[sessionIndex].currentPage, timestamp: new Date().toISOString() });
-        sessions[sessionIndex].updatedAt = new Date().toISOString();
+        sessions[sessionIndex].events.push({ action: "🚪 Completed Session / Left Site", page: sessions[sessionIndex].currentPage || "/", timestamp: eventTime.toISOString() });
+        sessions[sessionIndex].updatedAt = eventTime.toISOString();
         saveLocalCollection('userSessions', sessions);
       }
       return res.status(200).json({ success: true });
@@ -316,14 +330,14 @@ exports.getAllSessions = async (req, res) => {
     let enrichedSessions = [];
 
     if (isDBConnected()) {
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
 
       try {
         await UserSession.updateMany(
           {
             status: "active",
             exitTime: null,
-            lastActiveTime: { $lt: fiveMinutesAgo }
+            lastActiveTime: { $lt: twoMinutesAgo }
           },
           {
             $set: {
@@ -445,7 +459,7 @@ exports.getAllSessions = async (req, res) => {
         // Clean up status & exit time if inactive
         if (enriched.status === "active" && !enriched.exitTime) {
           const lastActive = new Date(enriched.lastActiveTime || enriched.entryTime || Date.now());
-          if (Date.now() - lastActive.getTime() > 5 * 60 * 1000) {
+          if (Date.now() - lastActive.getTime() > 2 * 60 * 1000) {
             enriched.status = "exited";
             enriched.exitTime = lastActive;
           }

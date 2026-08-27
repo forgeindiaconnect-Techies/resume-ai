@@ -2633,30 +2633,105 @@ input::-ms-clear {
 }
 
 .landing-hero-section {
-  max-width: 1200px;
+  max-width: 1340px;
   margin: 0 auto;
-  padding: 4rem 2rem 4rem;
+  padding: 2.5rem 1.5rem 3.5rem;
   text-align: center;
+  position: relative;
 }
 
 .landing-hero-h1 {
-  font-size: clamp(2.1rem, 5.8vw, 4.5rem);
+  font-size: clamp(2rem, 4.6vw, 3.8rem);
   font-weight: 900;
   font-family: 'Playfair Display', serif;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
   color: #0f172a;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .landing-hero-sub {
-  font-size: clamp(1rem, 2.8vw, 1.45rem);
+  font-size: clamp(0.95rem, 2.2vw, 1.25rem);
   font-family: 'Playfair Display', serif;
   font-style: italic;
   color: #475569;
-  max-width: 800px;
-  margin: 0 auto 3rem;
-  line-height: 1.55;
+  max-width: 820px;
+  margin: 0 auto 2.25rem;
+  line-height: 1.5;
+}
+
+/* ─── Hero Side Floating Interactive Widgets ─── */
+.landing-hero-wrapper {
+  position: relative;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.hero-side-widget {
+  position: absolute;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(226, 232, 240, 0.95);
+  border-radius: 18px;
+  padding: 0.85rem 1.15rem;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.07), 0 2px 8px rgba(2, 132, 199, 0.06);
+  pointer-events: auto;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.hero-side-widget:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12), 0 4px 14px rgba(2, 132, 199, 0.12);
+  border-color: #bae6fd;
+}
+
+.hero-side-left-1 {
+  top: 0px;
+  left: 15px;
+  animation: floatSlow 12s ease-in-out infinite;
+}
+
+.hero-side-left-2 {
+  bottom: 30px;
+  left: 20px;
+  max-width: 220px;
+  animation: floatReverse 14s ease-in-out infinite;
+}
+
+.hero-side-right-1 {
+  top: 10px;
+  right: 15px;
+  animation: floatOrb3 13s ease-in-out infinite;
+}
+
+.hero-side-right-2 {
+  bottom: 25px;
+  right: 20px;
+  min-width: 215px;
+  animation: floatSlow 15s ease-in-out infinite 1s;
+}
+
+@media (max-width: 1240px) {
+  .hero-side-left-1 {
+    left: 5px;
+  }
+  .hero-side-left-2 {
+    display: none;
+  }
+  .hero-side-right-1 {
+    right: 5px;
+  }
+  .hero-side-right-2 {
+    display: none;
+  }
+}
+
+@media (max-width: 1060px) {
+  .hero-side-widget {
+    display: none !important;
+  }
 }
 
 .landing-hero-cards {
@@ -3033,4 +3108,129 @@ input::-ms-clear {
     z-index: 999;
   }
 }
+
+/* ─── Premium Landing Page Animations ─── */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(30px, -25px) scale(1.08);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-30px, 20px) scale(0.95);
+  }
+}
+
+@keyframes floatOrb3 {
+  0%, 100% {
+    transform: translate(0px, 0px);
+  }
+  50% {
+    transform: translate(20px, 25px);
+  }
+}
+
+.landing-orb-1 {
+  animation: floatSlow 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.landing-orb-2 {
+  animation: floatReverse 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+.landing-orb-3 {
+  animation: floatOrb3 15s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes cosmicTwinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+.cosmic-star-1 {
+  animation: cosmicTwinkle 3s ease-in-out infinite;
+}
+.cosmic-star-2 {
+  animation: cosmicTwinkle 4.5s ease-in-out infinite 1s;
+}
+.cosmic-star-3 {
+  animation: cosmicTwinkle 3.8s ease-in-out infinite 0.5s;
+}
+.cosmic-star-4 {
+  animation: cosmicTwinkle 5s ease-in-out infinite 2s;
+}
+
+@keyframes pulseBadge {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+    transform: scale(1.02);
+  }
+}
+
+.pulse-badge {
+  animation: pulseBadge 3s ease-in-out infinite;
+}
+
+@keyframes typingDot {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.typing-dot-1 {
+  animation: typingDot 1.4s infinite ease-in-out 0s;
+}
+.typing-dot-2 {
+  animation: typingDot 1.4s infinite ease-in-out 0.2s;
+}
+.typing-dot-3 {
+  animation: typingDot 1.4s infinite ease-in-out 0.4s;
+}
+
+@keyframes gradientTextGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(2, 132, 199, 0.25));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(14, 165, 233, 0.45));
+  }
+}
+
+.gradient-glow-text {
+  animation: gradientTextGlow 4s ease-in-out infinite;
+}
+
+.landing-card-interactive {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.landing-card-interactive:hover {
+  transform: translateY(-8px) scale(1.015) !important;
+}
+
 

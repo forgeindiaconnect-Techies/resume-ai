@@ -9,13 +9,15 @@ const Navbar = () => {
 
   return (
     <nav style={{
-      background: 'rgba(255, 255, 255, 0.95)',
-      backdropFilter: 'blur(10px)',
+      background: '#ffffff',
       borderBottom: '1px solid #e2e8f0',
-      position: 'sticky',
+      position: 'fixed',
       top: 0,
-      zIndex: 100,
-      boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+      left: 0,
+      right: 0,
+      width: '100%',
+      zIndex: 1000,
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
     }}>
       <div className="landing-nav-container">
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>

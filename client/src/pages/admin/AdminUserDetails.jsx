@@ -234,7 +234,14 @@ const AdminUserDetails = () => {
                   <tr key={download._id}>
                     <td>{download.resumeId?.title || "Resume"}</td>
                     <td>
-                      {new Date(download.downloadedAt).toLocaleString("en-IN")}
+                      {download.downloadedAt ? new Date(download.downloadedAt).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true
+                      }) : "-"}
                     </td>
                   </tr>
                 ))}

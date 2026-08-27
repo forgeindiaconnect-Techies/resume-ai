@@ -525,8 +525,8 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       }
     };
     initializeResumeSession();
-    startSession('/builder');
-    trackEvent("Resume Builder Opened", "/builder");
+    startSession();
+    trackEvent("🛠️ Entered Resume Builder", "/builder");
   }, [user]);
 
   // Auto-Save Effect (1.5s Debounce)

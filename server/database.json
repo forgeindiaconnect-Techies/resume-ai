@@ -138,9 +138,9 @@
       "email": "help@forgeindiaconnect.com",
       "resumeName": "Joshua Nelson",
       "entryTime": "2026-08-27T08:36:05.505Z",
-      "lastActiveTime": "2026-08-27T08:36:05.505Z",
+      "lastActiveTime": "2026-08-27T11:41:44.136Z",
       "exitTime": null,
-      "currentPage": "/admin/ats-analyses",
+      "currentPage": "/admin/activity",
       "resumeCreated": false,
       "resumeId": null,
       "downloadType": "none",
@@ -152,10 +152,60 @@
           "action": "HEARTBEAT",
           "page": "/admin/ats-analyses",
           "timestamp": "2026-08-27T08:36:05.505Z"
+        },
+        {
+          "action": "HEARTBEAT",
+          "page": "/",
+          "timestamp": "2026-08-27T10:43:46.220Z"
+        },
+        {
+          "action": "Landing Page Opened",
+          "page": "/",
+          "timestamp": "2026-08-27T10:43:49.953Z"
+        },
+        {
+          "action": "HEARTBEAT",
+          "page": "/",
+          "timestamp": "2026-08-27T10:43:50.255Z"
+        },
+        {
+          "action": "Landing Page Opened",
+          "page": "/",
+          "timestamp": "2026-08-27T10:43:50.493Z"
+        },
+        {
+          "action": "HEARTBEAT",
+          "page": "/",
+          "timestamp": "2026-08-27T10:43:50.513Z"
+        },
+        {
+          "action": "LANDING_PAGE_OPENED",
+          "page": "/",
+          "timestamp": "2026-08-27T10:43:50.522Z"
+        },
+        {
+          "action": "LANDING_PAGE_OPENED",
+          "page": "/",
+          "timestamp": "2026-08-27T10:43:50.530Z"
+        },
+        {
+          "action": "HEARTBEAT",
+          "page": "/",
+          "timestamp": "2026-08-27T11:14:26.634Z"
+        },
+        {
+          "action": "HEARTBEAT",
+          "page": "/",
+          "timestamp": "2026-08-27T11:16:21.716Z"
+        },
+        {
+          "action": "HEARTBEAT",
+          "page": "/",
+          "timestamp": "2026-08-27T11:16:24.498Z"
         }
       ],
       "createdAt": "2026-08-27T08:36:05.505Z",
-      "updatedAt": "2026-08-27T08:36:05.505Z"
+      "updatedAt": "2026-08-27T11:41:44.136Z"
     }
   ],
   "downloads": [],

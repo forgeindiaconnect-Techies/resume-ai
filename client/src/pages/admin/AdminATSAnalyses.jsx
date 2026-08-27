@@ -139,15 +139,40 @@ const AdminATSAnalyses = () => {
   };
 
   return (
-    <div className="admin-layout" style={{ display: "flex", minHeight: "100vh", background: "#f8fafc" }}>
+    <div className="admin-layout">
       <AdminSidebar />
-
-      <div className="admin-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        <AdminHeader title="ATS Resume Analyses" />
-
-        <div style={{ padding: "2rem", maxWidth: "1440px", width: "100%", boxSizing: "border-box" }}>
+      <div className="admin-main">
+        <AdminHeader />
+        <main className="admin-content">
+          <div className="admin-page">
+            
+            {/* Page Header */}
+            <div className="admin-page-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <div>
+                <h2>ATS Resume Analyses</h2>
+                <p>Track all analyzed resumes, ATS compatibility scores, and feedback metrics.</p>
+              </div>
+              <button
+                onClick={fetchStatsAndAnalyses}
+                style={{
+                  padding: "8px 14px",
+                  background: "#0284c7",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "600",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px"
+                }}
+              >
+                <RefreshCw size={14} className={loading ? "spin" : ""} /> Refresh Data
+              </button>
+            </div>
           
-          {/* Top 8 Metric Cards */}
+            {/* Top 8 Metric Cards */}
           <div
             style={{
               display: "grid",
@@ -610,7 +635,8 @@ const AdminATSAnalyses = () => {
             </div>
           )}
 
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );

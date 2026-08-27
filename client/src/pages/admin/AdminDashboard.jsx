@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, IndianRupee, Download, FileText, RefreshCw, Trash2, FileCheck } from "lucide-react";
+import { Users, IndianRupee, Download, FileText, RefreshCw, Trash2, FileCheck, Activity } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { API_BASE_URL } from "../../config/api";
@@ -121,7 +121,7 @@ const AdminDashboard = () => {
         const activeUsersCount = sessions.filter(item => {
           if (item.status === "exited" || item.exitTime) return false;
           const lastActive = new Date(item.lastActiveTime || item.entryTime || Date.now());
-          return Date.now() - lastActive.getTime() < 5 * 60 * 1000;
+          return Date.now() - lastActive.getTime() < 2 * 60 * 1000;
         }).length;
 
         const withWatermarkCount = downloads.filter(
@@ -158,7 +158,7 @@ const AdminDashboard = () => {
 
     fetchDashboardStats(true);
 
-    const interval = setInterval(() => fetchDashboardStats(false), 15000);
+    const interval = setInterval(() => fetchDashboardStats(false), 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -222,6 +222,27 @@ const AdminDashboard = () => {
               <div className="admin-table-message">Loading dashboard...</div>
             ) : (
               <div className="report-stats-grid" style={{ marginBottom: "24px" }}>
+                {/* Live Active Users (Inside Now) Card */}
+                <div 
+                  className="report-stat-card" 
+                  onClick={() => navigate('/admin/sessions')}
+                  style={{ cursor: 'pointer', transition: 'all 0.2s ease', borderLeft: '4px solid #16a34a' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(22,163,74,0.12)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = ''; }}
+                  title="Click to view Real-Time Live Sessions"
+                >
+                  <div className="report-stat-icon" style={{ background: '#dcfce7', color: '#16a34a' }}>
+                    <Activity size={20} />
+                  </div>
+                  <div>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+                      Inside Now (Live)
+                    </span>
+                    <h2 style={{ margin: 0, color: '#15803d' }}>{dashboardStats.activeUsersCount}</h2>
+                  </div>
+                </div>
+
                 {/* Total Users Card */}
                 <div 
                   className="report-stat-card" 

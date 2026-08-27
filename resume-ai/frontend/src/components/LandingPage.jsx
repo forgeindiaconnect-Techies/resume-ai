@@ -282,21 +282,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '0.5rem', 
-            padding: '0.4rem 1.1rem', 
-            borderRadius: '50px', 
-            border: '1px solid #e0e7ff', 
-            background: '#eef2ff', 
-            color: '#4f46e5', 
-            fontSize: '0.875rem', 
-            fontWeight: 600, 
-            marginBottom: '2rem' 
-          }}>
-            <Layers size={14} /> Introducing Career 360°
-          </div>
+
 
           <h1 style={{ 
             fontSize: '4.5rem', 

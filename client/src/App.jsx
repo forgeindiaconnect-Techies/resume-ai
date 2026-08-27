@@ -63,7 +63,6 @@ function App() {
   useEffect(() => {
     const initializeTracking = async () => {
       await startSession();
-      await trackEvent("LANDING_PAGE_OPENED", window.location.pathname);
     };
     initializeTracking();
   }, []);
@@ -73,15 +72,15 @@ function App() {
       try {
         await trackEvent("HEARTBEAT", window.location.pathname);
       } catch (error) {
-        console.error("Heartbeat error:", error);
+        // Non-blocking
       }
     };
 
     // Send immediately
     sendHeartbeat();
 
-    // Update every 30 seconds
-    const interval = setInterval(sendHeartbeat, 30000);
+    // Update every 15 seconds for real-time live accuracy
+    const interval = setInterval(sendHeartbeat, 15000);
 
     return () => clearInterval(interval);
   }, []);
