@@ -337,7 +337,7 @@ Generated via Forge Resume AI Universal ATS
             style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}
             onClick={() => navigate("/")}
           >
-            <ForgeLogo size={32} showText={true} variant="light" />
+            <ForgeLogo size={52} showText={true} variant="light" />
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

@@ -53,8 +53,8 @@ const OnboardingStart = () => {
       
       {/* Logo */}
       <div style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <ForgeLogo size={28} showText={true} variant="light" />
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <ForgeLogo size={52} showText={true} variant="light" />
         </Link>
       </div>
 

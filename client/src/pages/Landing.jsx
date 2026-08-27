@@ -212,7 +212,7 @@ const LandingPage = () => {
       }}>
         <div className="landing-nav-container">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => navigate('/')}>
-            <ForgeLogo size={32} showText={true} variant="light" />
+            <ForgeLogo size={46} showText={true} />
           </div>
 
           {/* Desktop Navigation Links */}

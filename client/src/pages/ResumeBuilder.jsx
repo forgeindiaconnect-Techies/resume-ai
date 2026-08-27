@@ -1363,7 +1363,7 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             title="Go to Home" 
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
-            <ForgeLogo size={26} showText={true} />
+            <ForgeLogo size={44} showText={true} />
           </div>
         </div>
 

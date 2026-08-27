@@ -18,8 +18,8 @@ const Navbar = () => {
       boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
     }}>
       <div className="landing-nav-container">
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <ForgeLogo size={32} showText={true} variant="light" />
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <ForgeLogo size={46} showText={true} />
         </Link>
 
         {/* Desktop Nav Links */}

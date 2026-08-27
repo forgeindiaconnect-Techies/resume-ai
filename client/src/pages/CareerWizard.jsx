@@ -47,8 +47,8 @@ const CareerWizard = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-primary-500 selection:text-white">
       {/* Header */}
       <header className="px-8 py-6 flex justify-between items-center bg-white border-b border-slate-200">
-        <Link to="/" className="hover:opacity-80 transition">
-          <ForgeLogo size={32} />
+        <Link to="/" className="hover:opacity-80 transition flex items-center">
+          <ForgeLogo size={52} />
         </Link>
         <div className="flex gap-2">
           {[1, 2, 3, 4].map(i => (
