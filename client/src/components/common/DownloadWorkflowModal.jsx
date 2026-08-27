@@ -118,99 +118,160 @@ const DownloadWorkflowModal = ({
         return;
       }
 
-      setStep('progress');
-      
-      const isClean = selectedPlan === "no_watermark";
+      setLoadingPayment(true);
 
-      const resName = formData?.personalInfo?.name || formData?.name || localStorage.getItem("userName") || null;
-      if (email) localStorage.setItem("userEmail", email.trim().toLowerCase());
-      if (resName) localStorage.setItem("userName", resName);
-
-      // SAVE DOWNLOAD INTO MONGODB
-      const saveResponse = await fetch(
-        `${API_BASE_URL}/downloads`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            sessionId: localStorage.getItem("userSessionId") || null,
-            guestId: localStorage.getItem("guestId") || null,
-            email: email.trim().toLowerCase(),
-            resumeId: formData?.resumeId || localStorage.getItem("activeResumeSessionId") || null,
-            resumeName: resName,
-            downloadType: selectedPlan
-          })
-        }
-      );
-
-      const saveData = await saveResponse.json();
-      console.log("DOWNLOAD API RESULT:", saveData);
-
-      if (!saveResponse.ok || !saveData.success) {
-        throw new Error(saveData.message || "Download record could not be saved");
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded || !window.Razorpay) {
+        setLoadingPayment(false);
+        alert("Unable to load Razorpay payment gateway. Please check your internet connection.");
+        return;
       }
 
-      // CREATE MOCK PAYMENT RECORD
-      const paymentResponse = await fetch(
-        `${API_BASE_URL}/payments/mock-payment`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: email.trim().toLowerCase(),
-            resumeId: formData?.resumeId || localStorage.getItem("activeResumeSessionId") || "RESUME_001",
-            resumeName: resName,
-            plan: selectedPlan
-          })
-        }
-      );
+      const resName = formData?.personalInfo?.name || formData?.name || localStorage.getItem("userName") || "Resume";
+      const normalizedEmail = email.trim().toLowerCase();
+      if (email) localStorage.setItem("userEmail", normalizedEmail);
+      if (resName) localStorage.setItem("userName", resName);
 
-      const paymentData = await paymentResponse.json();
-      console.log("MOCK PAYMENT RESULT:", paymentData);
+      const resumeIdentifier = formData?.resumeId || localStorage.getItem("activeResumeSessionId") || `RESUME_${Date.now()}`;
+      const token = localStorage.getItem("token");
 
-      // 5. Track selected plan
-      await trackEvent(
-        isClean ? "DOWNLOAD_WITHOUT_WATERMARK" : "DOWNLOAD_WITH_WATERMARK",
-        "/builder",
-        {
-          resumeName: resName,
-          email: email.trim().toLowerCase(),
-          downloaded: true,
-          downloadType: selectedPlan
-        }
-      );
-
-      // 6. Generate PDF
-      const filename = generateProfessionalFilename(
-        resName || "Resume",
-        formData?.department || "Professional"
-      );
-
-      await exportResumeToPdf(sheet, filename, isClean);
-
-      // 7. Track successful download
-      await trackEvent("RESUME_DOWNLOADED", "/builder", {
-        resumeName: resName,
-        email: email.trim().toLowerCase(),
-        downloaded: true,
-        downloadType: selectedPlan
+      // 1. Create Razorpay Order on Backend
+      const orderResponse = await fetch(`${API_BASE_URL}/payments/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          resumeId: resumeIdentifier,
+          plan: selectedPlan,
+          planKey: selectedPlan
+        })
       });
 
-      console.log("PDF DOWNLOAD COMPLETED");
+      const orderData = await orderResponse.json();
 
-      setStep('success');
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      if (!orderResponse.ok || !orderData.success) {
+        throw new Error(orderData.message || "Failed to initialize Razorpay order");
+      }
+
+      // 2. Open Razorpay Checkout Modal
+      const options = {
+        key: orderData.razorpayKey,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency || "INR",
+        name: "Forge India Connect",
+        description: selectedPlan === "no_watermark" ? "High-Res PDF (No Watermark)" : "Standard PDF (Watermarked)",
+        order_id: orderData.order.id,
+        prefill: {
+          name: resName,
+          email: normalizedEmail,
+          contact: formData?.personalInfo?.phone || ""
+        },
+        theme: {
+          color: "#0ea5e9"
+        },
+        handler: async function (paymentResponse) {
+          try {
+            setStep('progress');
+            setProgress(30);
+
+            // 3. Verify Payment on Backend
+            const verifyResponse = await fetch(`${API_BASE_URL}/payments/verify-payment`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {})
+              },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                resumeId: resumeIdentifier
+              })
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (!verifyResponse.ok || !verifyData.success) {
+              throw new Error(verifyData.message || "Payment signature verification failed");
+            }
+
+            setProgress(60);
+
+            // 4. Save Download Record in MongoDB
+            await fetch(`${API_BASE_URL}/downloads`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                sessionId: localStorage.getItem("userSessionId") || null,
+                guestId: localStorage.getItem("guestId") || null,
+                email: normalizedEmail,
+                resumeId: resumeIdentifier,
+                resumeName: resName,
+                downloadType: selectedPlan,
+                paymentId: verifyData.payment?._id || paymentResponse.razorpay_payment_id
+              })
+            }).catch(e => console.warn("Save download error:", e));
+
+            setProgress(80);
+
+            // 5. Generate and Export PDF
+            const isClean = selectedPlan === "no_watermark";
+            const filename = generateProfessionalFilename(
+              resName || "Resume",
+              formData?.department || "Professional"
+            );
+
+            await exportResumeToPdf(sheet, filename, isClean);
+
+            setProgress(100);
+
+            // 6. Track Event
+            await trackEvent("RESUME_DOWNLOADED", "/builder", {
+              resumeName: resName,
+              email: normalizedEmail,
+              downloaded: true,
+              downloadType: selectedPlan,
+              paymentId: paymentResponse.razorpay_payment_id
+            });
+
+            setStep('success');
+            setTimeout(() => {
+              onClose();
+            }, 2500);
+
+          } catch (verifyError) {
+            console.error("Verification/Download Error:", verifyError);
+            alert(verifyError.message || "Payment verification failed.");
+            setStep('plan');
+          } finally {
+            setLoadingPayment(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setLoadingPayment(false);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        console.error("Razorpay Payment Failed:", response.error);
+        alert(`Payment failed: ${response.error?.description || "Transaction was declined"}`);
+        setLoadingPayment(false);
+      });
+
+      rzp.open();
 
     } catch (error) {
-      console.error("DOWNLOAD ERROR:", error);
-      setStep('error');
-      alert(error.message || "Unable to download resume.");
+      console.error("PAYMENT / ORDER CREATION ERROR:", error);
+      setLoadingPayment(false);
+      alert(error.message || "Unable to initiate payment.");
     }
   };
 

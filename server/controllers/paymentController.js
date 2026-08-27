@@ -21,16 +21,38 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const plans = {
-      watermarked: { amount: 99, watermarkRemoval: false },
-      no_watermark: { amount: 199, watermarkRemoval: true },
-      Single: { amount: 1, watermarkRemoval: false },
-      Monthly: { amount: 199, watermarkRemoval: true },
-      Quarterly: { amount: 399, watermarkRemoval: true },
-      Yearly: { amount: 999, watermarkRemoval: true }
-    };
+    if (!razorpay) {
+      return res.status(500).json({
+        success: false,
+        message: "Razorpay environment variables are missing or not initialized on the server.",
+      });
+    }
 
-    const selectedPlan = plans[actualPlanKey];
+    let selectedPlan = null;
+    try {
+      const DownloadPlan = require("../models/DownloadPlan");
+      const dbPlan = await DownloadPlan.findOne({ key: actualPlanKey });
+      if (dbPlan) {
+        selectedPlan = {
+          amount: Number(dbPlan.price),
+          watermarkRemoval: dbPlan.key === "no_watermark" || Boolean(dbPlan.removeWatermark)
+        };
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    if (!selectedPlan) {
+      const plans = {
+        watermarked: { amount: 99, watermarkRemoval: false },
+        no_watermark: { amount: 199, watermarkRemoval: true },
+        Single: { amount: 1, watermarkRemoval: false },
+        Monthly: { amount: 199, watermarkRemoval: true },
+        Quarterly: { amount: 399, watermarkRemoval: true },
+        Yearly: { amount: 999, watermarkRemoval: true }
+      };
+      selectedPlan = plans[actualPlanKey];
+    }
 
     if (!selectedPlan) {
       return res.status(400).json({
@@ -94,23 +116,27 @@ exports.createOrder = async (req, res) => {
 
     return res.status(201).json({
       success: true,
+      keyId: process.env.RAZORPAY_KEY_ID,
       razorpayKey: process.env.RAZORPAY_KEY_ID,
       order: {
         id: order.id,
         amount: order.amount,
         currency: order.currency,
       },
+      plan: actualPlanKey,
       paymentId: payment._id,
     });
   } catch (error) {
     console.error("Create Razorpay order error:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to create payment order",
+      message: error?.error?.description || error.message || "Failed to create payment order",
       error: error.message
     });
   }
 };
+
+exports.createRazorpayOrder = exports.createOrder;
 
 exports.verifyPayment = async (req, res) => {
   try {
