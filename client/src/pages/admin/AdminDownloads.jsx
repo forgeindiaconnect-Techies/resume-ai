@@ -115,11 +115,19 @@ const AdminDownloads = () => {
                     <td>{item.resumeName || "-"}</td>
                     <td>{item.email || "-"}</td>
                     <td>
-                      {item.downloadType === "watermarked"
-                        ? "With Watermark"
-                        : "Without Watermark"}
+                      {item.downloadType === "watermarked" || item.downloadType === "free_watermark" ? (
+                        <span style={{ color: "#16a34a", fontWeight: 700 }}>With Watermark</span>
+                      ) : (
+                        <span style={{ color: "#0284c7", fontWeight: 700 }}>Without Watermark</span>
+                      )}
                     </td>
-                    <td>₹{item.amount}</td>
+                    <td>
+                      {Number(item.amount) === 0 ? (
+                        <span style={{ color: "#16a34a", fontWeight: 700 }}>₹0 or FREE</span>
+                      ) : (
+                        <span style={{ fontWeight: 700 }}>₹{item.amount}</span>
+                      )}
+                    </td>
                     <td>
                       <span style={{ fontWeight: 600, color: "#334155" }}>
                         {item.downloadedAt

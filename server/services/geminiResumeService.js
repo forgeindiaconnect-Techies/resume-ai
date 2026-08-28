@@ -71,7 +71,7 @@ Return this exact JSON structure:
 `;
 
   const response = await ai.models.generateContent({
-    model: process.env.GEMINI_MODEL || "gemini-3.5-flash",
+    model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
     contents: prompt,
     config: {
       temperature: 0.2,

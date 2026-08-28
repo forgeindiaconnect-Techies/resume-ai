@@ -109,6 +109,8 @@ const ResumeChecker = () => {
   const [proofreadFilter, setProofreadFilter] = useState("all");
   const [copied, setCopied] = useState(false);
 
+  const theme = getScoreTheme(result?.resumeQualityScore || result?.overallScore || 0);
+
   useEffect(() => {
     try {
       startSession("/resume-checker");
@@ -207,6 +209,18 @@ const ResumeChecker = () => {
         const analysisData = {
           ...(raw.analysis || {}),
 
+          resumeProfile:
+            raw.resumeProfile || null,
+
+          jobRequirements:
+            raw.jobRequirements || null,
+
+          jobMatchAnalysis:
+            raw.jobMatchAnalysis || null,
+
+          jobMatchError:
+            raw.jobMatchError || null,
+
           aiAnalysis:
             raw.aiAnalysis || null,
 
@@ -301,7 +315,40 @@ Generated via Forge Resume AI Universal ATS
     window.print();
   };
 
-  const theme = result ? getScoreTheme(result.overallScore) : null;
+  const languageScore = Number(
+    result?.languageAnalysis?.languageScore ?? 0
+  );
+
+  const langTheme =
+    languageScore >= 80
+      ? {
+          primary: "#15803d",
+          text: "#166534",
+          background: "#f0fdf4",
+          border: "#bbf7d0",
+          badgeBg: "#dcfce7",
+          circle: "#16a34a",
+          gradient: "linear-gradient(135deg, #16a34a, #22c55e)",
+        }
+      : languageScore >= 60
+        ? {
+            primary: "#d97706",
+            text: "#92400e",
+            background: "#fffbeb",
+            border: "#fde68a",
+            badgeBg: "#fef3c7",
+            circle: "#d97706",
+            gradient: "linear-gradient(135deg, #d97706, #f59e0b)",
+          }
+        : {
+            primary: "#dc2626",
+            text: "#991b1b",
+            background: "#fef2f2",
+            border: "#fecaca",
+            badgeBg: "#fee2e2",
+            circle: "#dc2626",
+            gradient: "linear-gradient(135deg, #dc2626, #ef4444)",
+          };
 
   return (
     <div
@@ -666,7 +713,7 @@ Generated via Forge Resume AI Universal ATS
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: result.jobMatchScore !== null && result.jobMatchScore !== undefined ? "repeat(auto-fit, minmax(280px, 1fr))" : "1fr 1fr",
+                gridTemplateColumns: result.jobMatchAnalysis ? "repeat(auto-fit, minmax(280px, 1fr))" : "1fr 1fr",
                 gap: "1.25rem",
                 marginBottom: "1.75rem"
               }}
@@ -724,11 +771,11 @@ Generated via Forge Resume AI Universal ATS
                 </div>
               </div>
 
-              {/* Card 2: Language Quality Score (Proofreading Audit) */}
+              {/* Card 2: Language & Proofreading Score */}
               <div
                 style={{
                   background: "#ffffff",
-                  border: `2px solid ${(result.languageQualityScore || 100) >= 80 ? "#10b981" : (result.languageQualityScore || 100) >= 65 ? "#f59e0b" : "#ef4444"}`,
+                  border: `2px solid ${langTheme.border}`,
                   borderRadius: "20px",
                   padding: "1.5rem",
                   boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
@@ -736,41 +783,18 @@ Generated via Forge Resume AI Universal ATS
                   overflow: "hidden"
                 }}
               >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "5px",
-                    background: (result.languageQualityScore || 100) >= 80
-                      ? "linear-gradient(135deg, #10b981, #059669)"
-                      : (result.languageQualityScore || 100) >= 65
-                      ? "linear-gradient(135deg, #f59e0b, #d97706)"
-                      : "linear-gradient(135deg, #ef4444, #dc2626)"
-                  }}
-                />
-
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "5px", background: langTheme.gradient }} />
+                
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
                   <div>
-                    <span
-                      style={{
-                        background: (result.languageQualityScore || 100) >= 80 ? "#d1fae5" : (result.languageQualityScore || 100) >= 65 ? "#fef3c7" : "#fee2e2",
-                        color: (result.languageQualityScore || 100) >= 80 ? "#065f46" : (result.languageQualityScore || 100) >= 65 ? "#92400e" : "#991b1b",
-                        fontWeight: 800,
-                        fontSize: "0.75rem",
-                        padding: "0.2rem 0.65rem",
-                        borderRadius: "50px",
-                        textTransform: "uppercase"
-                      }}
-                    >
-                      {result.languageQualityLevel || "Good Quality"}
+                    <span style={{ background: langTheme.badgeBg, color: langTheme.text, fontWeight: 800, fontSize: "0.75rem", padding: "0.2rem 0.65rem", borderRadius: "50px", textTransform: "uppercase" }}>
+                      {result.languageQualityLevel || "Good"}
                     </span>
                     <h3 style={{ fontSize: "1.25rem", fontWeight: 900, color: "#0f172a", margin: "0.4rem 0 0.2rem" }}>
-                      Language Quality Score
+                      Spelling & Grammar Score
                     </h3>
                     <p style={{ fontSize: "0.82rem", color: "#64748b", margin: 0, lineHeight: 1.4 }}>
-                      Spelling, capitalization, punctuation & grammar audit.
+                      {result.languageAnalysis?.totalIssues !== undefined ? `${result.languageAnalysis.totalIssues} correction${result.languageAnalysis.totalIssues === 1 ? "" : "s"} identified` : "Proofreading check complete."}
                     </p>
                   </div>
 
@@ -781,18 +805,18 @@ Generated via Forge Resume AI Universal ATS
                         cx="50"
                         cy="50"
                         r="40"
-                        stroke={(result.languageQualityScore || 100) >= 80 ? "#10b981" : (result.languageQualityScore || 100) >= 65 ? "#f59e0b" : "#ef4444"}
+                        stroke={langTheme.circle}
                         strokeWidth="9"
                         fill="transparent"
                         strokeDasharray={2 * Math.PI * 40}
-                        strokeDashoffset={2 * Math.PI * 40 * (1 - (result.languageQualityScore || 100) / 100)}
+                        strokeDashoffset={2 * Math.PI * 40 * (1 - (result.languageQualityScore ?? 100) / 100)}
                         strokeLinecap="round"
                         transform="rotate(-90 50 50)"
                       />
                     </svg>
                     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: "1.3rem", fontWeight: 900, color: (result.languageQualityScore || 100) >= 80 ? "#10b981" : (result.languageQualityScore || 100) >= 65 ? "#f59e0b" : "#ef4444", lineHeight: 1 }}>
-                        {result.languageQualityScore || 100}
+                      <span style={{ fontSize: "1.3rem", fontWeight: 900, color: langTheme.circle, lineHeight: 1 }}>
+                        {result.languageQualityScore ?? 100}
                       </span>
                       <span style={{ fontSize: "0.65rem", color: "#64748b", fontWeight: 700 }}>/100</span>
                     </div>
@@ -801,11 +825,11 @@ Generated via Forge Resume AI Universal ATS
               </div>
 
               {/* Card 3: Job Match Score (if JD provided) */}
-              {result.jobMatchScore !== null && result.jobMatchScore !== undefined && (
+              {result.jobMatchAnalysis && (
                 <div
                   style={{
                     background: "#ffffff",
-                    border: `2px solid ${result.jobMatchScore >= 70 ? "#10b981" : result.jobMatchScore >= 50 ? "#f59e0b" : "#ef4444"}`,
+                    border: `2px solid ${result.jobMatchAnalysis.jobMatchScore >= 70 ? "#10b981" : result.jobMatchAnalysis.jobMatchScore >= 50 ? "#f59e0b" : "#ef4444"}`,
                     borderRadius: "20px",
                     padding: "1.5rem",
                     boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
@@ -820,7 +844,7 @@ Generated via Forge Resume AI Universal ATS
                       left: 0,
                       right: 0,
                       height: "5px",
-                      background: result.jobMatchScore >= 70 ? "linear-gradient(135deg, #10b981, #059669)" : result.jobMatchScore >= 50 ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #ef4444, #dc2626)"
+                      background: result.jobMatchAnalysis.jobMatchScore >= 70 ? "linear-gradient(135deg, #10b981, #059669)" : result.jobMatchAnalysis.jobMatchScore >= 50 ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #ef4444, #dc2626)"
                     }}
                   />
 
@@ -828,8 +852,8 @@ Generated via Forge Resume AI Universal ATS
                     <div>
                       <span
                         style={{
-                          background: result.jobMatchScore >= 70 ? "#d1fae5" : result.jobMatchScore >= 50 ? "#fef3c7" : "#fee2e2",
-                          color: result.jobMatchScore >= 70 ? "#065f46" : result.jobMatchScore >= 50 ? "#92400e" : "#991b1b",
+                          background: result.jobMatchAnalysis.jobMatchScore >= 70 ? "#d1fae5" : result.jobMatchAnalysis.jobMatchScore >= 50 ? "#fef3c7" : "#fee2e2",
+                          color: result.jobMatchAnalysis.jobMatchScore >= 70 ? "#065f46" : result.jobMatchAnalysis.jobMatchScore >= 50 ? "#92400e" : "#991b1b",
                           fontWeight: 800,
                           fontSize: "0.75rem",
                           padding: "0.2rem 0.65rem",
@@ -837,7 +861,7 @@ Generated via Forge Resume AI Universal ATS
                           textTransform: "uppercase"
                         }}
                       >
-                        {result.jobMatchLevel || "Job Match"}
+                        {result.jobMatchAnalysis.matchLevel || "Job Match"}
                       </span>
                       <h3 style={{ fontSize: "1.25rem", fontWeight: 900, color: "#0f172a", margin: "0.4rem 0 0.2rem" }}>
                         Job Match Score
@@ -854,18 +878,18 @@ Generated via Forge Resume AI Universal ATS
                           cx="50"
                           cy="50"
                           r="40"
-                          stroke={result.jobMatchScore >= 70 ? "#10b981" : result.jobMatchScore >= 50 ? "#f59e0b" : "#ef4444"}
+                          stroke={result.jobMatchAnalysis.jobMatchScore >= 70 ? "#10b981" : result.jobMatchAnalysis.jobMatchScore >= 50 ? "#f59e0b" : "#ef4444"}
                           strokeWidth="9"
                           fill="transparent"
                           strokeDasharray={2 * Math.PI * 40}
-                          strokeDashoffset={2 * Math.PI * 40 * (1 - result.jobMatchScore / 100)}
+                          strokeDashoffset={2 * Math.PI * 40 * (1 - result.jobMatchAnalysis.jobMatchScore / 100)}
                           strokeLinecap="round"
                           transform="rotate(-90 50 50)"
                         />
                       </svg>
                       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: "1.3rem", fontWeight: 900, color: result.jobMatchScore >= 70 ? "#10b981" : result.jobMatchScore >= 50 ? "#f59e0b" : "#ef4444", lineHeight: 1 }}>
-                          {result.jobMatchScore}
+                        <span style={{ fontSize: "1.3rem", fontWeight: 900, color: result.jobMatchAnalysis.jobMatchScore >= 70 ? "#10b981" : result.jobMatchAnalysis.jobMatchScore >= 50 ? "#f59e0b" : "#ef4444", lineHeight: 1 }}>
+                          {result.jobMatchAnalysis.jobMatchScore}
                         </span>
                         <span style={{ fontSize: "0.65rem", color: "#64748b", fontWeight: 700 }}>/100</span>
                       </div>
@@ -887,7 +911,7 @@ Generated via Forge Resume AI Universal ATS
                     icon: "✍️",
                     badge: (result.proofreadingIssues || []).length
                   },
-                  ...(result.jobMatchScore !== null && result.jobMatchScore !== undefined ? [{ id: "jobMatch", label: "Job Match", icon: "🎯" }] : []),
+                  ...(result.jobMatchAnalysis ? [{ id: "jobMatch", label: "Job Match", icon: "🎯" }] : []),
                   ...(result.aiAnalysis ? [{ id: "rewrites", label: "AI Rewrites", icon: "✨" }] : [])
                 ].map((tab) => {
                   const isActive = activeTab === tab.id;
@@ -1423,56 +1447,79 @@ Generated via Forge Resume AI Universal ATS
             {/* TAB 4: JOB MATCH */}
             {activeTab === "jobMatch" && (
               <div style={{ animation: "fadeIn 0.3s ease" }}>
-                {/* Keywords & Missing Skills */}
-                <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "20px", padding: "1.75rem", marginBottom: "1.5rem" }}>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#0f172a", margin: "0 0 1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <Tag size={18} color="#0284c7" /> Job Description Keywords & Requirements
-                  </h3>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-                    {/* Matched Keywords */}
-                    <div style={{ background: "#f8fafc", padding: "1.25rem", borderRadius: "14px", border: "1px solid #e2e8f0" }}>
-                      <h4 style={{ fontSize: "0.9rem", fontWeight: 800, color: "#166534", margin: "0 0 0.85rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                        <Check size={16} color="#16a34a" /> Matched Skills & Requirements ({(result.matchedKeywords || []).length})
-                      </h4>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                        {(result.matchedKeywords || []).length > 0 ? (
-                          result.matchedKeywords.map((kw, i) => {
-                            const kwText = typeof kw === "string" ? kw : (kw.keyword || kw.name || kw.skill || JSON.stringify(kw));
-                            return (
-                              <span key={i} style={{ background: "#dcfce7", color: "#166534", fontSize: "0.8rem", fontWeight: 700, padding: "0.3rem 0.7rem", borderRadius: "20px", border: "1px solid #bbf7d0" }}>
-                                ✓ {kwText}
-                              </span>
-                            );
-                          })
-                        ) : (
-                          <span style={{ fontSize: "0.85rem", color: "#64748b" }}>No specific skills matched.</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Missing Keywords */}
-                    <div style={{ background: "#f8fafc", padding: "1.25rem", borderRadius: "14px", border: "1px solid #e2e8f0" }}>
-                      <h4 style={{ fontSize: "0.9rem", fontWeight: 800, color: "#991b1b", margin: "0 0 0.85rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                        <XCircle size={16} color="#ef4444" /> Missing Mandatory Requirements ({(result.missingKeywords || []).length})
-                      </h4>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                        {(result.missingKeywords || []).length > 0 ? (
-                          result.missingKeywords.map((kw, i) => {
-                            const kwText = typeof kw === "string" ? kw : (kw.keyword || kw.name || kw.skill || JSON.stringify(kw));
-                            return (
-                              <span key={i} style={{ background: "#fee2e2", color: "#991b1b", fontSize: "0.8rem", fontWeight: 700, padding: "0.3rem 0.7rem", borderRadius: "20px", border: "1px solid #fecaca" }}>
-                                + {kwText}
-                              </span>
-                            );
-                          })
-                        ) : (
-                          <span style={{ fontSize: "0.85rem", color: "#16a34a" }}>All critical target job requirements present!</span>
-                        )}
-                      </div>
-                    </div>
+                {result.jobMatchError && (
+                  <div className="analysis-error" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: "1rem", borderRadius: "12px", marginBottom: "1.5rem", fontWeight: 600 }}>
+                    {result.jobMatchError}
                   </div>
-                </div>
+                )}
+
+                {result.jobMatchAnalysis && (
+                  <section className="job-match-report" style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "20px", padding: "1.75rem", marginBottom: "1.5rem" }}>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#0f172a", margin: "0 0 1rem" }}>Job Description Match</h2>
+
+                    <div className="job-match-score" style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
+                      <strong style={{ fontSize: "1.75rem", fontWeight: 900, color: result.jobMatchAnalysis.jobMatchScore >= 80 ? "#16a34a" : result.jobMatchAnalysis.jobMatchScore >= 60 ? "#d97706" : "#dc2626" }}>
+                        {result.jobMatchAnalysis.jobMatchScore}/100
+                      </strong>
+
+                      <span style={{ fontSize: "0.9rem", fontWeight: 800, color: "#0284c7", background: "#e0f2fe", padding: "0.25rem 0.75rem", borderRadius: "50px" }}>
+                        {result.jobMatchAnalysis.matchLevel}
+                      </span>
+                    </div>
+
+                    <h3 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#166534", margin: "1rem 0 0.5rem" }}>Matched Mandatory Requirements</h3>
+
+                    {result.jobMatchAnalysis.matchedMandatoryRequirements?.length > 0 ? (
+                      <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        {result.jobMatchAnalysis.matchedMandatoryRequirements.map(
+                          (requirement) => (
+                            <li key={requirement} style={{ background: "#f0fdf4", border: "1px solid #dcfce7", padding: "0.5rem 0.85rem", borderRadius: "8px", color: "#166534", fontWeight: 600, fontSize: "0.9rem" }}>
+                              ✅ {requirement}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    ) : (
+                      <p style={{ color: "#64748b", fontSize: "0.9rem", margin: "0 0 1rem" }}>No mandatory requirements were matched.</p>
+                    )}
+
+                    <h3 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#991b1b", margin: "1rem 0 0.5rem" }}>Missing Mandatory Requirements</h3>
+
+                    {result.jobMatchAnalysis.missingMandatoryRequirements?.length > 0 ? (
+                      <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        {result.jobMatchAnalysis.missingMandatoryRequirements.map(
+                          (requirement) => (
+                            <li key={requirement} style={{ background: "#fef2f2", border: "1px solid #fee2e2", padding: "0.5rem 0.85rem", borderRadius: "8px", color: "#991b1b", fontWeight: 600, fontSize: "0.9rem" }}>
+                              ❌ {requirement}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    ) : (
+                      <p style={{ color: "#16a34a", fontSize: "0.9rem", margin: "0 0 1rem" }}>No mandatory requirements are missing.</p>
+                    )}
+
+                    <h3 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0f172a", margin: "1rem 0 0.5rem" }}>Score Breakdown</h3>
+
+                    <div className="job-match-breakdown" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "0.75rem", marginBottom: "1.25rem" }}>
+                      {result.jobMatchAnalysis.categoryBreakdown?.map(
+                        (category) => (
+                          <div key={category.category} style={{ background: "#f8fafc", border: "1px solid #e2e8f0", padding: "0.75rem 1rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#334155" }}>{category.category}</span>
+
+                            <strong style={{ fontSize: "0.9rem", fontWeight: 800, color: "#0284c7" }}>
+                              {category.score}/{category.maximum}
+                            </strong>
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    <p className="score-disclaimer" style={{ fontSize: "0.82rem", color: "#64748b", background: "#f8fafc", padding: "0.75rem 1rem", borderRadius: "10px", border: "1px solid #cbd5e1", margin: 0 }}>
+                      {result.jobMatchAnalysis.disclaimer}
+                    </p>
+                  </section>
+                )}
               </div>
             )}
 

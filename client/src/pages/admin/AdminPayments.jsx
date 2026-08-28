@@ -60,13 +60,49 @@ const AdminPayments = () => {
     fetchPayments();
   }, []);
 
+  const getDisplayName = (item) => {
+    if (
+      item.resumeName &&
+      item.resumeName.toLowerCase() !== "user" &&
+      item.resumeName !== "Your Name" &&
+      item.resumeName !== "guest_user" &&
+      item.resumeName !== "Guest" &&
+      item.resumeName !== "-" &&
+      item.resumeName !== "My Resume"
+    ) {
+      return item.resumeName;
+    }
+    if (item.userId?.name) {
+      return item.userId.name;
+    }
+    if (item.name) {
+      return item.name;
+    }
+    if (item.resumeId?.title && item.resumeId.title !== "My Resume") {
+      return item.resumeId.title;
+    }
+    const email = item.email || item.userId?.email;
+    if (email) {
+      const namePart = email.split("@")[0].replace(/[._0-9]/g, " ").trim();
+      if (namePart && namePart.toLowerCase() !== "user" && namePart.toLowerCase() !== "guest") {
+        return namePart
+          .split(" ")
+          .filter(Boolean)
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ");
+      }
+    }
+    return "Customer";
+  };
+
   const filteredPayments = payments.filter((payment) => {
+    const displayName = getDisplayName(payment);
     const resumeName = payment.resumeName || "";
     const email = payment.email || payment.userId?.email || "";
     const planName = payment.plan || "";
     const status = payment.status || "";
 
-    const searchText = `${resumeName} ${email} ${planName} ${status}`.toLowerCase();
+    const searchText = `${displayName} ${resumeName} ${email} ${planName} ${status}`.toLowerCase();
     return searchText.includes(search.toLowerCase());
   });
 
@@ -138,7 +174,7 @@ const AdminPayments = () => {
                   <table className="admin-table">
                     <thead>
                       <tr>
-                        <th>Resume Name</th>
+                        <th>Customer / Name</th>
                         <th>Email</th>
                         <th>Plan</th>
                         <th>Amount</th>
@@ -150,7 +186,11 @@ const AdminPayments = () => {
                     <tbody>
                       {filteredPayments.map((item) => (
                         <tr key={item._id}>
-                          <td>{item.resumeName || "-"}</td>
+                          <td>
+                            <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.88rem" }}>
+                              {getDisplayName(item)}
+                            </div>
+                          </td>
                           <td>{item.email || item.userId?.email || "-"}</td>
                           <td>
                             {item.plan === "watermarked"

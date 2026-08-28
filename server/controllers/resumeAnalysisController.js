@@ -168,6 +168,7 @@ const analyzeResume = async (req, res) => {
       (typeof req.body.userName === "string" && req.body.userName.trim()) ||
       (typeof req.body.candidateName === "string" && req.body.candidateName.trim()) ||
       authUser?.name ||
+      resumeData.candidateName ||
       resumeData.detectedName ||
       "Candidate";
 
@@ -253,6 +254,10 @@ const analyzeResume = async (req, res) => {
       qualityLevel: scoringResult.qualityLevel,
       jobMatchScore: scoringResult.jobMatchScore,
       jobMatchLevel: scoringResult.jobMatchLevel,
+      matchedRequirements: scoringResult.matchedRequirements || [],
+      missingMandatoryRequirements: scoringResult.missingMandatoryRequirements || [],
+      missingPreferredRequirements: scoringResult.missingPreferredRequirements || [],
+      explanation: scoringResult.explanation || [],
       languageQualityScore: languageAnalysis?.languageScore ?? 100,
       languageQualityLevel: languageAnalysis?.scoreLevel ?? "Good",
       languageIssueCounts: languageAnalysis?.issueSummary ?? {},
@@ -265,10 +270,10 @@ const analyzeResume = async (req, res) => {
       jobMatchCategories: scoringResult.jobMatchCategories,
       issues: scoringResult.qualityIssues,
       strengths: scoringResult.qualityStrengths,
-      matchedKeywords: scoringResult.mandatorySkillsMatched,
-      missingKeywords: scoringResult.mandatorySkillsMissing,
-      preferredSkillsMatched: scoringResult.preferredSkillsMatched,
-      preferredSkillsMissing: scoringResult.preferredSkillsMissing,
+      matchedKeywords: scoringResult.matchedRequirements || scoringResult.mandatorySkillsMatched || [],
+      missingKeywords: scoringResult.missingMandatoryRequirements || scoringResult.mandatorySkillsMissing || [],
+      preferredSkillsMatched: scoringResult.preferredSkillsMatched || [],
+      preferredSkillsMissing: scoringResult.missingPreferredRequirements || scoringResult.preferredSkillsMissing || [],
       detectedSections: scoringResult.detectedSections,
       recommendations,
       disclaimer: scoringResult.disclaimer,
@@ -292,6 +297,19 @@ const analyzeResume = async (req, res) => {
         .filter(Boolean).length,
 
       analysis: analysisResponse,
+      resumeProfile: resumeData,
+      jobRequirements: jobData,
+      jobMatchAnalysis: scoringResult.jobMatchDetails || (scoringResult.jobMatchScore !== null && scoringResult.jobMatchScore !== undefined ? {
+        jobMatchScore: scoringResult.jobMatchScore,
+        matchLevel: scoringResult.jobMatchLevel || (scoringResult.jobMatchScore >= 80 ? "Strong Match" : scoringResult.jobMatchScore >= 60 ? "Moderate Match" : scoringResult.jobMatchScore >= 40 ? "Low Match" : "Poor Match"),
+        matchedMandatoryRequirements: scoringResult.mandatorySkillsMatched || scoringResult.matchedRequirements || [],
+        missingMandatoryRequirements: scoringResult.mandatorySkillsMissing || scoringResult.missingMandatoryRequirements || [],
+        matchedPreferredRequirements: scoringResult.preferredSkillsMatched || [],
+        missingPreferredRequirements: scoringResult.preferredSkillsMissing || scoringResult.missingPreferredRequirements || [],
+        categoryBreakdown: scoringResult.categoryBreakdown || [],
+        disclaimer: scoringResult.disclaimer || "This estimated score compares the uploaded resume only with the job description provided by the user.",
+      } : null),
+      jobMatchError: null,
       aiAnalysis,
       aiAnalysisError,
       languageAnalysis,

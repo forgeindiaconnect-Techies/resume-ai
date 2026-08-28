@@ -176,6 +176,18 @@ const AdminDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Format Date (e.g., Aug 28, 2026)
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "-";
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
+
   // Format 12-hour AM/PM time
   const formatTimeAMPM = (dateStr) => {
     if (!dateStr) return "-";
@@ -529,6 +541,7 @@ const AdminDashboard = () => {
                             <th>Status</th>
                             <th>Visitor / Name</th>
                             <th>Action</th>
+                            <th>Date</th>
                             <th>Starting Time</th>
                             <th>Time Spent</th>
                           </tr>
@@ -587,6 +600,11 @@ const AdminDashboard = () => {
                                     border: "1px solid #e2e8f0"
                                   }}>
                                     {getShortAction(session)}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span style={{ fontWeight: 600, color: "#334155", fontSize: "0.84rem" }}>
+                                    {formatDate(session.entryTime || session.createdAt)}
                                   </span>
                                 </td>
                                 <td>
@@ -689,7 +707,7 @@ const AdminDashboard = () => {
                         { title: "ATS Analyses", subtitle: "View AI score logs", icon: FileCheck, path: "/admin/ats-analyses", color: "#7c3aed", bg: "#f5f3ff" },
                         { title: "Download Plans", subtitle: "Pricing & tiers", icon: Wallet, path: "/admin/plans", color: "#16a34a", bg: "#dcfce7" },
                         { title: "Payments", subtitle: "Orders & transactions", icon: CreditCard, path: "/admin/payments", color: "#ea580c", bg: "#ffedd5" },
-                        { title: "Templates", subtitle: "Layouts & design", icon: Palette, path: "/admin/templates", color: "#db2777", bg: "#fdf2f8" },
+                        { title: "Activity Logs", subtitle: "Live visitor events", icon: FileText, path: "/admin/activity", color: "#db2777", bg: "#fdf2f8" },
                         { title: "Site Settings", subtitle: "Brand & watermark", icon: Settings, path: "/admin/settings", color: "#475569", bg: "#f1f5f9" }
                       ].map((item, idx) => {
                         const Icon = item.icon;

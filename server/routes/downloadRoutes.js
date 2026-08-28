@@ -22,41 +22,23 @@ router.post("/", async (req, res) => {
       });
     }
 
+    const isFree = downloadType === "free_watermark" || downloadType === "watermarked";
+
     let plan = await DownloadPlan.findOne({
-      key: downloadType,
+      $or: [
+        { key: downloadType },
+        ...(downloadType === "free_watermark" ? [{ key: "watermarked" }] : []),
+        ...(downloadType === "watermarked" ? [{ key: "free_watermark" }] : [])
+      ],
       isActive: true
     });
 
     if (!plan) {
-      // Auto-create default plans if they don't exist for testing
-      const defaultPlans = [
-        { name: "With Watermark", key: "watermarked", price: 99, watermarkRemoval: false, isActive: true },
-        { name: "Without Watermark", key: "no_watermark", price: 199, watermarkRemoval: true, isActive: true }
-      ];
-      
-      for (const p of defaultPlans) {
-        try {
-          const exists = await DownloadPlan.findOne({ key: p.key });
-          if (!exists) {
-            await DownloadPlan.create(p);
-          }
-        } catch (e) {
-          console.error("Error creating plan:", e);
-        }
-      }
-
-      plan = await DownloadPlan.findOne({
-        key: downloadType
-      });
-
-      if (!plan) {
-        // Hard fallback to prevent 404s breaking the UI test
-        plan = {
-          key: downloadType,
-          price: downloadType === "no_watermark" ? 199 : 99,
-          watermarkRemoval: downloadType === "no_watermark"
-        };
-      }
+      plan = {
+        key: downloadType,
+        price: isFree ? 0 : (downloadType === "no_watermark" ? 199 : 0),
+        watermarkRemoval: downloadType === "no_watermark"
+      };
     }
 
     const download = await Download.create({
@@ -65,11 +47,8 @@ router.post("/", async (req, res) => {
       email: email || null,
       resumeId: resumeId || null,
       resumeName: resumeName || null,
-
-      downloadType: plan.key,
-
-      amount: plan.price,
-
+      downloadType: plan.key || downloadType,
+      amount: isFree ? 0 : (plan.price || 0),
       downloadedAt: new Date()
     });
 
@@ -139,13 +118,43 @@ router.post("/", async (req, res) => {
 // ADMIN GET DOWNLOADS
 router.get("/", async (req, res) => {
   try {
-    const downloads = await Download.find()
-      .sort({ downloadedAt: -1 });
+    const Download = require("../models/Download");
+    const Payment = require("../models/Payment");
+
+    const [downloads, payments] = await Promise.all([
+      Download.find().sort({ downloadedAt: -1 }).lean().catch(() => []),
+      Payment.find({ $or: [{ status: "paid" }, { status: "free" }, { downloadUsed: true }, { downloadAllowed: true }] }).sort({ createdAt: -1 }).lean().catch(() => [])
+    ]);
+
+    const merged = [...downloads];
+    const existingKeys = new Set(
+      downloads.map(d => `${(d.email || '').toLowerCase()}_${d.resumeName || ''}`)
+    );
+
+    payments.forEach(p => {
+      const email = (p.email || '').toLowerCase();
+      const key = `${email}_${p.resumeName || ''}`;
+      if (!existingKeys.has(key)) {
+        merged.push({
+          _id: p._id,
+          sessionId: p.resumeReference || null,
+          guestId: null,
+          email: p.email || "user@example.com",
+          resumeId: p.resumeReference || "RESUME_EXPORT",
+          resumeName: p.resumeName || "Resume Candidate",
+          downloadType: p.plan || (p.watermarkRemoval ? "no_watermark" : "watermarked"),
+          amount: p.amount || 0,
+          downloadedAt: p.downloadedAt || p.createdAt || new Date()
+        });
+      }
+    });
+
+    merged.sort((a, b) => new Date(b.downloadedAt) - new Date(a.downloadedAt));
 
     return res.status(200).json({
       success: true,
-      count: downloads.length,
-      downloads
+      count: merged.length,
+      downloads: merged
     });
 
   } catch (error) {

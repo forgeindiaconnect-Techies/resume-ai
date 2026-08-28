@@ -8,11 +8,12 @@ const Resume = require("../models/Resume");
 
 exports.createOrder = async (req, res) => {
   try {
-    const { email, resumeId, plan, planKey, resumeSessionId } = req.body;
+    const { email, resumeId, plan, planKey, resumeSessionId, resumeName, name, userName } = req.body;
 
     const actualPlanKey = planKey || plan;
     const actualResumeId = resumeSessionId || resumeId;
     const actualEmail = email || (req.user?.email) || `guest_${Date.now()}@example.com`;
+    const candidateName = resumeName || name || userName || null;
 
     if (!actualResumeId || !actualPlanKey) {
       return res.status(400).json({
@@ -44,12 +45,21 @@ exports.createOrder = async (req, res) => {
 
     if (!selectedPlan) {
       const plans = {
-        watermarked: { amount: 99, watermarkRemoval: false },
-        no_watermark: { amount: 199, watermarkRemoval: true },
-        Single: { amount: 1, watermarkRemoval: false },
-        Monthly: { amount: 199, watermarkRemoval: true },
-        Quarterly: { amount: 399, watermarkRemoval: true },
-        Yearly: { amount: 999, watermarkRemoval: true }
+        free_watermark: {
+          amount: 0,
+          watermarkRemoval: false,
+          requiresPayment: false,
+        },
+        watermarked: {
+          amount: 0,
+          watermarkRemoval: false,
+          requiresPayment: false,
+        },
+        no_watermark: {
+          amount: 199,
+          watermarkRemoval: true,
+          requiresPayment: true,
+        },
       };
       selectedPlan = plans[actualPlanKey];
     }
@@ -73,8 +83,12 @@ exports.createOrder = async (req, res) => {
       user = await User.create({
         userId: `USR_${Date.now()}`,
         email: normalizedEmail,
+        name: candidateName,
         isGuest: false,
       });
+    } else if (candidateName && !user.name) {
+      user.name = candidateName;
+      await user.save();
     }
 
     let resume = await Resume.findOne({
@@ -85,12 +99,40 @@ exports.createOrder = async (req, res) => {
       resume = await Resume.create({
         userId: user._id,
         resumeId: actualResumeId.startsWith("RESUME_") ? actualResumeId : `RESUME_${Date.now()}`,
-        title: "My Resume"
+        title: candidateName || "My Resume"
       });
     }
 
     resume.userId = user._id;
     await resume.save();
+
+    // Free plan: no Razorpay order needed, grant download immediately
+    if (selectedPlan.amount === 0 || selectedPlan.requiresPayment === false) {
+      const payment = await Payment.create({
+        userId: user._id,
+        resumeId: resume._id,
+        resumeReference: actualResumeId,
+        resumeName: candidateName || resume.title || null,
+        email: normalizedEmail,
+        plan: actualPlanKey,
+        amount: 0,
+        razorpayOrderId: `free_${Date.now()}`,
+        razorpayPaymentId: `free_${Date.now()}`,
+        status: "paid",
+        watermarkRemoval: false,
+        downloadAllowed: true,
+        downloadUsed: false,
+      });
+
+      return res.status(200).json({
+        success: true,
+        freeDownload: true,
+        requiresPayment: false,
+        downloadAllowed: true,
+        plan: actualPlanKey,
+        paymentId: payment._id,
+      });
+    }
 
     const options = {
       amount: selectedPlan.amount * 100,
@@ -104,6 +146,7 @@ exports.createOrder = async (req, res) => {
       userId: user._id,
       resumeId: resume._id,
       resumeReference: actualResumeId,
+      resumeName: candidateName || resume.title || null,
       email: normalizedEmail,
       plan: actualPlanKey,
       amount: selectedPlan.amount,
@@ -245,7 +288,9 @@ exports.verifyPayment = async (req, res) => {
 exports.getAllPayments = async (req, res) => {
   try {
     const Download = require("../models/Download");
-    const [payments, downloads] = await Promise.all([
+    const UserSession = require("../models/UserSession");
+
+    const [payments, downloads, sessions] = await Promise.all([
       Payment.find()
         .populate("userId", "name email")
         .populate("planId", "name price")
@@ -253,23 +298,68 @@ exports.getAllPayments = async (req, res) => {
         .lean()
         .sort({ createdAt: -1 })
         .catch(() => []),
-      Download.find().lean().sort({ downloadedAt: -1 }).catch(() => [])
+      Download.find().lean().sort({ downloadedAt: -1 }).catch(() => []),
+      UserSession.find().lean().catch(() => [])
     ]);
 
-    const combinedPayments = [...payments];
+    const emailToNameMap = {};
+    sessions.forEach((s) => {
+      if (
+        s.email &&
+        s.resumeName &&
+        s.resumeName.toLowerCase() !== "user" &&
+        s.resumeName !== "Your Name" &&
+        s.resumeName !== "guest_user"
+      ) {
+        emailToNameMap[s.email.toLowerCase()] = s.resumeName;
+      }
+    });
+
+    const enrichedPayments = payments.map((p) => {
+      const email = (p.email || p.userId?.email || "").toLowerCase();
+      let resolvedName = p.resumeName;
+
+      if (!resolvedName || resolvedName === "-" || resolvedName.toLowerCase() === "user" || resolvedName === "My Resume") {
+        resolvedName = p.userId?.name || (p.resumeId?.title && p.resumeId.title !== "My Resume" ? p.resumeId.title : null) || emailToNameMap[email] || null;
+      }
+
+      if (!resolvedName && email) {
+        const part = email.split("@")[0].replace(/[._0-9]/g, " ").trim();
+        if (part && part.toLowerCase() !== "user" && part.toLowerCase() !== "guest") {
+          resolvedName = part
+            .split(" ")
+            .filter(Boolean)
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(" ");
+        }
+      }
+
+      return {
+        ...p,
+        resumeName: resolvedName || "Customer",
+      };
+    });
+
+    const combinedPayments = [...enrichedPayments];
 
     downloads.forEach((d) => {
-      const alreadyInPayments = payments.some(
+      const email = (d.email || "").toLowerCase();
+      const alreadyInPayments = enrichedPayments.some(
         (p) =>
           p.email &&
-          d.email &&
-          p.email.toLowerCase() === d.email.toLowerCase() &&
+          email &&
+          p.email.toLowerCase() === email &&
           p.amount === d.amount
       );
       if (!alreadyInPayments) {
+        let name = d.resumeName;
+        if (!name || name === "-" || name.toLowerCase() === "user") {
+          name = emailToNameMap[email] || (email ? email.split("@")[0].replace(/[._0-9]/g, " ").trim() : null) || "Resume User";
+        }
+
         combinedPayments.push({
           _id: d._id,
-          resumeName: d.resumeName || d.guestId || "Resume User",
+          resumeName: name,
           email: d.email || "user@example.com",
           plan: d.downloadType,
           amount: d.amount || (d.downloadType === "no_watermark" ? 199 : 99),
@@ -319,13 +409,111 @@ exports.mockPayment = async (req, res) => {
     const { email, resumeId, plan, resumeName } = req.body;
 
     const plans = {
-      watermarked: { amount: 99, watermarkRemoval: false },
-      no_watermark: { amount: 199, watermarkRemoval: true },
+      free_watermark: {
+        amount: 0,
+        watermarkRemoval: false,
+        requiresPayment: false,
+      },
+      watermarked: {
+        amount: 0,
+        watermarkRemoval: false,
+        requiresPayment: false,
+      },
+      no_watermark: {
+        amount: 199,
+        watermarkRemoval: true,
+        requiresPayment: true,
+      },
     };
 
     const selectedPlan = plans[plan];
+
     if (!selectedPlan) {
-      return res.status(400).json({ success: false, message: "Invalid plan" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid plan selected",
+      });
+    }
+
+    // Free resume with watermark
+    if (!selectedPlan.requiresPayment) {
+      let downloadRecord = null;
+      try {
+        const User = require("../models/User");
+        const Download = require("../models/Download");
+        const UserSession = require("../models/UserSession");
+
+        const safeEmail = email || `guest_${Date.now()}@example.com`;
+        const normalizedEmail = String(safeEmail).trim().toLowerCase();
+        let user = await User.findOne({ email: normalizedEmail });
+        if (!user) {
+          user = await User.create({
+            userId: `USR_${Date.now()}`,
+            email: normalizedEmail,
+            name: resumeName || null,
+            isGuest: false,
+          });
+        }
+        downloadRecord = await Payment.create({
+          userId: user._id,
+          resumeReference: resumeId,
+          resumeName: resumeName || null,
+          email: normalizedEmail,
+          plan: "watermarked",
+          amount: 0,
+          razorpayOrderId: `free_${Date.now()}`,
+          razorpayPaymentId: `free_${Date.now()}`,
+          status: "paid",
+          watermarkRemoval: false,
+          downloadAllowed: true,
+          downloadUsed: true,
+          downloadedAt: new Date(),
+        });
+
+        // Also save to Download collection so Downloads page and counters immediately increment
+        await Download.create({
+          sessionId: req.body.sessionId || null,
+          guestId: req.body.guestId || null,
+          email: normalizedEmail,
+          resumeId: resumeId || null,
+          resumeName: resumeName || null,
+          downloadType: "watermarked",
+          amount: 0,
+          downloadedAt: new Date()
+        });
+
+        // Update UserSession
+        await UserSession.updateMany(
+          {
+            $or: [
+              { email: normalizedEmail },
+              { resumeId: resumeId }
+            ]
+          },
+          {
+            $set: {
+              ...(resumeName ? { resumeName } : {}),
+              email: normalizedEmail,
+              downloaded: true,
+              downloadType: "watermarked",
+              downloadedAt: new Date(),
+              resumeCreated: true
+            }
+          }
+        ).catch(() => {});
+      } catch (e) {
+        console.warn("Free payment/download create error:", e.message);
+      }
+
+      return res.status(200).json({
+        success: true,
+        paymentRequired: false,
+        watermarkRemoval: false,
+        plan: "free_watermark",
+        amount: 0,
+        downloadId: downloadRecord?._id,
+        message: "Free watermarked resume is ready to download",
+      });
     }
 
     const User = require("../models/User");

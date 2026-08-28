@@ -29,7 +29,7 @@ const paymentSchema = new mongoose.Schema(
     },
     plan: {
       type: String,
-      enum: ["watermarked", "no_watermark"],
+      default: "free_watermark",
     },
     razorpayOrderId: {
       type: String,

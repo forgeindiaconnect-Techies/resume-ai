@@ -11,13 +11,14 @@ const Navbar = () => {
     <nav style={{
       background: '#ffffff',
       borderBottom: '1px solid #e2e8f0',
-      position: 'fixed',
+      position: 'sticky',
       top: 0,
       left: 0,
       right: 0,
       width: '100%',
       zIndex: 1000,
-      boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
+      boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+      flexShrink: 0
     }}>
       <div className="landing-nav-container">
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
@@ -29,6 +30,7 @@ const Navbar = () => {
           {[
             { label: 'Home', to: '/', isAnchor: false },
             { label: 'Features', to: '/#features', isAnchor: true },
+            { label: 'Pricing', to: '/#pricing', isAnchor: true },
             { label: 'Examples', to: '/industry-examples' }
           ].map((item) => (
             item.isAnchor ? (
@@ -113,6 +115,13 @@ const Navbar = () => {
               style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', textDecoration: 'none', padding: '0.4rem 0' }}
             >
               Features
+            </a>
+            <a
+              href="/#pricing"
+              onClick={() => setShowMobileMenu(false)}
+              style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', textDecoration: 'none', padding: '0.4rem 0' }}
+            >
+              Pricing
             </a>
             <Link
               to="/industry-examples"

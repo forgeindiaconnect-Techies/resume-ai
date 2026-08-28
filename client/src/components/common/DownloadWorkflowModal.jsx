@@ -4,6 +4,7 @@ import { CheckCircle2, AlertTriangle, Download, FileText, X, RefreshCw, Mail, Cr
 import { generateProfessionalFilename, exportResumeToPdf } from '../../utils/pdfExport';
 import { trackEvent } from '../../utils/sessionTracker';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import { API_BASE_URL } from '../../config/api';
 
@@ -26,6 +27,11 @@ const DownloadWorkflowModal = ({
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('no_watermark');
   const [downloadPlans, setDownloadPlans] = useState([]);
+
+  const premiumPlanObj = downloadPlans.find(p => p.key === "no_watermark" || p.watermarkRemoval);
+  const premiumPrice = premiumPlanObj ? premiumPlanObj.price : 199;
+  const freePlanObj = downloadPlans.find(p => p.key === "watermarked" || p.key === "free_watermark" || !p.watermarkRemoval);
+  const freePrice = freePlanObj ? freePlanObj.price : 0;
 
   useEffect(() => {
     const fetchDownloadPlans = async () => {
@@ -95,47 +101,119 @@ const DownloadWorkflowModal = ({
   };
 
   const handleContinueToPayment = async () => {
-    if (!email.trim() || !email.includes("@")) {
-      alert("Please enter a valid email ID.");
-      return;
+    let effectiveEmail = email.trim();
+    if (!effectiveEmail || !effectiveEmail.includes("@")) {
+      effectiveEmail = formData?.personalInfo?.email || localStorage.getItem("userEmail") || "candidate@example.com";
+      setEmail(effectiveEmail);
     }
 
     if (!selectedPlan) {
-      alert("Please select a download option.");
+      alert("Please select a download plan");
+      return;
+    }
+
+    const sheet =
+      document.getElementById("resume-preview-sheet") ||
+      document.querySelector(".print-paper-sheet") ||
+      document.querySelector(".resume-page") ||
+      document.querySelector(".resume-preview-container") ||
+      document.querySelector(".editor-right-preview > div:last-child > div");
+
+    if (!sheet) {
+      alert("Resume preview not found. Please ensure the preview canvas is loaded.");
+      return;
+    }
+
+    const resName = formData?.personalInfo?.name || formData?.name || localStorage.getItem("userName") || "Professional";
+    const jobTitle = formData?.department || formData?.personalInfo?.role || "Resume";
+    const normalizedEmail = effectiveEmail.trim().toLowerCase();
+    if (normalizedEmail) localStorage.setItem("userEmail", normalizedEmail);
+    if (resName) localStorage.setItem("userName", resName);
+
+    const resumeIdentifier = formData?.resumeId || localStorage.getItem("activeResumeSessionId") || `RESUME_${Date.now()}`;
+    const token = localStorage.getItem("token");
+
+    // Free download with watermark
+    if (selectedPlan === "free_watermark" || selectedPlan === "watermarked") {
+      try {
+        setLoadingPayment(true);
+        setStep('progress');
+        setProgress(30);
+
+        const response = await axios.post(
+          `${API_BASE_URL}/payments/mock-payment`,
+          {
+            email: normalizedEmail,
+            resumeId: resumeIdentifier,
+            plan: selectedPlan,
+            resumeName: resName,
+            sessionId: localStorage.getItem("userSessionId") || null,
+            guestId: localStorage.getItem("guestId") || null
+          }
+        );
+
+        if (response.data.success) {
+          setProgress(60);
+
+          // Save Download Record in MongoDB for Admin
+          await fetch(`${API_BASE_URL}/downloads`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              sessionId: localStorage.getItem("userSessionId") || null,
+              guestId: localStorage.getItem("guestId") || null,
+              email: normalizedEmail,
+              resumeId: resumeIdentifier,
+              resumeName: resName,
+              downloadType: "free_watermark",
+              paymentId: response.data.payment?.id || "free_download"
+            })
+          }).catch(e => console.warn("Save download error:", e));
+
+          setProgress(80);
+
+          const filename = generateProfessionalFilename(resName, jobTitle);
+
+          await exportResumeToPdf(
+            sheet,
+            filename,
+            false // Add watermark
+          );
+
+          setProgress(100);
+
+          await trackEvent("RESUME_DOWNLOADED", "/builder", {
+            resumeName: resName,
+            email: normalizedEmail,
+            downloaded: true,
+            downloadType: "free_watermark",
+            paymentId: response.data.payment?.id || "free_download"
+          });
+
+          setStep('success');
+          setTimeout(() => {
+            onClose();
+          }, 2500);
+        }
+      } catch (error) {
+        console.error("Free download error:", error);
+        alert(
+          error.response?.data?.message ||
+            "Unable to download the resume. Please try again."
+        );
+        setStep('plan');
+      } finally {
+        setLoadingPayment(false);
+      }
       return;
     }
 
     try {
-      const sheet =
-        document.getElementById("resume-preview-sheet") ||
-        document.querySelector(".print-paper-sheet") ||
-        document.querySelector(".resume-page") ||
-        document.querySelector(".resume-preview-container") ||
-        document.querySelector(".editor-right-preview > div:last-child > div");
-
-      if (!sheet) {
-        alert("Resume preview not found. Please ensure the preview canvas is loaded.");
-        return;
-      }
-
       setLoadingPayment(true);
 
-      const isLoaded = await loadRazorpay();
-      if (!isLoaded || !window.Razorpay) {
-        setLoadingPayment(false);
-        alert("Unable to load Razorpay payment gateway. Please check your internet connection.");
-        return;
-      }
-
-      const resName = formData?.personalInfo?.name || formData?.name || localStorage.getItem("userName") || "Resume";
-      const normalizedEmail = email.trim().toLowerCase();
-      if (email) localStorage.setItem("userEmail", normalizedEmail);
-      if (resName) localStorage.setItem("userName", resName);
-
-      const resumeIdentifier = formData?.resumeId || localStorage.getItem("activeResumeSessionId") || `RESUME_${Date.now()}`;
-      const token = localStorage.getItem("token");
-
-      // 1. Create Razorpay Order on Backend
+      // 1. Create Order on Backend
       const orderResponse = await fetch(`${API_BASE_URL}/payments/create-order`, {
         method: "POST",
         headers: {
@@ -146,14 +224,22 @@ const DownloadWorkflowModal = ({
           email: normalizedEmail,
           resumeId: resumeIdentifier,
           plan: selectedPlan,
-          planKey: selectedPlan
+          planKey: selectedPlan,
+          resumeName: resName
         })
       });
 
       const orderData = await orderResponse.json();
 
       if (!orderResponse.ok || !orderData.success) {
-        throw new Error(orderData.message || "Failed to initialize Razorpay order");
+        throw new Error(orderData.message || "Failed to initialize download");
+      }
+
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded || !window.Razorpay) {
+        setLoadingPayment(false);
+        alert("Unable to load Razorpay payment gateway. Please check your internet connection.");
+        return;
       }
 
       // 2. Open Razorpay Checkout Modal
@@ -162,7 +248,7 @@ const DownloadWorkflowModal = ({
         amount: orderData.order.amount,
         currency: orderData.order.currency || "INR",
         name: "Forge India Connect",
-        description: selectedPlan === "no_watermark" ? "High-Res PDF (No Watermark)" : "Standard PDF (Watermarked)",
+        description: "High-Res PDF (No Watermark)",
         order_id: orderData.order.id,
         prefill: {
           name: resName,
@@ -423,58 +509,72 @@ const DownloadWorkflowModal = ({
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                 <label style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '-0.5rem' }}>SELECT YOUR PLAN</label>
-                {downloadPlans
-                  .filter(plan => plan.key === "watermarked")
-                  .map(plan => (
-                    <div 
-                      key={plan._id}
-                      onClick={() => setSelectedPlan(plan.key)}
-                      style={{ 
-                        cursor: 'pointer', padding: '1.25rem', 
-                        border: selectedPlan === 'watermarked' ? '2px solid #0284c7' : '1px solid #cbd5e1', 
-                        borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                        transition: 'all 0.2s', background: selectedPlan === 'watermarked' ? '#f0f9ff' : '#f8fafc' 
-                      }}
-                    >
-                      <div>
-                        <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#334155', fontWeight: 800 }}>{plan.name}</h4>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Watermark</p>
-                      </div>
-                      <div style={{ fontWeight: 900, fontSize: '1.2rem', color: selectedPlan === 'watermarked' ? '#0284c7' : '#475569' }}>₹{plan.price}</div>
-                    </div>
-                  ))}
+                
+                {/* 1. Free Watermarked Option */}
+                <div 
+                  onClick={() => setSelectedPlan('free_watermark')}
+                  style={{ 
+                    cursor: 'pointer', padding: '1.25rem', 
+                    border: selectedPlan === 'free_watermark' ? '2px solid #16a34a' : '1px solid #cbd5e1', 
+                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                    transition: 'all 0.2s', background: selectedPlan === 'free_watermark' ? '#f0fdf4' : '#f8fafc' 
+                  }}
+                >
+                  <div>
+                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'free_watermark' ? '#15803d' : '#334155', fontWeight: 800 }}>Resume with Watermark</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>Standard PDF with Watermark</p>
+                  </div>
+                  <div style={{ fontWeight: 900, fontSize: '1rem', color: '#15803d', background: '#dcfce7', padding: '4px 12px', borderRadius: '50px' }}>FREE</div>
+                </div>
 
-                {downloadPlans
-                  .filter(plan => plan.key === "no_watermark")
-                  .map(plan => (
-                    <div 
-                      key={plan._id}
-                      onClick={() => setSelectedPlan(plan.key)}
-                      style={{ 
-                        cursor: 'pointer', position: 'relative', padding: '1.25rem', 
-                        border: selectedPlan === 'no_watermark' ? '2px solid #0ea5e9' : '1px solid #cbd5e1', 
-                        borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                        background: selectedPlan === 'no_watermark' ? '#f0f9ff' : '#f8fafc', transition: 'all 0.2s' 
-                      }}
-                    >
-                      <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0ea5e9', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
-                      <div>
-                        <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#334155', fontWeight: 800 }}>{plan.name}</h4>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: selectedPlan === 'no_watermark' ? '#0284c7' : '#64748b', fontWeight: 500 }}>High-res PDF, No Watermark</p>
-                      </div>
-                      <div style={{ fontWeight: 900, fontSize: '1.3rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#0f172a' }}>₹{plan.price}</div>
-                    </div>
-                  ))}
+                {/* 2. Premium No Watermark Option */}
+                <div 
+                  onClick={() => setSelectedPlan('no_watermark')}
+                  style={{ 
+                    cursor: 'pointer', position: 'relative', padding: '1.25rem', 
+                    border: selectedPlan === 'no_watermark' ? '2px solid #0ea5e9' : '1px solid #cbd5e1', 
+                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                    background: selectedPlan === 'no_watermark' ? '#f0f9ff' : '#f8fafc', transition: 'all 0.2s' 
+                  }}
+                >
+                  <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#0ea5e9', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800 }}>RECOMMENDED</div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.25rem', fontSize: '1.1rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#334155', fontWeight: 800 }}>Resume without Watermark</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: selectedPlan === 'no_watermark' ? '#0284c7' : '#64748b', fontWeight: 500 }}>High-res PDF, No Watermark</p>
+                  </div>
+                  <div style={{ fontWeight: 900, fontSize: '1.3rem', color: selectedPlan === 'no_watermark' ? '#0ea5e9' : '#0f172a' }}>₹{premiumPrice}</div>
+                </div>
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button
                   onClick={handleContinueToPayment}
                   disabled={loadingPayment}
-                  style={{ width: '100%', padding: '0.9rem', borderRadius: '12px', border: 'none', background: '#0ea5e9', color: 'white', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 14px rgba(14, 165, 233, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  style={{ 
+                    width: '100%', 
+                    padding: '0.9rem', 
+                    borderRadius: '12px', 
+                    border: 'none', 
+                    background: selectedPlan === 'free_watermark' ? '#16a34a' : '#0ea5e9', 
+                    color: 'white', 
+                    fontWeight: 800, 
+                    fontSize: '1rem', 
+                    cursor: 'pointer', 
+                    boxShadow: selectedPlan === 'free_watermark' ? '0 4px 14px rgba(22, 163, 74, 0.35)' : '0 4px 14px rgba(14, 165, 233, 0.35)', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '8px' 
+                  }}
                 >
-                  {loadingPayment ? <RefreshCw size={18} className="animate-spin" /> : <CreditCard size={18} />}
-                  Continue to Payment
+                  {loadingPayment ? (
+                    <RefreshCw size={18} className="animate-spin" />
+                  ) : selectedPlan === 'free_watermark' ? (
+                    <Download size={18} />
+                  ) : (
+                    <CreditCard size={18} />
+                  )}
+                  {selectedPlan === 'free_watermark' ? 'Download Free PDF' : `Continue to Payment (₹${premiumPrice})`}
                 </button>
               </div>
             </div>

@@ -1460,9 +1460,6 @@
 .admin-sidebar {
   width: 250px;
   height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
   background: #ffffff;
   color: #0f172a;
   border-right: 1px solid #e2e8f0;
@@ -1470,9 +1467,9 @@
   flex-direction: column;
   padding: 20px 14px;
   box-sizing: border-box;
-  z-index: 100;
+  flex-shrink: 0;
   overflow-y: auto;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease;
 }
 
 .admin-sidebar-close-btn {
@@ -1490,26 +1487,31 @@
 @media (min-width: 901px) {
   .admin-sidebar.collapsed {
     width: 72px !important;
-    transform: translateX(0) !important;
     padding: 20px 8px !important;
   }
   .admin-sidebar.collapsed .admin-menu-title,
   .admin-sidebar.collapsed .admin-logo h2,
   .admin-sidebar.collapsed .admin-logo span,
-  .admin-sidebar.collapsed .admin-menu-item span {
+  .admin-sidebar.collapsed .admin-menu-item span,
+  .admin-sidebar.collapsed .forge-logo-horizontal > div:last-child {
     display: none !important;
+  }
+  .admin-sidebar.collapsed .forge-logo-horizontal {
+    justify-content: center !important;
+    gap: 0 !important;
   }
   .admin-sidebar.collapsed .admin-menu-item {
     justify-content: center !important;
     padding: 11px 0 !important;
     border-radius: 10px !important;
   }
+  .admin-sidebar.collapsed .admin-sidebar-bottom .admin-menu-item {
+    justify-content: center !important;
+    padding: 11px 0 !important;
+  }
   .admin-sidebar.collapsed .admin-logo {
     justify-content: center !important;
     padding: 4px 0 20px !important;
-  }
-  .admin-layout.sidebar-collapsed {
-    padding-left: 72px !important;
   }
 }
 
@@ -1731,15 +1733,10 @@
 
 .admin-layout {
   height: 100vh;
+  width: 100%;
   overflow: hidden;
   display: flex;
   background: #f5f7fb;
-  padding-left: 250px; /* Offset for fixed sidebar */
-  transition: padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.admin-layout.sidebar-collapsed {
-  padding-left: 0 !important;
 }
 
 .admin-main {
@@ -1748,12 +1745,15 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
 }
 
 .admin-content {
-  padding: 30px;
+  padding: 24px 30px;
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
 .admin-page {
@@ -1939,7 +1939,11 @@
   }
 
   .admin-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 270px !important;
+    height: 100vh !important;
     transform: translateX(-100%);
     z-index: 9999;
     box-shadow: 4px 0 25px rgba(0, 0, 0, 0.25);

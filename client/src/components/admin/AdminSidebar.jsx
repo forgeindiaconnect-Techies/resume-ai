@@ -125,20 +125,22 @@ const AdminSidebar = () => {
 
       <aside className={`admin-sidebar ${isOpen ? 'open' : ''} ${isDesktopCollapsed ? 'collapsed' : ''}`}>
         {/* Logo and Mobile Close Button */}
-        <div className="admin-logo" style={{ padding: "8px 8px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <ForgeLogo variant="light" size={38} />
-          <button 
-            className="admin-sidebar-close-btn no-print"
-            onClick={() => setIsOpen(false)}
-            aria-label="Close Sidebar"
-          >
-            <X size={18} />
-          </button>
+        <div className="admin-logo" style={{ padding: isDesktopCollapsed ? "6px 0 18px" : "8px 8px 18px", display: "flex", alignItems: "center", justifyContent: isDesktopCollapsed ? "center" : "space-between" }}>
+          <ForgeLogo variant="light" size={isDesktopCollapsed ? 34 : 38} iconOnly={isDesktopCollapsed} showText={!isDesktopCollapsed} />
+          {!isDesktopCollapsed && (
+            <button 
+              className="admin-sidebar-close-btn no-print"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close Sidebar"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
 
         {/* Menu */}
         <nav className="admin-menu">
-          <p className="admin-menu-title">MAIN MENU</p>
+          {!isDesktopCollapsed && <p className="admin-menu-title">MAIN MENU</p>}
 
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -153,7 +155,7 @@ const AdminSidebar = () => {
                 onClick={() => navigate(item.path)}
               >
                 <Icon size={19} />
-                <span>{item.name}</span>
+                {!isDesktopCollapsed && <span>{item.name}</span>}
               </button>
             );
           })}
@@ -163,7 +165,7 @@ const AdminSidebar = () => {
         <div className="admin-sidebar-bottom">
           <button className="admin-menu-item logout" title="Logout" onClick={handleLogout}>
             <LogOut size={19} />
-            <span>Logout</span>
+            {!isDesktopCollapsed && <span>Logout</span>}
           </button>
         </div>
       </aside>

@@ -13,6 +13,7 @@ import { generateResumeAI } from '../services/aiService';
 import { getOrCreateUser } from '../utils/userIdentity';
 import { createResume } from '../services/resumeService';
 import { startSession, trackEvent } from '../utils/sessionTracker';
+import { API_BASE_URL } from '../config/api';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,28 @@ const LandingPage = () => {
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [downloadPlans, setDownloadPlans] = useState([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/download-plans`);
+        const data = await response.json();
+        if (data.success) {
+          setDownloadPlans(data.plans || []);
+        }
+      } catch (e) {
+        console.error("Failed to fetch download plans on landing:", e);
+      }
+    };
+    fetchPlans();
+  }, []);
+
+  const freePlan = downloadPlans.find(p => p.key === 'watermarked' || p.key === 'free_watermark' || !p.watermarkRemoval);
+  const premiumPlan = downloadPlans.find(p => p.key === 'no_watermark' || p.watermarkRemoval);
+
+  const freePriceDisplay = freePlan ? (Number(freePlan.price) === 0 ? 'FREE' : `₹${freePlan.price}`) : 'FREE';
+  const premiumPriceDisplay = premiumPlan ? `₹${premiumPlan.price}` : '₹199';
 
   useEffect(() => {
     // Start tracking user session as soon as they hit the landing page
@@ -226,6 +249,7 @@ const LandingPage = () => {
             {[
               { label: 'Home', onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
               { label: 'Features', href: '#features' },
+              { label: 'Pricing', href: '#pricing' },
               { label: 'Examples', onClick: () => navigate('/industry-examples') }
             ].map((item, idx) => (
               <span
@@ -338,6 +362,16 @@ const LandingPage = () => {
                 style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', padding: '0.4rem 0' }}
               >
                 Features
+              </span>
+              <span
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  const el = document.querySelector('#pricing');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                style={{ color: '#0f172a', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', padding: '0.4rem 0' }}
+              >
+                Pricing
               </span>
               <span
                 onClick={async () => { 
@@ -1249,8 +1283,132 @@ const LandingPage = () => {
           </div>
         </section>
 
+        {/* DYNAMIC PRICING SECTION CONNECTED TO ADMIN DASHBOARD */}
+        <section id="pricing" style={{ padding: 'clamp(4rem, 7vw, 6.5rem) 1.5rem', background: '#f8fafc', position: 'relative', borderTop: '1px solid #e2e8f0' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(2, 132, 199, 0.08)', border: '1px solid rgba(2, 132, 199, 0.2)', padding: '0.4rem 1rem', borderRadius: '50px', fontSize: '0.8rem', color: '#0284c7', fontWeight: 800, marginBottom: '1rem', letterSpacing: '0.04em' }}>
+                <ShieldCheck size={16} /> SIMPLE & TRANSPARENT PRICING
+              </div>
+              <h2 style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontFamily: "'Playfair Display', serif", fontWeight: 700, color: '#0f172a', margin: '0 0 1rem', lineHeight: 1.2 }}>
+                Invest in Your Next Career Move
+              </h2>
+              <p style={{ color: '#64748b', fontSize: '1.05rem', maxWidth: '620px', margin: '0 auto', lineHeight: 1.6 }}>
+                Create, customize, and download recruiter-approved resumes instantly. No hidden fees.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', maxWidth: '850px', margin: '0 auto', alignItems: 'stretch' }}>
+              
+              {/* Card 1: With Watermark (FREE) */}
+              <motion.div
+                whileHover={{ y: -6, boxShadow: '0 20px 35px rgba(0,0,0,0.08)' }}
+                transition={{ duration: 0.25 }}
+                style={{ background: 'white', borderRadius: '20px', padding: '2.5rem 2rem', border: '1.5px solid #e2e8f0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', position: 'relative' }}
+              >
+                <div>
+                  <div style={{ display: 'inline-block', background: '#ecfdf5', color: '#16a34a', padding: '0.35rem 0.85rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.25rem' }}>
+                    100% FREE
+                  </div>
+                  <h3 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.5rem' }}>
+                    With Watermark
+                  </h3>
+                  <p style={{ color: '#64748b', fontSize: '0.88rem', margin: '0 0 1.5rem', lineHeight: 1.5 }}>
+                    Free draft export to format and practice your ATS resume structure.
+                  </p>
+
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '2rem' }}>
+                    <span style={{ fontSize: '3rem', fontWeight: 900, color: '#16a34a', letterSpacing: '-0.02em', lineHeight: 1 }}>
+                      {freePriceDisplay}
+                    </span>
+                    <span style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 600 }}>/ instant download</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '2.5rem' }}>
+                    {[
+                      'Instant PDF Download',
+                      'Access to All Luxury ATS Templates',
+                      'Live ATS Quality Score Check',
+                      'Includes "RESUME AI" Watermark'
+                    ].map((feat, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: '#334155', fontWeight: 600 }}>
+                        <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0 }} />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onEnterApp('create')}
+                  style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '2px solid #cbd5e1', background: '#f8fafc', color: '#0f172a', fontSize: '0.95rem', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.borderColor = '#94a3b8'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                >
+                  Start Building Free <ArrowRight size={16} />
+                </button>
+              </motion.div>
+
+              {/* Card 2: Without Watermark (Dynamic Price from Admin) */}
+              <motion.div
+                whileHover={{ y: -6, boxShadow: '0 25px 45px rgba(2,132,199,0.18)' }}
+                transition={{ duration: 0.25 }}
+                style={{ background: 'white', borderRadius: '20px', padding: '2.5rem 2rem', border: '2px solid #0284c7', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 30px rgba(2,132,199,0.1)', position: 'relative' }}
+              >
+                <div style={{ position: 'absolute', top: '-13px', right: '24px', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', padding: '0.35rem 1rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.05em', boxShadow: '0 4px 12px rgba(2,132,199,0.35)' }}>
+                  MOST POPULAR
+                </div>
+
+                <div>
+                  <div style={{ display: 'inline-block', background: '#e0f2fe', color: '#0284c7', padding: '0.35rem 0.85rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.25rem' }}>
+                    PRO EXPORT
+                  </div>
+                  <h3 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.5rem' }}>
+                    Without Watermark
+                  </h3>
+                  <p style={{ color: '#64748b', fontSize: '0.88rem', margin: '0 0 1.5rem', lineHeight: 1.5 }}>
+                    Clean, recruiter-vetted vector PDF ready for job applications.
+                  </p>
+
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '2rem' }}>
+                    <span style={{ fontSize: '3rem', fontWeight: 900, color: '#0284c7', letterSpacing: '-0.02em', lineHeight: 1 }}>
+                      {premiumPriceDisplay}
+                    </span>
+                    <span style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 600 }}>/ one-time export</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '2.5rem' }}>
+                    {[
+                      '100% Clean PDF — Zero Watermark',
+                      'Recruiter-Grade High Resolution Vector Output',
+                      'Full AI Bullet & Summary Optimizer',
+                      '98% ATS Compatibility Score',
+                      'Instant PDF Download'
+                    ].map((feat, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: '#0f172a', fontWeight: 700 }}>
+                        <CheckCircle2 size={18} color="#0284c7" style={{ flexShrink: 0 }} />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onEnterApp('create')}
+                  style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #0284c7, #0ea5e9)', color: 'white', fontSize: '0.95rem', fontWeight: 900, cursor: 'pointer', boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  Get Clean Resume ({premiumPriceDisplay}) <ArrowRight size={16} />
+                </button>
+              </motion.div>
+
+            </div>
+          </div>
+        </section>
+
         {/* CTA Bottom Section */}
-        <section id="pricing" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: 'clamp(3.5rem, 6vw, 6rem) 1.5rem', textAlign: 'center', color: 'white', position: 'relative' }}>
+        <section style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)', borderTop: '1px solid rgba(255,255,255,0.1)', padding: 'clamp(3.5rem, 6vw, 6rem) 1.5rem', textAlign: 'center', color: 'white', position: 'relative' }}>
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}

@@ -35,6 +35,7 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
   const origHeight = element.style.height;
   const origOverflow = element.style.overflow;
 
+  let watermark = null;
   let watermarkStyleEl = null;
 
   if (isPremium) {
@@ -44,6 +45,28 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
   }
 
   try {
+    // Add watermark only for the free plan
+    if (!isPremium) {
+      watermark = document.createElement("div");
+      watermark.innerText = "RESUME AI";
+
+      Object.assign(watermark.style, {
+        position: "absolute",
+        top: "45%",
+        left: "50%",
+        transform: "translate(-50%, -50%) rotate(-45deg)",
+        fontSize: "8rem",
+        fontWeight: "bold",
+        color: "rgba(0, 0, 0, 0.08)",
+        whiteSpace: "nowrap",
+        pointerEvents: "none",
+        zIndex: "9999",
+      });
+
+      element.style.position = "relative";
+      element.appendChild(watermark);
+    }
+
     // Hide focus outlines and reset scaling
     element.classList.add('exporting-pdf');
     element.style.transform = 'none';
@@ -87,6 +110,9 @@ export const exportResumeToPdf = async (elementOrId, filename = 'My_Resume.pdf',
     toast.error('PDF export failed. Opening print window...', { id: toastId });
     window.print();
   } finally {
+    if (watermark && watermark.parentNode) {
+      watermark.parentNode.removeChild(watermark);
+    }
     if (watermarkStyleEl) {
       document.head.removeChild(watermarkStyleEl);
     }
