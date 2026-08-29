@@ -64,9 +64,8 @@ const DownloadWorkflowModal = ({
       const generated = generateProfessionalFilename(formData?.personalInfo?.name, formData?.department || formData?.personalInfo?.role);
       setCustomFilename(generated);
       
-      if (formData?.personalInfo?.email) {
-        setEmail(formData.personalInfo.email);
-      }
+      // Keep email field empty by default so no pre-filled mail ID is shown
+      setEmail('');
       
       trackEvent("Download Popup Opened", "/builder");
     }
@@ -103,8 +102,9 @@ const DownloadWorkflowModal = ({
   const handleContinueToPayment = async () => {
     let effectiveEmail = email.trim();
     if (!effectiveEmail || !effectiveEmail.includes("@")) {
-      effectiveEmail = formData?.personalInfo?.email || localStorage.getItem("userEmail") || "candidate@example.com";
-      setEmail(effectiveEmail);
+      effectiveEmail = (formData?.personalInfo?.email && !formData.personalInfo.email.includes('help@forgeindiaconnect.com'))
+        ? formData.personalInfo.email
+        : (localStorage.getItem("userEmail") || "candidate@example.com");
     }
 
     if (!selectedPlan) {
@@ -450,7 +450,7 @@ const DownloadWorkflowModal = ({
                     type="email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    placeholder="john@example.com"
+                    placeholder="Enter your email address (e.g. name@example.com)"
                     style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
                   />
                 </div>
@@ -502,7 +502,7 @@ const DownloadWorkflowModal = ({
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="john@example.com"
+                  placeholder="Enter your email address (e.g. name@example.com)"
                   style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>

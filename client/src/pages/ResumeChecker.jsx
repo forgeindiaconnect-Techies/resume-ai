@@ -11,6 +11,7 @@ import {
   XCircle,
   Sparkles,
   ArrowRight,
+  ArrowLeft,
   RefreshCw,
   HelpCircle,
   Briefcase,
@@ -380,11 +381,49 @@ Generated via Forge Resume AI Universal ATS
             justifyContent: "space-between"
           }}
         >
-          <div
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}
-            onClick={() => navigate("/")}
-          >
-            <ForgeLogo size={52} showText={true} variant="light" />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+            <button
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  navigate("/");
+                }
+              }}
+              title="Back"
+              aria-label="Back"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "32px",
+                height: "32px",
+                borderRadius: "8px",
+                background: "#f1f5f9",
+                border: "1px solid #e2e8f0",
+                color: "#475569",
+                cursor: "pointer",
+                transition: "all 0.15s",
+                flexShrink: 0,
+                padding: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#e2e8f0";
+                e.currentTarget.style.color = "#0f172a";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#f1f5f9";
+                e.currentTarget.style.color = "#475569";
+              }}
+            >
+              <ArrowLeft size={16} />
+            </button>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}
+              onClick={() => navigate("/")}
+            >
+              <ForgeLogo size={52} showText={true} variant="light" />
+            </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

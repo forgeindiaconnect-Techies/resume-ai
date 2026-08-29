@@ -1321,6 +1321,18 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
 
   const currentLabel = steps.find(s => s.num === activeStep)?.label || 'Personal';
 
+  const handleTopBack = () => {
+    if (mobileTab !== 'form') {
+      setMobileTab('form');
+      return;
+    }
+    if (activeStep > 1) {
+      setActiveStep(prev => prev - 1);
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#f8fafc', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
       
@@ -1328,9 +1340,9 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
       <header className="builder-header no-print">
         <div className="builder-header-left" style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
           <button
-            onClick={() => navigate('/')}
-            title="Back to Home"
-            aria-label="Back to Home"
+            onClick={handleTopBack}
+            title={activeStep > 1 ? "Previous Section" : "Back to Home"}
+            aria-label={activeStep > 1 ? "Previous Section" : "Back to Home"}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -1996,11 +2008,11 @@ const SplitBuilderView = ({ user, onComplete, activeResumeId, onUpgradeRedirect 
             gap: '0.4rem'
           }}>
             <button 
-              disabled={activeStep === 1}
-              onClick={() => setActiveStep(prev => Math.max(1, prev - 1))}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'none', border: '1px solid #cbd5e1', color: activeStep === 1 ? '#cbd5e1' : '#0f172a', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
+              onClick={handleTopBack}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'none', border: '1px solid #cbd5e1', color: '#0f172a', padding: '0.5rem 0.8rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
+              title={activeStep === 1 ? 'Back to Home' : 'Previous Section'}
             >
-              <ChevronLeft size={14} /> Previous
+              <ChevronLeft size={14} /> {activeStep === 1 ? 'Home' : 'Previous'}
             </button>
 
             <button 

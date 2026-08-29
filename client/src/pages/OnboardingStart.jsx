@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileEdit, Sparkles, Link2, Upload } from 'lucide-react';
+import { FileEdit, Sparkles, Link2, Upload, ArrowLeft } from 'lucide-react';
 import ForgeLogo from '../components/common/ForgeLogo';
 
 const OnboardingStart = () => {
@@ -51,8 +51,38 @@ const OnboardingStart = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem', fontFamily: "'Inter', sans-serif" }}>
       
-      {/* Logo */}
-      <div style={{ position: 'absolute', top: '2rem', left: '2rem' }}>
+      {/* Logo & Back */}
+      <div style={{ position: 'absolute', top: '2rem', left: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button
+          onClick={() => navigate('/')}
+          title="Back to Home"
+          aria-label="Back to Home"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '34px',
+            height: '34px',
+            borderRadius: '8px',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            color: '#475569',
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            padding: 0
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#f1f5f9';
+            e.currentTarget.style.color = '#0f172a';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '#ffffff';
+            e.currentTarget.style.color = '#475569';
+          }}
+        >
+          <ArrowLeft size={16} />
+        </button>
         <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
           <ForgeLogo size={52} showText={true} variant="light" />
         </Link>

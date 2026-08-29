@@ -12,24 +12,32 @@ import { startSession, trackEvent } from '../utils/sessionTracker';
 
 const categorySlugMap = {
   'most-popular': 'Most Popular Resume Examples',
+  'college-students-freshers': 'College students & freshers resume examples',
+  'ai-and-data-engineering': 'AI & Data engineering resume examples',
+  'cloud-and-devops': 'Cloud & DevOps resume examples',
+  'cybersecurity': 'Cybersecurity & InfoSec resume examples',
+  'software-engineering': 'Software engineering resume examples',
+  'information-technology': 'Information technology resume examples',
+  'data-science': 'Data science resume examples',
+  'banking-and-fintech': 'Banking & FinTech resume examples',
   'accounting-and-finance': 'Accounting and finance resume examples',
   'business-and-management': 'Business and management resume examples',
-  'creative-and-cultural-fields': 'Creative and cultural fields resume examples',
-  'data-science': 'Data science resume examples',
-  'design': 'Design resume examples',
-  'engineering': 'Engineering resume examples',
-  'executive-and-management': 'Executive and management resume examples',
-  'famous-people': 'Famous people resume examples',
-  'food-service': 'Food service resume examples',
-  'freelance': 'Freelance resume examples',
-  'government-and-federal': 'Government and federal resume examples',
-  'healthcare': 'Healthcare resume examples',
-  'human-resources': 'Human resources resume examples',
-  'information-technology': 'Information technology resume examples',
-  'legal': 'Legal resume examples',
   'marketing': 'Marketing resume examples',
   'sales': 'Sales resume examples',
-  'software-engineering': 'Software engineering resume examples'
+  'customer-support-and-bpo': 'Customer support & BPO resume examples',
+  'education-and-teaching': 'Education & teaching resume examples',
+  'healthcare': 'Healthcare resume examples',
+  'human-resources': 'Human resources resume examples',
+  'supply-chain-and-logistics': 'Supply chain & logistics resume examples',
+  'engineering': 'Engineering resume examples',
+  'design': 'Design resume examples',
+  'creative-and-cultural-fields': 'Creative and cultural fields resume examples',
+  'executive-and-management': 'Executive and management resume examples',
+  'government-and-federal': 'Government and federal resume examples',
+  'legal': 'Legal resume examples',
+  'food-service': 'Food service resume examples',
+  'freelance': 'Freelance resume examples',
+  'famous-people': 'Famous people resume examples'
 };
 
 const categoryList = Object.values(categorySlugMap);
@@ -152,10 +160,203 @@ const initialRoles = [
 
   // --- SOFTWARE ENGINEERING ---
   { id: 'devops',       title: 'DevOps Engineer',     category: 'Software engineering resume examples', layout: 'professional', color: '#1d4ed8' },
-  { id: 'fullstack',    title: 'Full Stack Developer',category: 'Software engineering resume examples', layout: 'modern',       color: '#1e3a5f' }
+  { id: 'fullstack',    title: 'Full Stack Developer',category: 'Software engineering resume examples', layout: 'modern',       color: '#1e3a5f' },
+
+  // --- COLLEGE STUDENTS & FRESHERS ---
+  { id: 'grad_trainee', title: 'Graduate Engineer Trainee', category: 'College students & freshers resume examples', layout: 'minimal', color: '#1d4ed8' },
+  { id: 'cs_student',   title: 'Computer Science Student', category: 'College students & freshers resume examples', layout: 'modern', color: '#0284c7' },
+  { id: 'intern_biz',   title: 'Business & Marketing Intern', category: 'College students & freshers resume examples', layout: 'creative', color: '#7c3aed' },
+
+  // --- AI & DATA ENGINEERING ---
+  { id: 'prompt_eng',   title: 'Prompt Engineer',     category: 'AI & Data engineering resume examples', layout: 'creative', color: '#6d28d9' },
+  { id: 'mlops_eng',    title: 'MLOps Engineer',      category: 'AI & Data engineering resume examples', layout: 'modern', color: '#134e4a' },
+  { id: 'genai_dev',    title: 'Generative AI Developer', category: 'AI & Data engineering resume examples', layout: 'professional', color: '#1d4ed8' },
+
+  // --- CLOUD & DEVOPS ---
+  { id: 'cloud_arch_aws', title: 'AWS Cloud Solutions Architect', category: 'Cloud & DevOps resume examples', layout: 'modern', color: '#0284c7' },
+  { id: 'sre_eng',      title: 'Site Reliability Engineer (SRE)', category: 'Cloud & DevOps resume examples', layout: 'professional', color: '#1e3a5f' },
+  { id: 'k8s_spec',     title: 'Kubernetes Platform Engineer', category: 'Cloud & DevOps resume examples', layout: 'enhancv', color: '#0f172a' },
+
+  // --- CYBERSECURITY & INFOSEC ---
+  { id: 'cyber_analyst',title: 'Cybersecurity Analyst', category: 'Cybersecurity & InfoSec resume examples', layout: 'modern', color: '#134e4a' },
+  { id: 'pen_tester',   title: 'Ethical Hacker & Pen Tester', category: 'Cybersecurity & InfoSec resume examples', layout: 'enhancv', color: '#0f172a' },
+  { id: 'soc_analyst',  title: 'SOC Analyst & Incident Lead', category: 'Cybersecurity & InfoSec resume examples', layout: 'professional', color: '#0b2545' },
+
+  // --- EDUCATION & TEACHING ---
+  { id: 'stem_teacher', title: 'STEM High School Teacher', category: 'Education & teaching resume examples', layout: 'minimal', color: '#1e3a5f' },
+  { id: 'uni_prof',     title: 'Assistant Professor & Researcher', category: 'Education & teaching resume examples', layout: 'enhancv', color: '#1e293b' },
+  { id: 'corp_trainer', title: 'Corporate L&D Trainer', category: 'Education & teaching resume examples', layout: 'creative', color: '#7c3aed' },
+
+  // --- BANKING & FINTECH ---
+  { id: 'fintech_analyst', title: 'FinTech Product Analyst', category: 'Banking & FinTech resume examples', layout: 'modern', color: '#0b2545' },
+  { id: 'risk_compliance',title: 'Risk & Compliance Officer', category: 'Banking & FinTech resume examples', layout: 'professional', color: '#1e293b' },
+  { id: 'wealth_advisor', title: 'Wealth Management Advisor', category: 'Banking & FinTech resume examples', layout: 'enhancv', color: '#15803d' },
+
+  // --- SUPPLY CHAIN & LOGISTICS ---
+  { id: 'supply_chain_mgr', title: 'Supply Chain Manager', category: 'Supply chain & logistics resume examples', layout: 'modern', color: '#0f172a' },
+  { id: 'logistics_lead',  title: 'Logistics Operations Lead', category: 'Supply chain & logistics resume examples', layout: 'minimal', color: '#374151' },
+  { id: 'procurement_mgr', title: 'Strategic Procurement Specialist', category: 'Supply chain & logistics resume examples', layout: 'professional', color: '#14532d' },
+
+  // --- CUSTOMER SUPPORT & BPO ---
+  { id: 'csm_mgr',      title: 'Customer Success Manager', category: 'Customer support & BPO resume examples', layout: 'modern', color: '#2563eb' },
+  { id: 'tech_support_l2', title: 'Technical Support Lead (L2/L3)', category: 'Customer support & BPO resume examples', layout: 'enhancv', color: '#0f172a' },
+  { id: 'bpo_team_lead', title: 'BPO Operations Team Leader', category: 'Customer support & BPO resume examples', layout: 'creative', color: '#7c3aed' }
 ];
 
 const resumeDataByRole = {
+  'Graduate Engineer Trainee': {
+    name: 'Aarav Patel',
+    role: 'Graduate Engineer Trainee | Full-Stack & Systems Engineering',
+    contact: { email: 'aarav.patel@forgeindiaconnect.com', phone: '+91 98765 12345', location: 'Bengaluru, India', linkedin: 'linkedin.com/in/aarav-patel-get' },
+    objective: 'Motivated B.Tech graduate with strong foundations in Data Structures, Java, Python, and Web Technologies. Eager to leverage problem-solving abilities and academic project experience to contribute to enterprise-scale engineering teams.',
+    skills: { languages: 'Java · Python · C++ · React.js · Node.js · SQL · Git · Docker · REST APIs · Agile Methodology · Problem Solving' },
+    experience: [
+      { company: 'Infosys Ltd', location: 'Bengaluru, India', title: 'Graduate Engineer Trainee', duration: '08/2024 - Present', desc: '• Completed rigorous 4-month enterprise training on full-stack microservices architecture, scoring top 5% in assessment cohorts.\n• Collaborated on automated testing frameworks using Selenium and JUnit, increasing test coverage by 25% for pilot services.\n• Assisted senior engineers in debugging API endpoints and performance profiling using JMeter.' },
+      { company: 'TechNova Solutions', location: 'Pune, India', title: 'Software Engineering Intern', duration: '01/2024 - 05/2024', desc: '• Built responsive dashboard interfaces in React and Tailwind CSS, reducing page load latency by 18%.\n• Designed and documented 12 RESTful API endpoints for user onboarding and role-based access control.' }
+    ],
+    education: [{ degree: 'B.Tech in Computer Science and Engineering', institution: 'National Institute of Technology (NIT)', location: 'Surathkal, India', tenure: '2020 - 2024' }],
+    achievements: [
+      { title: 'Top 5% Cohort Ranking', desc: 'Awarded excellence badge during graduate onboarding program.' },
+      { title: 'Hackathon Finalist', desc: 'Ranked 3rd out of 120 teams in National College Techfest Hackathon 2023.' }
+    ]
+  },
+
+  'Computer Science Student': {
+    name: 'Riya Sen',
+    role: 'Computer Science Undergraduate | Aspiring Software Developer',
+    contact: { email: 'riya.sen@forgeindiaconnect.com', phone: '+91 98111 22334', location: 'Hyderabad, India', linkedin: 'linkedin.com/in/riya-sen-cs' },
+    objective: 'Final-year Computer Science student passionate about cloud computing and algorithm design. Seeking a software development internship or entry-level role to apply hands-on project experience in building scalable web applications.',
+    skills: { languages: 'Python · C++ · JavaScript · React · Express.js · MongoDB · PostgreSQL · AWS Basics · Data Structures · OOP' },
+    experience: [
+      { company: 'College Tech Lab', location: 'Hyderabad, India', title: 'Student Research Lead', duration: '06/2023 - Present', desc: '• Led student developer team in building campus event management portal used by 3,500+ active students.\n• Integrated JWT authentication and automated email notifications via SendGrid, achieving 99.8% delivery success.' },
+      { company: 'InnoByte Tech', location: 'Hyderabad, India', title: 'Web Development Intern', duration: '05/2023 - 08/2023', desc: '• Developed interactive components in React, reducing bounce rate on customer landing pages by 15%.\n• Optimized database queries in MongoDB, cutting response times from 320ms to 95ms.' }
+    ],
+    education: [{ degree: 'Bachelor of Technology (B.Tech) in Computer Science', institution: 'IIIT Hyderabad', location: 'Hyderabad, India', tenure: '2021 - 2025' }],
+    achievements: [
+      { title: 'Dean’s Honor List', desc: 'Awarded for academic excellence across 3 consecutive semesters.' },
+      { title: 'LeetCode 500+ Solved', desc: 'Ranked in top 8% globally in algorithm contest ratings.' }
+    ]
+  },
+
+  'Prompt Engineer': {
+    name: 'Kavya Nair',
+    role: 'AI Prompt Engineer | LLM Evaluation & Generative AI Solutions',
+    contact: { email: 'kavya.nair@forgeindiaconnect.com', phone: '+1-(415)-890-4321', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/kavya-nair-prompt' },
+    objective: 'Prompt Engineering Specialist with 3+ years refining Large Language Model (LLM) prompts, constructing few-shot prompt libraries, and benchmarking output quality across GPT-4, Claude 3, and Gemini 1.5 Pro.',
+    skills: { languages: 'Prompt Engineering · Few-Shot Learning · Chain-of-Thought (CoT) · LangChain · LlamaIndex · Python · RAG Architecture · LLM Benchmarking · RLHF' },
+    experience: [
+      { company: 'CognitiveWave AI', location: 'San Francisco, CA', title: 'Senior Prompt Engineer', duration: '02/2023 - Present', desc: '• Architected system prompts for customer-facing Copilots, driving accuracy from 74% to 96% and decreasing hallucination rate by 42%.\n• Designed and deployed evaluation rubrics (ROUGE, BLEU, human-in-the-loop) for 50,000+ daily conversational completions.\n• Collaborated with ML scientists to fine-tune prompts and optimize token consumption, slashing API inference costs by 34%.' },
+      { company: 'Nexus Automation Labs', location: 'Austin, TX', title: 'AI Solutions Engineer', duration: '08/2021 - 01/2023', desc: '• Implemented Retrieval-Augmented Generation (RAG) pipelines connecting internal enterprise knowledge bases with Claude LLMs.\n• Conducted red-teaming and prompt injection vulnerability assessments to fortify AI safety guardrails.' }
+    ],
+    education: [{ degree: 'B.S. in Cognitive Science & Computer Science', institution: 'UC Berkeley', location: 'Berkeley, CA', tenure: '2017 - 2021' }],
+    achievements: [
+      { title: '34% Inference Cost Reduction', desc: 'Optimized token prompt density saving $220K annually in cloud API costs.' },
+      { title: '42% Drop in Hallucinations', desc: 'Engineered multi-step reasoning guardrails for enterprise banking assistants.' }
+    ]
+  },
+
+  'AWS Cloud Solutions Architect': {
+    name: 'Vikram Malhotra',
+    role: 'AWS Certified Solutions Architect (Professional) | Cloud Migration & FinOps',
+    contact: { email: 'vikram.malhotra@forgeindiaconnect.com', phone: '+1-(206)-555-7890', location: 'Seattle, WA', linkedin: 'linkedin.com/in/vikram-cloud-arch' },
+    objective: 'AWS-Certified Solutions Architect with 10+ years designing resilient, multi-region cloud infrastructure, leading legacy-to-cloud migrations, and implementing automated FinOps cost governance.',
+    skills: { languages: 'AWS (ECS, EKS, Lambda, S3, RDS, DynamoDB) · Terraform · Kubernetes · CloudFormation · CI/CD Pipelines · FinOps · Zero-Trust Security · Multi-Region DR' },
+    experience: [
+      { company: 'CloudScale Enterprises', location: 'Seattle, WA', title: 'Principal Cloud Architect', duration: '04/2020 - Present', desc: '• Led migration of 140+ microservices from on-premise VMware to AWS EKS with zero downtime across 4.2M daily active users.\n• Automated multi-account IAM governance and AWS Organizations policies, achieving SOC-2 Type II and HIPAA compliance.\n• Executed FinOps cost optimization strategies, lowering monthly AWS infrastructure expenditure by $85,000 without sacrificing SLA thresholds.' },
+      { company: 'Syntel Global Cloud', location: 'San Jose, CA', title: 'Senior Cloud Engineer', duration: '06/2015 - 03/2020', desc: '• Designed automated disaster recovery (DR) architecture with RTO < 15 mins and RPO < 5 mins using AWS Route53 and S3 cross-region replication.' }
+    ],
+    education: [{ degree: 'Master of Science in Information Systems', institution: 'University of Washington', location: 'Seattle, WA', tenure: '2013 - 2015' }],
+    achievements: [
+      { title: 'AWS Solutions Architect Professional', desc: 'Credential ID: AWS-PSA-994827 - Active.' },
+      { title: '$1M+ Annual Cloud Cost Savings', desc: 'Consolidated idle instances, reserved instances, and Spot orchestration.' }
+    ]
+  },
+
+  'Cybersecurity Analyst': {
+    name: 'Ananya Deshmukh',
+    role: 'Senior Cybersecurity Analyst | Threat Detection & Incident Response',
+    contact: { email: 'ananya.deshmukh@forgeindiaconnect.com', phone: '+1-(703)-555-9012', location: 'Reston, VA', linkedin: 'linkedin.com/in/ananya-cybersecurity' },
+    objective: 'CISSP-certified Cybersecurity Analyst with 7+ years of experience in SIEM monitoring, threat intelligence, vulnerability remediation, and enterprise incident response.',
+    skills: { languages: 'SIEM (Splunk, Microsoft Sentinel) · Wireshark · EDR (CrowdStrike) · Nessus · MITRE ATT&CK · Incident Response · Penetration Testing · ISO 27001 · NIST CSF' },
+    experience: [
+      { company: 'Fortress Defense Systems', location: 'Reston, VA', title: 'Senior Security Operations Analyst', duration: '01/2021 - Present', desc: '• Monitored 12,000+ endpoints via CrowdStrike Falcon and Microsoft Sentinel, investigating and neutralizing an average of 45 high-severity incidents monthly.\n• Reduced Mean Time to Detect (MTTD) by 38% and Mean Time to Respond (MTTR) by 50% by building custom SOAR automation playbooks.\n• Spearheaded annual penetration testing engagements, identifying and patching 18 critical vulnerabilities before production release.' },
+      { company: 'Apex IT Security', location: 'Austin, TX', title: 'Information Security Associate', duration: '07/2017 - 12/2020', desc: '• Maintained enterprise vulnerability scanner (Tenable Nessus), auditing 450+ network assets and achieving 100% compliance with NIST CSF.' }
+    ],
+    education: [{ degree: 'B.S. in Cybersecurity & Information Assurance', institution: 'George Mason University', location: 'Fairfax, VA', tenure: '2013 - 2017' }],
+    achievements: [
+      { title: 'CISSP & CEH Certified', desc: 'Certified Information Systems Security Professional (Active).' },
+      { title: '0 Ransomware Incidents', desc: 'Maintained 100% containment record over 4 consecutive operational years.' }
+    ]
+  },
+
+  'STEM High School Teacher': {
+    name: 'David Reynolds',
+    role: 'High School STEM Educator | AP Physics & Robotics Program Director',
+    contact: { email: 'david.reynolds@forgeindiaconnect.com', phone: '+1-(617)-555-3456', location: 'Boston, MA', linkedin: 'linkedin.com/in/david-reynolds-stem' },
+    objective: 'Dedicated High School STEM Teacher with 8+ years experience developing inquiry-based curricula in AP Physics, Algebra II, and competitive Robotics. Fosters inclusive, hands-on learning environments with a 92% AP exam pass rate.',
+    skills: { languages: 'Curriculum Development · AP Physics · Calculus · STEM Pedagogy · Classroom Management · FIRST Robotics Mentorship · Python for Science · Canvas LMS · Google Classroom' },
+    experience: [
+      { company: 'Cambridge Science Academy', location: 'Boston, MA', title: 'Lead STEM & Physics Teacher', duration: '08/2019 - Present', desc: '• Instructed 140+ students annually across Honors and AP Physics, achieving an average AP score of 4.3/5.0 (28% above state benchmark).\n• Founded school Robotics Club and mentored 24 student engineers to qualify for State FIRST Tech Challenge Championships two years running.\n• Integrated interactive simulations (PhET, MATLAB) into weekly lesson plans, boosting student engagement and lab completion by 35%.' },
+      { company: 'Lincoln Public Schools', location: 'Newton, MA', title: 'Mathematics & Science Teacher', duration: '08/2016 - 06/2019', desc: '• Taught Algebra II and Introductory Chemistry to diverse student cohorts with tailored IEP accommodations.' }
+    ],
+    education: [{ degree: 'Master of Education (M.Ed.) in Curriculum & Instruction', institution: 'Boston University', location: 'Boston, MA', tenure: '2014 - 2016' }],
+    achievements: [
+      { title: 'Teacher of the Year 2023', desc: 'Awarded by Greater Boston Educational Consortium for excellence in STEM outreach.' },
+      { title: '92% AP Pass Rate', desc: 'Consistently surpassed Massachusetts state average AP Physics pass rates.' }
+    ]
+  },
+
+  'FinTech Product Analyst': {
+    name: 'Siddharth Rao',
+    role: 'FinTech Product Analyst | Payments, UPI & Digital Lending Solutions',
+    contact: { email: 'siddharth.rao@forgeindiaconnect.com', phone: '+91 99000 88776', location: 'Mumbai, India', linkedin: 'linkedin.com/in/siddharth-fintech' },
+    objective: 'Data-driven FinTech Analyst with 5+ years optimizing payment checkout conversions, API integrations (UPI, Cards, BNPL), and regulatory fraud compliance across high-volume transaction gateways.',
+    skills: { languages: 'FinTech Product Analytics · Payment Gateways · UPI Architecture · SQL · Python · Mixpanel · Tableau · Agile Scrum · KYC & AML Compliance · Fraud Detection' },
+    experience: [
+      { company: 'PayFlow Technologies', location: 'Mumbai, India', title: 'Senior Product Analyst (Payments)', duration: '05/2021 - Present', desc: '• Analyzed end-to-end checkout funnel for 8.5M monthly transactions, reducing payment failure drop-offs by 4.8% and unlocking ₹32 Cr in annualized GMV.\n• Defined technical specifications and PRDs for Instant Refund integration via IMPS, decreasing customer dispute tickets by 40%.\n• Built real-time fraud monitoring dashboard with rule-based flagging that intercepted ₹1.8 Cr in fraudulent chargebacks.' },
+      { company: 'CreditScale India', location: 'Bengaluru, India', title: 'Associate Business Analyst', duration: '07/2019 - 04/2021', desc: '• Evaluated digital lending risk scorecards and applicant drop-off rates across 12 banking partners.' }
+    ],
+    education: [{ degree: 'B.Tech + MBA Tech in Finance & Analytics', institution: 'NMIMS University', location: 'Mumbai, India', tenure: '2014 - 2019' }],
+    achievements: [
+      { title: '₹32 Cr GMV Unlocked', desc: 'Optimized multi-rail payment fallback mechanisms improving success rates to 96.4%.' },
+      { title: '40% Ticket Reduction', desc: 'Shipped auto-reconciliation engine for failed UPI payments.' }
+    ]
+  },
+
+  'Supply Chain Manager': {
+    name: 'Marcus Sterling',
+    role: 'Global Supply Chain Manager | End-to-End Logistics & Vendor Management',
+    contact: { email: 'marcus.sterling@forgeindiaconnect.com', phone: '+1-(312)-555-6677', location: 'Chicago, IL', linkedin: 'linkedin.com/in/marcus-sterling-scm' },
+    objective: 'Results-oriented Supply Chain Manager with 9+ years directing freight logistics, automated warehousing, demand forecasting, and vendor contract negotiations across global distribution hubs.',
+    skills: { languages: 'Supply Chain Optimization · SAP S/4HANA (MM, PP) · Demand Planning · Freight Forwarding · Inventory Management · 3PL/4PL Management · Six Sigma Black Belt · Procurement' },
+    experience: [
+      { company: 'Apex Logistics Global', location: 'Chicago, IL', title: 'Senior Supply Chain Manager', duration: '03/2020 - Present', desc: '• Directed $120M logistics procurement portfolio across 6 North American distribution centers, delivering 99.2% on-time shipment fulfillment.\n• Renegotiated carrier contracts with ocean and domestic freight carriers, capturing $2.4M in annual shipping cost savings.\n• Implemented automated demand planning algorithms that lowered dead-stock inventory by 24% while preventing out-of-stock events.' },
+      { company: 'TransContinental Freight', location: 'Dallas, TX', title: 'Operations Logistics Lead', duration: '08/2015 - 02/2020', desc: '• Managed cross-docking operations and fleet scheduling for 45 daily long-haul routes.' }
+    ],
+    education: [{ degree: 'B.S. in Supply Chain Management & Operations', institution: 'Michigan State University', location: 'East Lansing, MI', tenure: '2011 - 2015' }],
+    achievements: [
+      { title: '$2.4M Freight Savings', desc: 'Negotiated strategic carrier master service agreements.' },
+      { title: '99.2% Fulfillment Rate', desc: 'Maintained tier-1 customer fulfillment metrics through peak holiday surges.' }
+    ]
+  },
+
+  'Customer Success Manager': {
+    name: 'Emily Carter',
+    role: 'Senior Customer Success Manager | SaaS Retention, Onboarding & NRR Growth',
+    contact: { email: 'emily.carter@forgeindiaconnect.com', phone: '+1-(415)-555-7799', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/emily-carter-csm' },
+    objective: 'Strategic Customer Success Manager with 6+ years driving enterprise customer onboarding, retention, and account expansion across B2B SaaS organizations. Proven track record maintaining 118% Net Retention Rate (NRR).',
+    skills: { languages: 'Customer Success · Enterprise Onboarding · Churn Prevention · Gainsight · Salesforce CRM · Net Retention Rate (NRR) · QBR Execution · Upsell & Cross-sell · Executive Relationship Management' },
+    experience: [
+      { company: 'CloudMatrix Software', location: 'San Francisco, CA', title: 'Senior Customer Success Manager', duration: '06/2021 - Present', desc: '• Managed portfolio of 42 Tier-1 enterprise accounts generating $6.2M in Annual Recurring Revenue (ARR) with a 97% gross retention rate.\n• Maintained 118% Net Retention Rate (NRR) through proactive Quarterly Business Reviews (QBRs) and cross-functional product adoption audits.\n• Shortened customer time-to-value (TTV) from 45 days to 18 days by designing interactive onboarding playbooks in Gainsight.' },
+      { company: 'SaaSify Platforms', location: 'Denver, CO', title: 'Customer Success Specialist', duration: '08/2018 - 05/2021', desc: '• Handled proactive client check-ins and executive escalations, reducing annual churn rate by 3.2% across mid-market accounts.' }
+    ],
+    education: [{ degree: 'B.A. in Communications & Business Administration', institution: 'University of Colorado Boulder', location: 'Boulder, CO', tenure: '2014 - 2018' }],
+    achievements: [
+      { title: '118% Net Retention Rate', desc: 'Consistently exceeded expansion and upsell targets across enterprise accounts.' },
+      { title: 'CSM of the Year 2023', desc: 'Recognized for lowest account churn and highest customer CSAT score (4.9/5.0).' }
+    ]
+  },
+
   'Executive': {
     name: 'Jonathan Ross',
     role: 'Executive Director | Operations & Strategic Expansion',
@@ -439,7 +640,7 @@ const resumeDataByRole = {
   'Project Manager': {
     name: 'Joshua Nelson',
     role: 'Project Manager | Renewable Energy | Agile | PMP',
-    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Los Angeles, California', linkedin: 'linkedin.com/in/joshua-nelson-pmp' },
+    contact: { email: 'j.nelson@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Los Angeles, California', linkedin: 'linkedin.com/in/joshua-nelson-pmp' },
     objective: 'Enthusiastic Project Manager with over 5 years of experience in the renewable energy sector, specializing in Agile and Waterfall methodologies. Expertise in project planning and execution, with a proven track record of leading multi-disciplinary teams to achieve on-time, on-budget project delivery.',
     skills: { languages: 'Project Management · Agile Methodologies · Waterfall · Microsoft Project · Jira · Risk Management' },
     experience: [
@@ -721,7 +922,7 @@ const resumeDataByRole = {
   'Python Developer': {
     name: 'Owen Wright',
     role: 'Python Developer | Healthcare Solutions | Scalable Applications',
-    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-5234', location: 'San Jose, CA', linkedin: 'linkedin.com/in/owenwright' },
+    contact: { email: 'o.wright@forgeindiaconnect.com', phone: '+1-(234)-555-5234', location: 'San Jose, CA', linkedin: 'linkedin.com/in/owenwright' },
     objective: 'With over 8 years of experience in Python development, specializes in healthcare applications to enhance patient outcomes. Expertise in developing scalable applications using Django, AWS, and Docker. A key achievement included leading a team to reduce processing time by 30%, improving system efficiency and client satisfaction.',
     skills: { languages: 'Python · Django · Flask · AWS · Docker · PostgreSQL · Redis · Celery · REST APIs · GraphQL · NumPy · Pandas · Scikit-learn · TensorFlow · Kubernetes' },
     experience: [
@@ -876,7 +1077,7 @@ const resumeDataByRole = {
   'Web Developer': {
     name: 'Luna Thomas',
     role: 'Web Developer | Front-End Technologies | Scalability',
-    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Columbus, Ohio', linkedin: 'linkedin.com/in/lunathomas', github: 'github' },
+    contact: { email: 'l.thomas@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Columbus, Ohio', linkedin: 'linkedin.com/in/lunathomas', github: 'github' },
     objective: 'Driven Web Developer with 6 years of experience proficient in HTML5, CSS, and JavaScript. Demonstrates exceptional problem-solving skills and attention to detail while efficiently balancing technical and non-technical aspects. Through focus on code optimization, web performance improved website speed by 36% at previous companies, significantly enhancing user experience.',
     skills: { languages: 'HTML · CSS · JavaScript · React · Vue.js · Node.js · Express · MongoDB · PostgreSQL · REST APIs · GraphQL · Git · Webpack · Performance Optimization · Responsive Design · SEO · Accessibility' },
     experience: [
@@ -1233,7 +1434,7 @@ const resumeDataByRole = {
   'Actor': {
     name: 'Ava Johnson',
     role: 'Actor | Character Development | Film & TV',
-    contact: { email: 'help@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Austin, Texas', linkedin: 'linkedin.com/in/ava-johnson-acting' },
+    contact: { email: 'a.johnson@forgeindiaconnect.com', phone: '+1-(234)-555-1234', location: 'Austin, Texas', linkedin: 'linkedin.com/in/ava-johnson-acting' },
     objective: 'Accomplished Actor with 6 years of experience in film and television, excelling in character development and script interpretation. Skilled in collaboration and adaptability while maintaining professionalism and consistency across performances. Received critical acclaim for a performance that increased viewership by 30%, driven by effective communication and passion for storytelling.',
     skills: { languages: 'Script Analysis - Character Development - Voice-over Techniques - Improvisational Acting - Film Production - Audio Recording' },
     experience: [

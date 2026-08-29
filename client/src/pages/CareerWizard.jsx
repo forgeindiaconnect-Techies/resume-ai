@@ -47,9 +47,33 @@ const CareerWizard = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-primary-500 selection:text-white">
       {/* Header */}
       <header className="px-8 py-6 flex justify-between items-center bg-white border-b border-slate-200">
-        <Link to="/" className="hover:opacity-80 transition flex items-center">
-          <ForgeLogo size={52} />
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <button
+            onClick={handleBack}
+            title={step > 1 ? "Previous Step" : "Back"}
+            aria-label={step > 1 ? "Previous Step" : "Back"}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              flexShrink: 0,
+              padding: 0
+            }}
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <Link to="/" className="hover:opacity-80 transition flex items-center">
+            <ForgeLogo size={52} />
+          </Link>
+        </div>
         <div className="flex gap-2">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className={`h-2 w-16 rounded-full transition-colors duration-300 ${i <= step ? 'bg-primary-600' : 'bg-slate-200'}`} />

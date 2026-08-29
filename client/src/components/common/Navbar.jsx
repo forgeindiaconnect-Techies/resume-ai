@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import ForgeLogo from './ForgeLogo';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  const isHome = location.pathname === '/';
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <nav style={{
@@ -21,9 +33,44 @@ const Navbar = () => {
       flexShrink: 0
     }}>
       <div className="landing-nav-container">
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-          <ForgeLogo size={46} showText={true} />
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+          {!isHome && (
+            <button
+              onClick={handleBack}
+              title="Back"
+              aria-label="Back"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: '#f1f5f9',
+                border: '1px solid #e2e8f0',
+                color: '#475569',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                flexShrink: 0,
+                padding: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#e2e8f0';
+                e.currentTarget.style.color = '#0f172a';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#f1f5f9';
+                e.currentTarget.style.color = '#475569';
+              }}
+            >
+              <ArrowLeft size={16} />
+            </button>
+          )}
+
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <ForgeLogo size={46} showText={true} />
+          </Link>
+        </div>
 
         {/* Desktop Nav Links */}
         <div className="landing-desktop-nav">

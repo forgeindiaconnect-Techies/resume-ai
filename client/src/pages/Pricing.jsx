@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Check } from "lucide-react";
+import Navbar from "../components/common/Navbar";
 import { API_BASE_URL } from "../config/api";
 
 const loadRazorpay = () => {
@@ -106,8 +107,10 @@ const Pricing = () => {
   }
 
   return (
-    <div className="pricing-page">
-      <div className="pricing-header">
+    <div>
+      <Navbar />
+      <div className="pricing-page">
+        <div className="pricing-header">
           <h1>Choose Your Plan</h1>
           <p>Create professional resumes without limitations.</p>
         </div>
@@ -139,6 +142,7 @@ const Pricing = () => {
           ))}
         </div>
       </div>
+    </div>
   );
 };
 
